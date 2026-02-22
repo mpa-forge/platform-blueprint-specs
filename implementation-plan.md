@@ -160,7 +160,7 @@ For each decision capture:
 - Define Sentry and incident.io projects/workspaces and API credentials.
 - Define GitHub Actions environments/secrets and GCP Workload Identity Federation for CI auth.
 - Define GitHub Issues/Projects task-management workflow baseline (issue templates, labels, board states, automation) across repos.
-- Define and codify CI code-quality/security tooling standards (`golangci-lint`, `eslint`, `tsc`, `trivy`, `gitleaks`, `semgrep/codeql`, IaC checks) with swap criteria.
+- Define and codify CI code-quality/security tooling standards (`golangci-lint`, `eslint`, `tsc`, `sonar`/`sonarcloud`, `trivy`, `gitleaks`, `semgrep/codeql`, IaC checks) with swap criteria.
 - Define and bootstrap `platform-ai-workers` repo with task-state machine and draft-PR flow (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`).
 - Provision minimal AI worker runtime prerequisites early (Cloud Run Job + Cloud Scheduler + GSM/IAM) to enable task-to-code automation before full platform completion.
 - Define per-target-repo worker deployment config model (`WORKER_ID`, `TARGET_REPO`, limits, credential refs).
@@ -224,3 +224,4 @@ For each decision capture:
 - v2.20 (2026-02-22): Added fast-track AI task-to-code automation bootstrap plan (dedicated worker repo, early Cloud Run Job/Scheduler prerequisites, per-repo worker lanes, and review governance).
 - v2.21 (2026-02-22): Added later-phase AI Ops automation plan for alert-driven diagnostics using MCP-integrated telemetry access and automatic remediation task generation.
 - v2.22 (2026-02-22): Added explicit CI code-quality/security tooling integration plan with approved alternatives and migration criteria.
+- v2.23 (2026-02-22): Added Sonar (`SonarCloud` free-tier path where eligible) to the CI quality baseline and near-term rollout tasks.

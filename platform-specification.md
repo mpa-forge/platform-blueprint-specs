@@ -49,6 +49,7 @@
 - CI/CD: GitHub Actions.
 - CI quality/security tooling baseline:
   - Quality: `golangci-lint`, `go test`, `go vet`, `eslint`, `tsc --noEmit`, `buf lint`, `buf breaking`
+  - Repository quality gate: `sonar` (`sonarcloud` free tier where eligible)
   - Security: `trivy` (dependency + image scanning), `gitleaks` (secret scanning), `semgrep` (or `codeql`) for SAST
   - IaC quality/security: `terraform fmt/validate`, `tflint` (optional `tfsec`/`checkov`)
   - Supply chain (hardening phase): `syft` + `cosign`
@@ -442,5 +443,6 @@
 - v1.27 (2026-02-22): Locked AI task-to-code automation baseline to a dedicated `platform-ai-workers` repo with scheduled Cloud Run Jobs, per-repo worker-job deployments, and human-reviewed draft PR controls.
 - v1.28 (2026-02-22): Added later-phase AI Ops automation scope: alert-triggered diagnostic workers with MCP-based telemetry analysis and automated remediation task generation.
 - v1.29 (2026-02-22): Added concrete CI code-quality/security tooling baseline and alternatives framework for pipeline integration.
+- v1.30 (2026-02-22): Added Sonar (`SonarCloud` free-tier path where eligible) to the CI quality baseline.
 
 

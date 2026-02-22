@@ -19,7 +19,8 @@ Type: CI coding
 Dependencies: P4-T01  
 Action: Add jobs for Go/TS linting and unit tests with caching and deterministic tooling versions; baseline tools:
 - Go: `golangci-lint`, `go test`, `go vet`
-- Frontend: `eslint`, `tsc --noEmit` (plus optional `prettier --check`)  
+- Frontend: `eslint`, `tsc --noEmit` (plus optional `prettier --check`)
+- Repository quality gate: `sonar` (`sonarcloud` free tier where eligible)  
 Output: CI quality gates on every PR.  
 Done when: PRs fail on lint/test errors.
 
@@ -63,6 +64,7 @@ Action: Integrate scanners (language dependencies + container images), and enfor
 - `trivy` for dependency + image vulnerability scanning
 - `gitleaks` for secret scanning
 - `semgrep` for SAST (or `codeql` as alternative)
+- `sonar` (`sonarcloud` free tier where eligible) for code quality and maintainability gates
 - `tflint` + `terraform fmt/validate` for IaC quality (with optional `tfsec`/`checkov`)  
 Output: Vulnerability reports and gate policy.  
 Done when: CI enforces the defined gate policy and accepted exceptions are traceable via time-boxed waiver records.
@@ -103,7 +105,7 @@ Done when: AI-created PRs cannot merge without the same required review/check ga
 Owner: Human + Agent  
 Type: Governance + documentation  
 Dependencies: P4-T02, P4-T07  
-Action: Document approved alternatives and swap criteria for core CI tools (for example `semgrep` vs `codeql`, `trivy` vs `grype`, `tfsec` vs `checkov`) and define migration trigger points (cost, false positives, runtime impact, enterprise compliance).  
+Action: Document approved alternatives and swap criteria for core CI tools (for example `sonar` vs `semgrep`/`codeql`, `trivy` vs `grype`, `tfsec` vs `checkov`) and define migration trigger points (cost, false positives, runtime impact, enterprise compliance).  
 Output: `docs/standards/ci-quality-security-tooling.md`.  
 Done when: Tool substitutions can be made with explicit rationale and no policy ambiguity.
 
