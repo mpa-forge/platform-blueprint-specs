@@ -18,6 +18,7 @@ Detailed tasks: `implementation-phase-tasks/phase-4-ci-pipeline-tasks.md`
 - Add test reports and build artifacts.
 - Enforce branch protection and required checks.
 - Standardize reusable workflow templates consumed across repos.
+- Add governance checks for AI-generated PRs (required status checks/reviewers and standardized metadata labels).
 - CI runtime target baseline for PR pipelines:
   - `p50 <= 10 minutes`
   - `p95 <= 15 minutes`

@@ -37,6 +37,7 @@ Target repositories (polyrepo):
 - `platform-contracts`: protobuf APIs, Buf config, generated artifact policy.
 - `backend-api`: Go API service (`net/http` + `connect-go`) with Auth0 validation and Cloud SQL connectivity.
 - `backend-worker`: Go worker service with scheduled/no-op job loop and shared platform libraries.
+- `platform-ai-workers`: AI task-to-code worker runtime (scheduled Cloud Run Jobs) that converts GitHub tasks into draft PRs with human review gates.
 - `frontend-web`: authenticated React app using generated TypeScript client from protobuf contracts.
 - `platform-infra`: Terraform + Helm + GitHub Actions deployment workflows.
 - dedicated docs repository: ADRs, platform standards, runbooks, and cross-repo operational documentation.
@@ -104,6 +105,19 @@ Out of scope until baseline completion:
 - Queue/broker implementation and async delivery semantics.
 - Public website/blog implementation path.
 
+### 3.1 Fast-Track AI Automation Bootstrap
+- Priority intent:
+  - Implement minimal AI task-to-code automation as early as possible to accelerate execution of later phase tasks while preserving merge control.
+- Delivery order:
+  - Phase 0: lock automation architecture, task state machine, and credential model.
+  - Phase 1: bootstrap `platform-ai-workers` repo and validate one end-to-end task -> draft PR flow in a sandbox repo.
+  - Phase 5 (minimal subset pulled earlier as needed): provision Cloud Run Job + Cloud Scheduler + GSM/IAM bindings for worker runtime.
+  - Phase 4: enforce governance checks for AI-generated PRs (required review/checks/metadata).
+- Guardrails:
+  - Draft PR only, no direct protected-branch writes.
+  - Required human review and existing CI checks remain mandatory.
+  - Worker lanes are configured per target repo using environment variables and least-privilege credentials.
+
 ## 4. Workstreams (Parallel)
 - App Platform: frontend/api/worker skeletons.
 - Infrastructure: Terraform and Kubernetes foundations.
@@ -133,6 +147,10 @@ For each decision capture:
 - Define Grafana Cloud org/stack setup and telemetry credentials for local, RC, and prod.
 - Define Sentry and incident.io projects/workspaces and API credentials.
 - Define GitHub Actions environments/secrets and GCP Workload Identity Federation for CI auth.
+- Define GitHub Issues/Projects task-management workflow baseline (issue templates, labels, board states, automation) across repos.
+- Define and bootstrap `platform-ai-workers` repo with task-state machine and draft-PR flow (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`).
+- Provision minimal AI worker runtime prerequisites early (Cloud Run Job + Cloud Scheduler + GSM/IAM) to enable task-to-code automation before full platform completion.
+- Define per-target-repo worker deployment config model (`WORKER_ID`, `TARGET_REPO`, limits, credential refs).
 - Define Cloud SQL instance topology and connectivity model for RC/prod.
 - Apply `us-east4` as the primary region baseline for RC/prod infrastructure components.
 - Define RC isolation model implementation details (namespaces, DB boundaries, secret namespaces, and domain layout).
@@ -189,3 +207,5 @@ For each decision capture:
 - v2.16 (2026-02-21): Locked baseline mandatory smoke-test blockers for prod promotion and aligned Phase 7 gating criteria.
 - v2.17 (2026-02-21): Locked provisional baseline API SLO targets for RC/prod (availability and p95 latency) with a defined post-launch recalibration checkpoint.
 - v2.18 (2026-02-21): Locked baseline secret rotation cadence/policy for RC and prod, including emergency rotation SLA, rollback window, and prod approval governance.
+- v2.19 (2026-02-22): Locked task management baseline to GitHub Issues + GitHub Projects with a standardized cross-repo workflow model.
+- v2.20 (2026-02-22): Added fast-track AI task-to-code automation bootstrap plan (dedicated worker repo, early Cloud Run Job/Scheduler prerequisites, per-repo worker lanes, and review governance).

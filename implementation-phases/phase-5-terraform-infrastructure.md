@@ -8,12 +8,14 @@ Detailed tasks: `implementation-phase-tasks/phase-5-terraform-infrastructure-tas
   - Google Artifact Registry repositories and IAM bindings
   - Cloud SQL for PostgreSQL instances, networking, backups, and IAM/database auth integration
   - Google Secret Manager secrets, IAM policies, and workload identity bindings for ESO
+  - Cloud Run Jobs + Cloud Scheduler + IAM for AI task-to-code workers
   - observability dependencies (as needed)
 - Create env stacks (`rc`, `prod`) with separate project-level isolation for prod.
 - Enforce one Terraform root per environment (`rc`, `prod`) with shared modules.
 - Do not use Terraform workspaces for environment isolation/switching.
 - Add remote state and locking.
 - Enforce separate GCP projects for `rc` and `prod`.
+- Allow minimal infra subset pull-forward when needed to unblock early AI worker automation bootstrap (Cloud Run Job + Scheduler + GSM/IAM).
 - Standardize Terraform remote state pattern on GCS backend:
   - Dedicated Terraform state project.
   - Separate state bucket per environment (`rc`, `prod`) with strict IAM isolation.

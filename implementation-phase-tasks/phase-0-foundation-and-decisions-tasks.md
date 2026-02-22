@@ -77,10 +77,42 @@ Action: Define exactly what conditions trigger queue re-evaluation (throughput, 
 Output: `docs/standards/deferred-queue-policy.md`.  
 Done when: Trigger criteria are objective and measurable.
 
-### P0-T10: Sign-off phase gate
+### P0-T10: Define task management platform and workflow baseline
+Owner: Human + Agent  
+Type: Governance  
+Dependencies: P0-T02, P0-T06  
+Action: Standardize task management on GitHub Issues + GitHub Projects with one cross-repo project board, issue templates (`feature`, `bug`, `chore`, `spike`), label taxonomy (`area/*`, `priority/*`, `type/*`, `env/*`), status flow (`Backlog` -> `Ready` -> `In Progress` -> `In Review` -> `Blocked` -> `Done`), and automation rules (auto-add issues/PRs, auto-status transitions, close-on-merge link rules).  
+Output: `docs/governance/task-management-workflow.md` and project board configuration checklist.  
+Done when: Board is live, templates/labels are applied across repos, and at least one end-to-end issue flow is demonstrated.
+
+### P0-T11: Define AI task-to-code architecture and control model
+Owner: Human + Agent  
+Type: Governance + architecture  
+Dependencies: P0-T10  
+Action: Document the baseline automation architecture: dedicated `platform-ai-workers` repo, scheduled Cloud Run Jobs, one worker-job deployment per target repo, environment-driven worker configuration (`WORKER_ID`, `TARGET_REPO`, credential refs, limits), and mandatory human review controls (draft PR + required checks/review).  
+Output: `docs/automation/ai-task-to-code-architecture.md`.  
+Done when: Architecture and control boundaries are approved and referenced by Phase 1/4/5 tasks.
+
+### P0-T12: Define AI task state machine and claim/resume policy
+Owner: Human + Agent  
+Type: Workflow design  
+Dependencies: P0-T11  
+Action: Define GitHub issue labels/states for AI execution (`ai:ready`, `ai:in-progress`, `ai:ready-for-review`, `ai:failed`, `worker:<id>`), claim rules, retry/resume behavior, and pending-review cap policy.  
+Output: `docs/automation/ai-task-state-machine.md`.  
+Done when: State transitions are deterministic and testable with one worker lane.
+
+### P0-T13: Define AI worker credential and secret model
+Owner: Human + Agent  
+Type: Security design  
+Dependencies: P0-T11  
+Action: Define GitHub credential strategy (GitHub App preferred), least-privilege scopes, GSM secret layout, and runtime injection model for Cloud Run Jobs.  
+Output: `docs/security/ai-worker-credentials.md`.  
+Done when: Credential model supports per-target-repo worker deployments without static keys in git.
+
+### P0-T14: Sign-off phase gate
 Owner: Human  
 Type: Approval  
-Dependencies: P0-T01..P0-T09  
+Dependencies: P0-T01..P0-T13  
 Action: Review phase artifacts and approve transition to Phase 1.  
 Output: Phase 0 sign-off note in `docs/phase-gates/phase-0-signoff.md`.  
 Done when: Sign-off completed with approver names and date.
@@ -95,4 +127,8 @@ Done when: Sign-off completed with approver names and date.
 - `docs/standards/git-and-release-policy.md`
 - `docs/security/access-model.md`
 - `docs/standards/deferred-queue-policy.md`
+- `docs/governance/task-management-workflow.md`
+- `docs/automation/ai-task-to-code-architecture.md`
+- `docs/automation/ai-task-state-machine.md`
+- `docs/security/ai-worker-credentials.md`
 - `docs/phase-gates/phase-0-signoff.md`

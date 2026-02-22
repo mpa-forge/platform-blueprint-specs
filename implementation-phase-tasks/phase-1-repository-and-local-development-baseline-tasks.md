@@ -9,7 +9,7 @@ Establish runnable local repositories and developer workflows that mirror the cl
 Owner: Human  
 Type: Repo setup  
 Dependencies: Phase 0 sign-off  
-Action: Create `frontend-web`, `backend-api`, dedicated `backend-worker`, `platform-contracts`, `platform-infra`; configure protected `main` branch and required reviewers.  
+Action: Create `frontend-web`, `backend-api`, dedicated `backend-worker`, dedicated `platform-ai-workers`, `platform-contracts`, `platform-infra`; configure protected `main` branch and required reviewers.  
 Output: Repositories created with baseline settings.  
 Done when: All repos are accessible and protected policies are active.
 
@@ -85,6 +85,30 @@ Action: Have one fresh machine run bootstrap from docs without verbal help; capt
 Output: Updated onboarding docs and resolved blockers.  
 Done when: New developer setup completes within targeted time window.
 
+### P1-T11: Bootstrap `platform-ai-workers` repository baseline
+Owner: Agent  
+Type: Coding  
+Dependencies: P1-T01, Phase 0 AI automation decisions  
+Action: Scaffold worker job codebase and container with configurable env vars (`WORKER_ID`, `TARGET_REPO`, `MAX_PENDING_REVIEW`, `POLL_WINDOW`, credential secret refs), GitHub task selection logic, task state transitions (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`), and draft PR creation path.  
+Output: Runnable automation worker baseline in dedicated repo.  
+Done when: Worker can process one synthetic issue and produce a draft PR in a target sandbox repo.
+
+### P1-T12: Add worker lane safety and resume behavior
+Owner: Agent  
+Type: Coding  
+Dependencies: P1-T11  
+Action: Implement single-lane processing guard per worker id, deterministic claim-before-work behavior, retry/resume handling for `ai:in-progress` tasks, and pending-review cap stop condition.  
+Output: Safe worker execution loop with deterministic state transitions.  
+Done when: Repeated runs do not duplicate claims and can resume interrupted tasks for the same worker lane.
+
+### P1-T13: Run AI worker dry-run validation
+Owner: Human + Agent  
+Type: Validation  
+Dependencies: P1-T11, P1-T12  
+Action: Execute controlled dry-run against a sandbox repository and verify end-to-end path (issue selection, branch changes, draft PR creation, state updates, reviewer handoff).  
+Output: `docs/automation/ai-worker-dry-run.md` with findings and fixes.  
+Done when: One end-to-end task-to-draft-PR flow succeeds under manual observation.
+
 ## Artifacts Checklist
 - Repository settings screenshots/exports
 - Baseline repo skeleton commits
@@ -92,6 +116,8 @@ Done when: New developer setup completes within targeted time window.
 - Lint/pre-commit configs
 - `.env.example` contracts
 - Dockerfiles for frontend/API/worker
+- `platform-ai-workers` bootstrap code and container
 - `docker-compose.yml`
 - local smoke test scripts
+- AI worker dry-run report
 - onboarding runbook updates

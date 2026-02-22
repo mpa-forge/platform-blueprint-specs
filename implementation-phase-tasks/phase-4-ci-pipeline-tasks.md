@@ -85,6 +85,14 @@ Action: Add caching, parallel job splitting, and timeout budgets for fast feedba
 Output: CI runtime optimization report.  
 Done when: PR pipeline runtime meets SLO baseline (`p50 <= 10 min`, `p95 <= 15 min`) and required checks enforce a hard cap of `20 min`.
 
+### P4-T11: Enforce AI-generated PR governance controls
+Owner: Human + Agent  
+Type: CI governance  
+Dependencies: P4-T09, Phase 1 AI worker bootstrap  
+Action: Configure required checks and review policy for AI-generated PRs (draft-first, mandatory human reviewer, CODEOWNERS enforcement, and required metadata labels such as `ai-generated` and `ai-run-id`).  
+Output: Enforced governance policy for automation-created PRs.  
+Done when: AI-created PRs cannot merge without the same required review/check gates as human-authored PRs.
+
 ## Artifacts Checklist
 - Workflow templates and repo CI YAMLs
 - Contract check jobs
@@ -93,3 +101,4 @@ Done when: PR pipeline runtime meets SLO baseline (`p50 <= 10 min`, `p95 <= 15 m
 - vulnerability scan configuration
 - CI artifact retention policy
 - GitHub branch protection settings evidence
+- AI-generated PR governance policy evidence

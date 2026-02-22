@@ -61,15 +61,23 @@ Action: Provision secret placeholders, access bindings, and workload identity pe
 Output: Secret management infrastructure baseline.  
 Done when: Workloads can retrieve expected secrets via ESO sync path.
 
-### P5-T08: Build environment stacks (`rc`, `prod`)
+### P5-T08: Implement Cloud Run Jobs + Scheduler module for AI workers
 Owner: Agent  
 Type: IaC coding  
-Dependencies: P5-T03..P5-T07  
+Dependencies: P5-T01, P5-T05, P5-T07  
+Action: Provision Cloud Run Job definitions, Cloud Scheduler triggers, service accounts/IAM, and Secret Manager bindings for `platform-ai-workers` execution. Support multiple worker-job deployments, each targeting a repository with environment-specific configuration (`WORKER_ID`, `TARGET_REPO`, limits, credential refs).  
+Output: AI worker runtime infrastructure module.  
+Done when: At least one worker-job deployment can be created per environment and triggered on schedule with least privilege.
+
+### P5-T09: Build environment stacks (`rc`, `prod`)
+Owner: Agent  
+Type: IaC coding  
+Dependencies: P5-T03..P5-T08  
 Action: Create per-environment root stack composition and parameter files with minimal drift, while enforcing prod full separation and RC internal isolation boundaries; keep environment selection explicit by root path, not Terraform workspace.  
 Output: Environment-specific IaC layers.  
 Done when: `terraform plan` works for all environments from their dedicated root paths.
 
-### P5-T09: Add IaC policy checks and formatting in CI
+### P5-T10: Add IaC policy checks and formatting in CI
 Owner: Agent  
 Type: CI/IaC  
 Dependencies: P5-T01  
@@ -77,10 +85,10 @@ Action: Add formatting, validation, static analysis, and policy checks to PR pip
 Output: Infrastructure quality gates.  
 Done when: Invalid infra changes are blocked in CI before apply.
 
-### P5-T10: Execute `rc` clean-state apply and document runbook
+### P5-T11: Execute `rc` clean-state apply and document runbook
 Owner: Human + Agent  
 Type: Validation  
-Dependencies: P5-T01..P5-T09  
+Dependencies: P5-T01..P5-T10  
 Action: Apply full stack from empty state, capture timings, rollback instructions, and known caveats.  
 Output: Provisioning evidence and runbook.  
 Done when: `rc` can be recreated from scratch reproducibly.
@@ -89,6 +97,7 @@ Done when: `rc` can be recreated from scratch reproducibly.
 - Terraform module/stacks structure
 - remote state backend/locking configuration
 - network, cluster, GAR, Cloud SQL, GSM modules
+- Cloud Run Job/Scheduler module for AI workers
 - environment variable files and outputs
 - IaC CI validation checks
 - `rc` apply evidence and infra runbook

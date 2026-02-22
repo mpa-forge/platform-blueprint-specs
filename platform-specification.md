@@ -49,6 +49,7 @@
 - CI/CD: GitHub Actions.
 - Container artifact registry: Google Artifact Registry.
 - CD operating model: Pipeline-driven deployment (GitHub Actions + Helm).
+- AI task-to-code automation: Custom worker runtime in dedicated `platform-ai-workers` repository, executed as scheduled Cloud Run Jobs.
 - Secrets management: Google Secret Manager + External Secrets Operator (ESO).
 - Repository strategy: Polyrepo.
 - Worker repository model: Dedicated `backend-worker` repository from the start.
@@ -127,6 +128,19 @@
 - Incident response platform: incident.io (managed).
 - CI/CD platform: GitHub Actions.
 - CI workflow model: Centralized reusable workflow templates across repositories.
+- Task management platform: GitHub Issues + GitHub Projects.
+- Task workflow baseline:
+  - One cross-repo project board as the source of truth.
+  - Standard issue types: `feature`, `bug`, `chore`, `spike`.
+  - Standard status flow: `Backlog` -> `Ready` -> `In Progress` -> `In Review` -> `Blocked` -> `Done`.
+  - Standard labels: `area/*`, `type/*`, `priority/*`, `env/*`.
+  - Automation baseline: auto-add issues/PRs to board, auto-move states on PR events, close issues on merge.
+- AI task-to-code worker platform:
+  - Dedicated `platform-ai-workers` repository.
+  - Scheduled Cloud Run Jobs (custom code, not n8n) execute task-to-code loops.
+  - One worker-job deployment per target repository, configured through environment variables (`WORKER_ID`, `TARGET_REPO`, limits, credential refs).
+  - Worker state model is GitHub-issue driven (`ai:ready`, `ai:in-progress`, `ai:ready-for-review`, `ai:failed`, `worker:<id>`).
+  - Worker output path: branch + draft PR; merge requires standard human review and required CI checks.
 - CD operating model: Pipeline-driven (GitHub Actions + Helm).
 - Container artifact registry: Google Artifact Registry.
 - Secrets management: Google Secret Manager + External Secrets Operator.
@@ -349,7 +363,33 @@
   - Trigger synthetic alert and verify full webhook -> enrichment -> AI -> notification loop.
   - Add rate limits, dedup keys, and retry policy.
 
-## 17. Living Change Log
+## 17. AI Task-to-Code Automation Baseline
+- Objective:
+  - Convert approved GitHub tasks into code changes automatically while preserving human control at review/merge.
+- Runtime model:
+  - A dedicated `platform-ai-workers` repo produces a worker container.
+  - Cloud Scheduler triggers Cloud Run Jobs on a cadence.
+  - Each deployed job is a worker lane bound to one target repository via environment configuration.
+- Required runtime configuration per worker-job deployment:
+  - `WORKER_ID`
+  - `TARGET_REPO`
+  - `MAX_PENDING_REVIEW`
+  - `POLL_WINDOW` (or equivalent cadence/selection window)
+  - Secret references for GitHub credentials and agent credentials/config.
+- Task state machine baseline:
+  - Select tasks by labels: `ai:ready` + `worker:<id>`.
+  - Claim task by moving to `ai:in-progress` before code execution.
+  - On success move to `ai:ready-for-review` and open/update draft PR.
+  - On failure mark `ai:failed` (with retry/resume policy retaining deterministic ownership by worker id).
+- Control and governance:
+  - Worker-generated PRs are draft-first and carry machine-readable metadata (`ai-generated`, run id).
+  - Branch protection/CODEOWNERS/required checks remain mandatory before merge.
+  - No direct writes to protected branches.
+- Bootstrap priority:
+  - Implement this automation stack early (immediately after foundational decisions and minimal infra bootstrap) so subsequent platform tasks can be accelerated by agents.
+  - Minimal infra prerequisites: Cloud Run Jobs, Cloud Scheduler, Secret Manager credential wiring, and least-privilege IAM.
+
+## 18. Living Change Log
 - v0.1 (2026-02-17): Initial high-level draft.
 - v0.2 (2026-02-17): Locked GCP/GKE + polyrepo + NGINX ingress, deferred queue decision, added authentication architecture baseline.
 - v0.3 (2026-02-19): Locked Auth0 Free plan for B2C-first external auth, excluding Organizations and SCIM from initial scope.
@@ -385,5 +425,7 @@
 - v1.23 (2026-02-21): Locked initial mandatory smoke-test blockers for prod promotion (health/readiness, authenticated API path, DB read path, worker heartbeat, deployed version match).
 - v1.24 (2026-02-21): Locked provisional baseline API SLO targets for availability and latency, with explicit post-launch recalibration window.
 - v1.25 (2026-02-21): Locked baseline secret rotation cadence/policy for RC and prod, including emergency SLA, rollback window, and governance controls.
+- v1.26 (2026-02-22): Locked task management platform/workflow baseline to GitHub Issues + GitHub Projects with a standardized cross-repo board model.
+- v1.27 (2026-02-22): Locked AI task-to-code automation baseline to a dedicated `platform-ai-workers` repo with scheduled Cloud Run Jobs, per-repo worker-job deployments, and human-reviewed draft PR controls.
 
 

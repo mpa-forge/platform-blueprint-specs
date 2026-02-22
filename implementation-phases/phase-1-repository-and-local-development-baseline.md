@@ -7,6 +7,7 @@ Detailed tasks: `implementation-phase-tasks/phase-1-repository-and-local-develop
   - optional `frontend-public/` for corporate website/blog surface.
   - `backend-api/` Go API shell.
   - `backend-worker/` dedicated worker repository from day one.
+  - `platform-ai-workers/` dedicated automation worker repository for task-to-code job runners.
   - additional backend repos for workers/processes when needed.
   - shared contracts repo (`platform-contracts/`) if cross-repo protobuf sharing is required.
   - infra repo (`platform-infra/`) for Terraform and Helm (recommended for centralized ops control).
