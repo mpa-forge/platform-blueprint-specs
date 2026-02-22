@@ -17,9 +17,9 @@ Done when: Team can add dated decision records with context/options/consequences
 Owner: Human  
 Type: Governance  
 Dependencies: P0-T01  
-Action: Assign maintainers for each repo (`frontend-web`, `backend-api`, `backend-worker`, `platform-contracts`, `platform-infra`, dedicated docs repo) and fallback reviewers.  
+Action: Assign one human maintainer for each repo (`frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`, dedicated docs repo), and document optional AI-agent ownership/execution responsibilities.  
 Output: `docs/governance/repo-ownership.md`.  
-Done when: Every repo has at least 2 responsible maintainers.
+Done when: Every repo has at least one human maintainer and documented AI-agent responsibilities where applicable.
 
 ### P0-T03: Create or confirm cloud/account tenants
 Owner: Human  
