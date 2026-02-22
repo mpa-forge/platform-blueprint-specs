@@ -1,0 +1,389 @@
+﻿# Product & Platform Specification
+
+## 1. Goals
+- Build a web product with a React frontend, Go backend APIs, background processing, and a scalable cloud-native platform.
+- Reach end-to-end operability (local + deployed) before business logic.
+- Keep architecture modular so product needs can evolve without major rewrites.
+- Use the first end-to-end minimal implementation as a reusable blueprint/template for future projects.
+
+## 2. Scope (Phase 0/1)
+- Frontend delivery options:
+  - Public corporate/blog frontend.
+  - Authenticated product application frontend.
+- Backend service shell (proto-defined browser and service contracts).
+- Background worker shell.
+- Data layer (PostgreSQL + migrations).
+- Local and cloud deployment paths.
+- CI/CD and infrastructure as code.
+- Observability baseline (logs, metrics, tracing).
+- Security baseline (secrets, authn/authz placeholders, supply-chain checks).
+
+## 3. High-Level Architecture
+- Frontend: React SPA (TypeScript), served via CDN or ingress.
+- API Layer: Go API service exposing protobuf-defined endpoints for browser clients via Connect/gRPC-Web compatible transport, with gRPC-compatible contracts for service-to-service.
+- Async Layer: Go worker process model kept, but queue/broker technology is intentionally deferred until product requirements are clearer.
+- Data Layer: PostgreSQL as primary relational database.
+- Messaging: Deferred decision (not part of initial platform baseline).
+- Platform: Docker containers deployed to Kubernetes.
+- Packaging: Helm charts per environment.
+- Infra: Terraform modules for networking, cluster, data services, secrets integration.
+- Observability: OpenTelemetry -> Grafana Cloud (managed metrics/logs/traces/alerting) + automation workflows.
+
+## 4. Proposed Stack (Initial)
+- Frontend: React + Vite + TypeScript + TanStack Query + React Router.
+- API/Workers: Go 1.24+ with:
+  - HTTP runtime: native `net/http` (Go stdlib)
+  - RPC/contracts: protobuf + Connect (`connect-go`) + grpc-go compatibility
+  - Config: viper/envconfig + explicit env schema
+  - Persistence: pgx + sqlc (typed queries)
+  - Migrations: golang-migrate
+- Contract toolchain: Buf (`buf lint`, `buf breaking`, managed code generation).
+- Frontend contract client: Connect ES generated TypeScript clients and types.
+- Database: PostgreSQL 16.
+- Database hosting: Cloud SQL for PostgreSQL (managed).
+- Queue/Broker: Deferred until business requirements define delivery semantics.
+- Cache (optional): Redis.
+- Build: Docker multi-stage builds.
+- Orchestration: GKE Autopilot + Helm.
+- IaC: Terraform.
+- CI/CD: GitHub Actions.
+- Container artifact registry: Google Artifact Registry.
+- CD operating model: Pipeline-driven deployment (GitHub Actions + Helm).
+- Secrets management: Google Secret Manager + External Secrets Operator (ESO).
+- Repository strategy: Polyrepo.
+- Worker repository model: Dedicated `backend-worker` repository from the start.
+- Shared docs/ADR repository: Dedicated docs repository.
+- Provider/account ownership model: Single owner.
+- Frontend package manager baseline: `npm`.
+- Observability:
+  - Metrics: Grafana Cloud Metrics (Prometheus-compatible)
+  - Dashboards: Grafana Cloud (locked)
+  - Traces: Grafana Cloud Traces / Tempo (managed)
+  - Logs: Grafana Cloud Logs / Loki (managed, locked)
+
+## 5. Environments
+- Local: Docker Compose minimal stack (frontend, api, worker, postgres) with no local observability components required by default.
+- RC: release-candidate environment with continuous deploy from `main` and strict internal isolation (separate namespaces, DB boundaries, secrets, and domains).
+- Prod: fully separate production environment with controlled rollout strategy and stronger change controls.
+
+### Frontend Delivery Options
+- Option A: Public website/blog frontend.
+  - Best fit: marketing pages, documentation/blog content, SEO-focused public surface.
+  - Serving model preference: CDN/static hosting (optionally SSR-enabled framework if needed later).
+- Option B: Authenticated product app frontend.
+  - Best fit: signed-in application workflows, account/user-specific interactions.
+  - Serving model preference: CDN-first delivery path for static assets, with app/API integration through managed ingress and API endpoints.
+- Option C: Both frontends in parallel.
+  - Split concerns: public site optimized for SEO/content, product app optimized for authenticated UX.
+  - Can share design system/components while keeping separate deployment lifecycles.
+
+## 6. Deployment & Release Strategy
+- Trunk-based development with short-lived feature branches.
+- CI on every PR:
+  - lint, unit tests, contract checks, security scans, build images.
+- CD:
+  - main -> RC auto deploy.
+  - release promotion RC -> prod with approvals.
+  - prod promotion is blocked unless mandatory smoke tests pass.
+- Rollouts:
+  - rolling updates initially; canary/blue-green later.
+- DB changes:
+  - forward-only migrations, run before app rollout.
+
+## 7. Scalability Strategy
+- Stateless API and worker containers.
+- Horizontal pod autoscaling based on CPU/memory and HTTP/service metrics.
+- Postgres: start single primary with managed backups; evolve to read replicas/partitioning.
+- Postgres hosting path: Cloud SQL primary with managed backups; evolve to replicas as needed.
+- Background processors scaled independently by workload profile.
+
+## 8. Security Baseline
+- Secrets in cloud secret manager (no plaintext in git).
+- Secrets are delivered to workloads via External Secrets Operator; raw secret values are not stored in git.
+- RC isolation baseline: separate namespace, DB boundary, secret scope, and domain per service surface as needed.
+- Image scanning and dependency scanning in CI.
+- SAST/DAST checkpoints.
+- TLS everywhere, ingress with cert management.
+- RBAC and least privilege in Kubernetes and cloud IAM.
+
+## 9. Key Decisions To Finalize
+- Queue/broker approach (only if asynchronous workflows become a requirement).
+
+## 10. Locked Decisions (Current)
+- Cloud provider and Kubernetes: GCP + GKE.
+- GKE cluster mode: Autopilot.
+- Repository strategy: Polyrepo.
+- Ingress: NGINX Ingress Controller.
+- Queue/broker: Deferred until product requirements demand it.
+- External authentication: Auth0 Free plan.
+- Auth scope: B2C-first (independent users, no Organizations or SCIM in initial phase).
+- Browser/API contract model: Proto-first with Connect-compatible endpoints.
+- Go HTTP stack: native `net/http` with `connect-go` handlers.
+- Observability platform: Grafana Cloud (managed metrics, logs, traces, alerting).
+- Observability logs: Grafana Cloud Logs (Loki-managed).
+- Observability dashboards: Grafana Cloud.
+- Observability metrics runtime: Grafana Cloud Metrics (Prometheus-compatible managed backend).
+- Error tracking platform: Sentry (managed).
+- Incident response platform: incident.io (managed).
+- CI/CD platform: GitHub Actions.
+- CI workflow model: Centralized reusable workflow templates across repositories.
+- CD operating model: Pipeline-driven (GitHub Actions + Helm).
+- Container artifact registry: Google Artifact Registry.
+- Secrets management: Google Secret Manager + External Secrets Operator.
+- Frontend sequencing: Authenticated app first.
+- Authenticated frontend serving path: CDN-first.
+- Authenticated frontend CDN implementation: Cloud CDN + External HTTPS Load Balancer + Cloud Storage backend bucket.
+- Frontend/API single-domain routing baseline:
+  - frontend/static assets served from CDN path.
+  - `/api/*` routed to backend ingress/API service path.
+- Queue/broker decision timing: Deferred until after the first end-to-end baseline implementation is complete.
+- Environment model: Local + RC + prod.
+- Environment separation: prod fully separate from RC; RC enforces strict internal isolation boundaries.
+- GCP project separation: `rc` and `prod` run in separate projects.
+- API ingress routing model: Single domain with path-based routing.
+- TLS certificate management default: Managed certificates.
+- Production deployment timing: On-demand with required approvals.
+- DB rollback policy baseline: Forward-fix only.
+- Mandatory smoke-test blockers for prod promotion baseline:
+  - API `healthz` and `readyz` checks pass on deployed release.
+  - Authenticated frontend -> protected API request succeeds.
+  - API -> DB deterministic read check succeeds.
+  - Worker heartbeat/no-op run is observed for deployed release.
+  - Deployed image tag/digest matches release being promoted.
+- Contract generation artifacts: Committed to git.
+- Baseline frontend token handling pattern: Direct SPA bearer tokens (BFF deferred).
+- Typed DB access standard: `sqlc` with handwritten SQL and `pgx` runtime.
+- Telemetry routing baseline: Cluster-level collector gateway (Grafana Alloy / OTel Collector) before Grafana Cloud.
+- Initial trace sampling baseline:
+  - `rc`: 25%
+  - `prod`: 5%
+  - Force sample 100% for error/high-latency (>1s initial threshold)/debug-incident traces.
+- Alert incident policy baseline:
+  - Auto-open incidents for `P1`.
+  - Notify-only for `P2/P3/P4` by default.
+  - Escalate unacknowledged `P2` to auto-open incident after 15 minutes.
+- Vulnerability gating policy baseline:
+  - Block `Critical` findings in runtime dependencies/container images.
+  - Block `High` findings in runtime dependencies/container images when a fix is available.
+  - Notify-only for `High` without fix, `Medium`/`Low`, and dev/test-only findings.
+  - Use time-boxed waiver tickets for accepted exceptions.
+- PR CI runtime SLO baseline:
+  - `p50 <= 10 minutes`
+  - `p95 <= 15 minutes`
+  - hard cap `20 minutes` for required checks.
+- Terraform remote state and locking baseline:
+  - `backend \"gcs\"` with dedicated Terraform state project.
+  - Separate state bucket per environment (`rc`, `prod`) with IAM isolation.
+  - Prefix convention `<env>/<root-module>`.
+  - Bucket safeguards: Object Versioning, Uniform bucket-level access, Public Access Prevention.
+  - Locking via Terraform GCS backend with `-lock-timeout=5m` in CI/apply.
+- Terraform environment structure baseline:
+  - One Terraform root per environment (`rc`, `prod`) with shared modules.
+  - No workspace-based environment switching.
+- Deploy-time image signature verification: Deferred to a later hardening phase.
+- Primary cloud region baseline: `us-east4` for both RC and prod.
+- Local environment stack scope: Minimal app stack only (frontend, api, worker, postgres).
+- Baseline SLO targets (provisional, to be tuned after product requirements are defined):
+  - API availability:
+    - `rc >= 99.0%` monthly
+    - `prod >= 99.5%` monthly
+  - API latency (p95 on baseline protected endpoints):
+    - `rc <= 1000 ms`
+    - `prod <= 750 ms`
+  - Review and recalibrate after first 30 days of production traffic and formal SLA definition.
+- Baseline secret rotation policy:
+  - Cadence:
+    - `rc`: every 30 days
+    - `prod`: every 90 days
+    - `prod` high-risk secrets (DB credentials, auth/provider secrets, observability/incident ingest keys): every 30 days
+  - Emergency rotation SLA: within 4 hours for suspected compromise.
+  - Execution model: rotate in GSM, sync via ESO, keep previous secret valid for 24 hours rollback, then disable and delete after 7 days.
+  - Governance: weekly secret-age audit and manual approval for prod rotation runs.
+
+## 11. Authentication Architecture
+- Why auth is needed:
+  - Identify who is calling the platform (user or service).
+  - Restrict actions by role/permissions (authorization).
+  - Protect data boundaries in a multi-user product.
+  - Enable auditability and incident response.
+- Recommended model for this platform:
+  - Use OpenID Connect (OIDC) + OAuth 2.1 style flows.
+  - Frontend gets user identity token from an Identity Provider (IdP).
+  - Frontend sends `Authorization: Bearer <JWT>` to API.
+  - API verifies token signature and claims, then enforces authorization policy.
+  - Internal service-to-service auth should use short-lived workload identity tokens (not static shared secrets).
+- Request flow:
+  - User opens frontend and is redirected to IdP login when not authenticated.
+  - IdP returns tokens after login (ID token + access token; refresh token as applicable).
+  - Frontend stores tokens securely (prefer httpOnly cookie via backend-for-frontend when possible).
+  - API validates issuer, audience, expiry, and signature via JWKS.
+  - API maps claims (subject, groups, scopes) to internal roles/permissions.
+  - API returns `401` for unauthenticated and `403` for unauthorized requests.
+- Selected provider:
+  - Auth0 Free plan for development and early production with limited users.
+- Initial auth feature scope:
+  - B2C user model only.
+  - No Auth0 Organizations dependency in initial implementation.
+  - No SCIM provisioning in initial implementation.
+- Minimum auth baseline before business logic:
+  - One protected endpoint in API.
+  - One role-based rule (for example `user` vs `admin`).
+  - Token validation middleware with automated tests.
+  - Audit log fields: user id, role, tenant/org id (if multi-tenant), request id.
+
+## 12. Definition of "Platform Ready"
+- One command local startup works for all core services.
+- One automated pipeline deploys infra + apps to RC environment.
+- Health checks, basic dashboards, traces, and alerting present.
+- Smoke tests pass against deployed environment.
+- Documented runbook for deploy, rollback, and incident basics.
+
+## 13. Protobuf Contract and Versioning Conventions
+- Ownership and repository:
+  - Protobuf source of truth lives in `platform-contracts` repository.
+  - No hand-written request/response DTOs in frontend or backend for contracted APIs.
+- Buf module:
+  - Module name format: `buf.build/<org>/<repo>` (example: `buf.build/dynamic-playlists/platform-contracts`).
+  - Enforce `STANDARD` lint and `FILE` breaking-change policies in CI.
+- Package naming:
+  - Package format: `dynamicplaylists.<domain>.v<major>`.
+  - Example: `dynamicplaylists.playlists.v1`.
+  - Language options:
+    - `go_package` mirrors package path and includes version segment.
+    - Generated TypeScript follows package namespace from proto definitions.
+- File layout:
+  - One domain folder per bounded context.
+  - Version folder per major version (`/playlists/v1/...`).
+  - Shared/common messages in a dedicated `common/v1` package.
+- Versioning rules:
+  - Additive changes (safe in same major):
+    - add optional fields
+    - add new RPC methods
+    - add new enum values (with unknown-value handling)
+  - Breaking changes (require new major package/version):
+    - field number/type changes
+    - removing fields/RPCs
+    - semantic changes that invalidate existing clients
+  - Deprecated fields/RPCs:
+    - mark deprecated first, keep for one full release cycle, then remove in next major.
+- Field and schema rules:
+  - Reserve removed field numbers and names.
+  - Use explicit field behavior docs in comments.
+  - Use stable identifiers (`id`, `created_at`, etc.) consistently across services.
+- Generation and release:
+  - Generated artifacts:
+    - Go: `connect-go` handlers/clients + protobuf messages.
+    - TypeScript: Connect ES clients/types.
+  - CI gates:
+    - `buf lint`
+    - `buf breaking` against main branch
+    - generated-code drift check (fail if `git diff` after generation).
+  - Contract releases:
+    - Tag contract repo semantically (`contracts-vX.Y.Z`).
+    - App repos pin generated client/server dependencies to released versions.
+
+## 14. Observability Architecture Baseline
+- Metrics:
+  - Services expose `/metrics` and/or OTEL metrics.
+  - Telemetry is forwarded to Grafana Cloud Metrics (Prometheus-compatible query model).
+  - Alerting rules evaluate SLO/SLI symptoms (latency, error rate, saturation, availability).
+- Logs:
+  - Grafana Alloy (or equivalent agent) ships container logs to Grafana Cloud Logs.
+  - Structured JSON logs with request and trace correlation ids.
+- Traces:
+  - OpenTelemetry SDK in services exports spans to a cluster-level OTEL collector/gateway.
+  - Collector forwards spans to Grafana Cloud Traces (Tempo-managed).
+  - Sampling baseline starts at `rc` 25% / `prod` 5%, with force-sample rules for errors, high latency, and debug/incident traces.
+- Errors:
+  - Sentry is used for frontend and backend exception/error aggregation.
+- Incident response:
+  - Grafana Cloud alerting and Sentry alerts route to incident.io and webhook consumers.
+  - Severity policy baseline: `P1` auto-open; `P2/P3/P4` notify-only; unacknowledged `P2` escalates to auto-open after 15 minutes.
+- Managed platform implications:
+  - Lower in-cluster operational burden (no self-hosted Prometheus/Loki/Tempo/Alertmanager lifecycle).
+  - Cost controls depend on ingestion volume, retention, and cardinality discipline.
+  - Vendor API tokens and endpoint config are required for telemetry export.
+
+## 15. Automated Alert -> AI Workflow
+- Trigger:
+  - Grafana Cloud alerting sends webhook events to an internal automation service (for example Cloud Run).
+- Enrichment:
+  - Automation service queries Grafana Cloud APIs for related metrics, logs, and traces in a bounded time window.
+  - Optional Sentry API enrichment for error-group context and release regressions.
+- Diagnosis:
+  - AI pipeline performs triage classification, suspected root-cause ranking, and recommended runbook actions.
+- Response:
+  - Post enriched incident summary to incident.io/Slack and optionally create ticket artifacts.
+  - Keep human approval gates before any destructive remediation.
+- Governance:
+  - Store alert payload + enrichment snapshots + AI output for auditability and postmortems.
+  - Apply dedup/rate limits to avoid alert storms and repeated analyses.
+
+## 16. Grafana Cloud Setup Checklist
+- Account and stack:
+  - Create Grafana Cloud organization and stacks for `RC` and `prod` (or one shared stack with strict environment labels and access boundaries).
+  - Enable products: Metrics, Logs, Traces, Alerting.
+- Credentials and access:
+  - Create service accounts and least-privilege API tokens for telemetry ingest and API queries.
+  - Store tokens in secret manager and inject via Kubernetes secrets/CI variables.
+- Endpoints and app config:
+  - Define OTLP endpoint env vars for services (`OTEL_EXPORTER_OTLP_ENDPOINT`, protocol, headers).
+  - Define metrics/logs/traces query API credentials for automation service.
+  - Standardize resource attributes: `service.name`, `service.version`, `deployment.environment`, `cloud.region`.
+- Telemetry pipeline:
+  - Deploy OTel Collector or Grafana Alloy as gateway for exporters.
+  - Configure traces pipeline: OTLP receiver -> processors (batch/redaction/sampling) -> Grafana Cloud Traces.
+  - Configure metrics pipeline: Prometheus scrape and/or OTLP metrics -> Grafana Cloud Metrics.
+  - Configure logs pipeline: Kubernetes/container logs -> parsing/labels -> Grafana Cloud Logs.
+- Dashboards and alerts:
+  - Import/create baseline dashboards for API, worker, ingress, and Postgres.
+  - Create SLO-adjacent alerts (availability, latency, error-rate, saturation).
+  - Configure contact points and routing policies (Slack/email/incident.io/webhook).
+- Alert -> AI workflow wiring:
+  - Register webhook endpoint in Grafana Cloud alerting.
+  - Define payload contract versioning and signature verification in automation service.
+  - Implement enrichment queries (metrics/logs/traces windows keyed by alert labels).
+  - Publish AI summary and evidence links to incident destination.
+- Validation and hardening:
+  - Run synthetic trace/log/metric generation and verify end-to-end visibility.
+  - Trigger synthetic alert and verify full webhook -> enrichment -> AI -> notification loop.
+  - Add rate limits, dedup keys, and retry policy.
+
+## 17. Living Change Log
+- v0.1 (2026-02-17): Initial high-level draft.
+- v0.2 (2026-02-17): Locked GCP/GKE + polyrepo + NGINX ingress, deferred queue decision, added authentication architecture baseline.
+- v0.3 (2026-02-19): Locked Auth0 Free plan for B2C-first external auth, excluding Organizations and SCIM from initial scope.
+- v0.4 (2026-02-19): Locked Loki + Grafana and added observability architecture baseline, including Prometheus operational implications.
+- v0.5 (2026-02-19): Locked self-managed Prometheus on GKE as the metrics runtime.
+- v0.6 (2026-02-19): Switched to Grafana Cloud managed observability and added automated alert-to-AI workflow architecture.
+- v0.7 (2026-02-19): Added concrete Grafana Cloud setup checklist and alert-to-AI integration checklist.
+- v0.8 (2026-02-19): Locked proto-first API contracts with Connect (browser-compatible) and native `net/http` in Go.
+- v0.9 (2026-02-19): Added protobuf package/versioning conventions and Buf governance policy.
+- v1.0 (2026-02-19): Locked Sentry for error tracking and incident.io for incident response workflow.
+- v1.1 (2026-02-19): Locked GitHub Actions for CI/CD and Google Artifact Registry for container artifacts.
+- v1.2 (2026-02-19): Locked GKE cluster mode to Autopilot.
+- v1.3 (2026-02-19): Locked PostgreSQL hosting to Cloud SQL.
+- v1.4 (2026-02-19): Locked Google Secret Manager + External Secrets Operator for secrets management.
+- v1.5 (2026-02-19): Locked CD operating model to pipeline-driven deployment using GitHub Actions + Helm.
+- v1.6 (2026-02-19): Added dual frontend delivery options (public website/blog and authenticated app) with deferred scope sequencing decision.
+- v1.7 (2026-02-19): Locked frontend sequencing to authenticated app first and set authenticated frontend serving path to CDN-first.
+- v1.8 (2026-02-20): Confirmed blueprint-first execution strategy and deferred queue/broker decision until after baseline end-to-end implementation completion.
+- v1.9 (2026-02-20): Locked environment model to Local + RC + prod, with prod fully separate and strict RC internal isolation boundaries.
+- v1.10 (2026-02-20): Locked primary GCP region baseline to `us-east4` for RC and prod.
+- v1.11 (2026-02-20): Applied additional locked decisions for ownership/docs repo, worker repo model, npm, committed generated artifacts, reusable CI templates, ingress/TLS, rollout/rollback policy, project separation, and deferred deploy-time signature verification.
+- v1.12 (2026-02-20): Locked local development environment scope to minimal stack only (frontend, api, worker, postgres).
+- v1.13 (2026-02-20): Locked baseline auth token handling to direct SPA bearer tokens and deferred BFF token handling.
+- v1.14 (2026-02-20): Locked typed DB access approach to `sqlc` + handwritten SQL with `pgx` runtime.
+- v1.15 (2026-02-20): Locked telemetry routing to cluster-level collector gateway before forwarding to Grafana Cloud.
+- v1.16 (2026-02-20): Locked initial trace sampling policy (`rc` 25%, `prod` 5%) with force-sampling for error/high-latency/debug traces.
+- v1.17 (2026-02-20): Locked alert incident severity policy (`P1` auto-open, `P2/P3/P4` notify-only, unacknowledged `P2` escalates after 15 minutes).
+- v1.18 (2026-02-20): Locked CI vulnerability merge-gate policy (block `Critical`; block runtime `High` when fix exists; notify-only for non-blocking classes with time-boxed waivers).
+- v1.19 (2026-02-20): Locked PR CI runtime SLO baseline (`p50 <= 10 min`, `p95 <= 15 min`, hard cap `20 min` for required checks).
+- v1.20 (2026-02-20): Locked Terraform remote state/locking pattern on GCS (dedicated state project, per-env buckets, prefix convention, bucket safeguards, lock-timeout).
+- v1.21 (2026-02-20): Locked Terraform environment structure to separate roots per environment with shared modules and no workspace-based env switching.
+- v1.22 (2026-02-20): Locked authenticated frontend delivery to Cloud CDN + External HTTPS Load Balancer + Cloud Storage with `/api/*` path routing to backend ingress under a single domain.
+- v1.23 (2026-02-21): Locked initial mandatory smoke-test blockers for prod promotion (health/readiness, authenticated API path, DB read path, worker heartbeat, deployed version match).
+- v1.24 (2026-02-21): Locked provisional baseline API SLO targets for availability and latency, with explicit post-launch recalibration window.
+- v1.25 (2026-02-21): Locked baseline secret rotation cadence/policy for RC and prod, including emergency SLA, rollback window, and governance controls.
+
+

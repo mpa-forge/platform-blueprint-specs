@@ -1,0 +1,30 @@
+# Phase 5: Terraform Infrastructure
+
+Detailed tasks: `implementation-phase-tasks/phase-5-terraform-infrastructure-tasks.md`
+
+- Create Terraform modules for:
+  - network/VPC
+  - GKE Autopilot cluster
+  - Google Artifact Registry repositories and IAM bindings
+  - Cloud SQL for PostgreSQL instances, networking, backups, and IAM/database auth integration
+  - Google Secret Manager secrets, IAM policies, and workload identity bindings for ESO
+  - observability dependencies (as needed)
+- Create env stacks (`rc`, `prod`) with separate project-level isolation for prod.
+- Enforce one Terraform root per environment (`rc`, `prod`) with shared modules.
+- Do not use Terraform workspaces for environment isolation/switching.
+- Add remote state and locking.
+- Enforce separate GCP projects for `rc` and `prod`.
+- Standardize Terraform remote state pattern on GCS backend:
+  - Dedicated Terraform state project.
+  - Separate state bucket per environment (`rc`, `prod`) with strict IAM isolation.
+  - Prefix convention per root module: `<env>/<root-module>`.
+  - Bucket safeguards: Object Versioning, Uniform bucket-level access, Public Access Prevention.
+  - Locking via Terraform GCS backend with CI/apply `-lock-timeout=5m`.
+
+Exit criteria:
+- `rc` infra provisioned reproducibly from clean state.
+- prod infra is provisioned as a fully separate environment.
+- IaC plan/apply integrated with CI checks.
+
+## Open Questions / Choices To Clarify Later
+- None currently.

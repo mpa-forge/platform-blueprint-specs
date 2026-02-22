@@ -1,0 +1,191 @@
+﻿# Implementation Plan
+
+## 1. Delivery Principles
+- Build the platform first, then product features.
+- Keep every phase deployable and testable.
+- Prefer incremental hardening over premature complexity.
+- Complete one minimal end-to-end implementation (with near-zero business logic) as a reusable blueprint for future projects.
+
+## 2. Phased Roadmap
+- Phase 0: `implementation-phases/phase-0-foundation-and-decisions.md`
+- Phase 1: `implementation-phases/phase-1-repository-and-local-development-baseline.md`
+- Phase 2: `implementation-phases/phase-2-contracts-service-skeletons-and-data-baseline.md`
+- Phase 3: `implementation-phases/phase-3-observability-and-operability-baseline.md`
+- Phase 4: `implementation-phases/phase-4-ci-pipeline.md`
+- Phase 5: `implementation-phases/phase-5-terraform-infrastructure.md`
+- Phase 6: `implementation-phases/phase-6-kubernetes-and-helm-deployment.md`
+- Phase 7: `implementation-phases/phase-7-cd-release-and-rollback-controls.md`
+- Phase 8: `implementation-phases/phase-8-scalability-reliability-and-security-hardening.md`
+
+### 2.1 Phase Task Packs
+- Phase 0 tasks: `implementation-phase-tasks/phase-0-foundation-and-decisions-tasks.md`
+- Phase 1 tasks: `implementation-phase-tasks/phase-1-repository-and-local-development-baseline-tasks.md`
+- Phase 2 tasks: `implementation-phase-tasks/phase-2-contracts-service-skeletons-and-data-baseline-tasks.md`
+- Phase 3 tasks: `implementation-phase-tasks/phase-3-observability-and-operability-baseline-tasks.md`
+- Phase 4 tasks: `implementation-phase-tasks/phase-4-ci-pipeline-tasks.md`
+- Phase 5 tasks: `implementation-phase-tasks/phase-5-terraform-infrastructure-tasks.md`
+- Phase 6 tasks: `implementation-phase-tasks/phase-6-kubernetes-and-helm-deployment-tasks.md`
+- Phase 7 tasks: `implementation-phase-tasks/phase-7-cd-release-and-rollback-controls-tasks.md`
+- Phase 8 tasks: `implementation-phase-tasks/phase-8-scalability-reliability-and-security-hardening-tasks.md`
+
+## 3. Baseline MVP Definition (Template Build)
+
+Objective:
+- Deliver a fully operational platform slice from commit to running workloads, with minimal domain logic, so it can be reused as a blueprint.
+
+Target repositories (polyrepo):
+- `platform-contracts`: protobuf APIs, Buf config, generated artifact policy.
+- `backend-api`: Go API service (`net/http` + `connect-go`) with Auth0 validation and Cloud SQL connectivity.
+- `backend-worker`: Go worker service with scheduled/no-op job loop and shared platform libraries.
+- `frontend-web`: authenticated React app using generated TypeScript client from protobuf contracts.
+- `platform-infra`: Terraform + Helm + GitHub Actions deployment workflows.
+- dedicated docs repository: ADRs, platform standards, runbooks, and cross-repo operational documentation.
+
+Minimum functional scope (no business logic):
+- Frontend:
+  - Authenticated shell app with login/logout flow through Auth0.
+  - One protected page that calls one protected API endpoint using generated client code.
+- API:
+  - `GET /healthz` and `GET /readyz`.
+  - One protected Connect/proto endpoint that returns deterministic placeholder data from Postgres.
+  - JWT verification middleware with role check (`user` and `admin` baseline claim mapping).
+- Worker:
+  - Health endpoint and periodic no-op task with structured logs and trace spans.
+- Database:
+  - One migration creating a minimal table.
+  - One seed script inserting deterministic sample records.
+- Contracts:
+  - One service, one unary RPC, request/response messages versioned under `v1`.
+
+Pipeline and deployment path (must be proven end-to-end):
+- Commit/PR:
+  - lint, unit tests, `buf lint`, `buf breaking`, generated-code drift check.
+- Merge to `main`:
+  - Build containers, scan, push immutable image tags to GAR.
+  - Publish frontend build to CDN origin bucket/path.
+  - Deploy API/worker via Helm to `rc` on GKE Autopilot.
+  - Invalidate CDN cache for changed frontend assets.
+- Post-deploy:
+  - Smoke test: authenticated frontend -> protected API -> DB read.
+  - Smoke test: worker heartbeat + scheduled no-op execution.
+  - Smoke test: trace/log/metric visibility in Grafana Cloud.
+  - Prod promotion gate: require passing baseline blockers (API health/readiness, authenticated protected API path, DB read path, worker heartbeat, deployed version match).
+
+Required platform integrations in MVP:
+- Auth: Auth0 (B2C, free plan) wired in frontend and API.
+- Secrets: GSM + ESO for runtime secret sync.
+- Data: Cloud SQL Postgres private connectivity from GKE.
+- Observability: Grafana Cloud (metrics/logs/traces + alert), Sentry, incident.io routing.
+- CD: GitHub Actions pipeline-driven deploy with Helm.
+
+Acceptance checklist (Definition of Done for baseline):
+- Local:
+  - `docker compose up` runs frontend, API, worker, Postgres.
+  - Local authenticated flow reaches protected API endpoint.
+- Cloud RC:
+  - Terraform provisions/updates required infrastructure from clean state.
+  - Helm releases API/worker successfully with zero-downtime rollout behavior.
+  - Frontend is served through CDN and can call RC API through ingress.
+  - RC isolation boundaries are enforced: separate namespaces, databases (or DB names), secrets, and domains.
+- Operability:
+  - Dashboard exists with API latency, error rate, and worker health.
+  - At least 3 actionable alerts configured and tested.
+  - One synthetic alert triggers the alert -> AI workflow and produces an incident summary artifact.
+- Security/governance:
+  - No plaintext secrets in repos.
+  - CI uses Workload Identity Federation (no static cloud keys).
+  - Branch protection enforces required checks.
+- Reusability:
+  - `README` + runbook documents exact bootstrap steps for a new project using this template.
+  - Repo templates/boilerplates are tagged with a baseline release.
+
+Out of scope until baseline completion:
+- Product/domain-specific business workflows.
+- Queue/broker implementation and async delivery semantics.
+- Public website/blog implementation path.
+
+## 4. Workstreams (Parallel)
+- App Platform: frontend/api/worker skeletons.
+- Infrastructure: Terraform and Kubernetes foundations.
+- Quality & Security: CI, scans, policies.
+- Operations: observability, runbooks, alerts.
+
+## 5. Decision Log Template
+For each decision capture:
+- Context
+- Options considered
+- Decision
+- Consequences
+- Review date
+
+## 6. Risks & Mitigations
+- Over-engineering early:
+  - Mitigation: strict phase exit criteria.
+- Tooling complexity:
+  - Mitigation: prefer managed services first.
+- Slow feedback loops in CI/CD:
+  - Mitigation: cache dependencies, parallel jobs.
+- Environment drift:
+  - Mitigation: immutable infra through Terraform + Helm values discipline.
+
+## 7. Immediate Next Iteration
+- Define Auth0 tenant/app configuration for local, RC, and prod environments.
+- Define Grafana Cloud org/stack setup and telemetry credentials for local, RC, and prod.
+- Define Sentry and incident.io projects/workspaces and API credentials.
+- Define GitHub Actions environments/secrets and GCP Workload Identity Federation for CI auth.
+- Define Cloud SQL instance topology and connectivity model for RC/prod.
+- Apply `us-east4` as the primary region baseline for RC/prod infrastructure components.
+- Define RC isolation model implementation details (namespaces, DB boundaries, secret namespaces, and domain layout).
+- Define Google Secret Manager namespace/secret naming and ESO sync mappings for all services.
+- Implement authenticated frontend CDN path first (asset hosting, cache policy, invalidation strategy).
+- Keep public website/blog scope deferred until authenticated app baseline is complete.
+- Keep queue/broker scope deferred until post-baseline feature implementation requires async messaging.
+- Define proto package/versioning conventions and set up Buf generation pipeline.
+  - Create `buf.yaml`, `buf.gen.yaml`, and conventions doc in contracts repo template.
+- Define webhook payload contract and auth scheme for alert-to-AI service.
+  - Specification artifact: `ops/alert-ai-webhook-spec.md`.
+- Establish dedicated docs/ADR repository and migrate shared architecture decision records there.
+- Standardize frontend tooling on `npm` across repo templates and CI.
+- Apply single-domain path-based API ingress and managed TLS certificate defaults in deployment design.
+- Scaffold repo folders and minimal service skeletons.
+- Stand up local end-to-end via Docker Compose.
+
+## 8. Living Change Log
+- v0.1 (2026-02-17): Initial high-level phased implementation plan.
+- v0.2 (2026-02-17): Applied locked decisions (GCP/GKE, polyrepo, NGINX ingress), deferred queue decision, and added auth milestones.
+- v0.3 (2026-02-19): Locked Auth0 Free plan for B2C-first auth and updated implementation tasks accordingly.
+- v0.4 (2026-02-19): Locked Loki + Grafana and expanded observability implementation tasks for Prometheus operations.
+- v0.5 (2026-02-19): Locked self-managed Prometheus and updated Phase 3 to Helm-based in-cluster deployment tasks.
+- v0.6 (2026-02-19): Switched observability implementation to Grafana Cloud managed stack and added alert-to-AI automation tasks.
+- v0.7 (2026-02-19): Added concrete Phase 3 Grafana Cloud setup checklist and alert webhook contract task.
+- v0.8 (2026-02-19): Locked proto-first + Connect contract model and updated Phase 2/CI tasks for generated Go/TypeScript contract enforcement.
+- v0.9 (2026-02-19): Added protobuf package/versioning implementation checklist aligned with Buf policies.
+- v1.0 (2026-02-19): Locked Sentry + incident.io and added Phase 3 setup tasks for both integrations.
+- v1.1 (2026-02-19): Locked GitHub Actions + Google Artifact Registry and updated CI/IaC tasks accordingly.
+- v1.2 (2026-02-19): Locked GKE Autopilot mode and updated infrastructure tasks.
+- v1.3 (2026-02-19): Locked Cloud SQL for PostgreSQL hosting and updated infrastructure planning tasks.
+- v1.4 (2026-02-19): Locked Google Secret Manager + External Secrets Operator and updated infra/deployment tasks.
+- v1.5 (2026-02-19): Locked CD operating model to pipeline-driven GitHub Actions + Helm deployment.
+- v1.6 (2026-02-19): Added dual frontend delivery options and implementation checkpoints for public site and authenticated app paths.
+- v1.7 (2026-02-19): Locked frontend sequencing to authenticated app first and prioritized CDN-first delivery for the authenticated frontend.
+- v1.8 (2026-02-20): Confirmed blueprint-first strategy (minimal end-to-end implementation before business logic) and deferred queue decision until post-baseline completion.
+- v1.9 (2026-02-20): Added concrete Baseline MVP Definition checklist (repos, minimal scope, CI/CD flow, integrations, and acceptance criteria).
+- v2.0 (2026-02-20): Split phased roadmap into separate files under `implementation-phases/` and converted this file into the index entrypoint.
+- v2.1 (2026-02-20): Added detailed per-phase task packs with agent/human ownership, dependencies, outputs, and done criteria; phase files now include open questions/choices.
+- v2.2 (2026-02-20): Locked non-local environment model to RC + prod, updated promotion flow assumptions, and added explicit RC isolation boundary requirements.
+- v2.3 (2026-02-20): Locked primary GCP region baseline to `us-east4` for RC and prod and aligned immediate implementation tasks.
+- v2.4 (2026-02-20): Applied additional locked decisions (single owner, dedicated docs repo, dedicated worker repo, npm, committed generated artifacts, reusable workflows, separate RC/prod projects, path-based ingress, managed TLS, on-demand prod deploys, forward-fix rollback, deferred deploy-time signature verification).
+- v2.5 (2026-02-20): Locked local environment baseline to minimal stack only (frontend, API, worker, Postgres), excluding local observability components by default.
+- v2.6 (2026-02-20): Locked baseline auth model to direct SPA bearer tokens (no BFF token handling in baseline phase).
+- v2.7 (2026-02-20): Locked typed DB access approach to `sqlc` + handwritten SQL with `pgx` runtime.
+- v2.8 (2026-02-20): Locked observability telemetry routing to cluster-level collector gateway (Grafana Alloy / OTel Collector) before export to Grafana Cloud.
+- v2.9 (2026-02-20): Locked initial trace sampling policy (`rc` 25%, `prod` 5%) with force-sampling for error/high-latency/debug traces.
+- v2.10 (2026-02-20): Locked alert incident severity policy (`P1` auto-open, `P2/P3/P4` notify-only, unacknowledged `P2` escalates after 15 minutes).
+- v2.11 (2026-02-20): Locked CI vulnerability merge-gate policy (block `Critical`; block runtime `High` when fix exists; notify-only for non-blocking classes with time-boxed waivers).
+- v2.12 (2026-02-20): Locked PR CI runtime SLO baseline (`p50 <= 10 min`, `p95 <= 15 min`, hard cap `20 min` for required checks).
+- v2.13 (2026-02-20): Locked Terraform remote state/locking pattern on GCS (dedicated state project, per-env buckets, prefix convention, bucket safeguards, lock-timeout).
+- v2.14 (2026-02-20): Locked Terraform environment structure to separate roots per env (`rc`, `prod`) with shared modules; no workspace-based env switching.
+- v2.15 (2026-02-20): Locked authenticated frontend CDN implementation to Cloud CDN + External HTTPS Load Balancer + Cloud Storage, with single-domain `/api/*` routing to backend ingress.
+- v2.16 (2026-02-21): Locked baseline mandatory smoke-test blockers for prod promotion and aligned Phase 7 gating criteria.
+- v2.17 (2026-02-21): Locked provisional baseline API SLO targets for RC/prod (availability and p95 latency) with a defined post-launch recalibration checkpoint.
+- v2.18 (2026-02-21): Locked baseline secret rotation cadence/policy for RC and prod, including emergency rotation SLA, rollback window, and prod approval governance.
