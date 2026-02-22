@@ -47,6 +47,11 @@
 - Orchestration: GKE Autopilot + Helm.
 - IaC: Terraform.
 - CI/CD: GitHub Actions.
+- CI quality/security tooling baseline:
+  - Quality: `golangci-lint`, `go test`, `go vet`, `eslint`, `tsc --noEmit`, `buf lint`, `buf breaking`
+  - Security: `trivy` (dependency + image scanning), `gitleaks` (secret scanning), `semgrep` (or `codeql`) for SAST
+  - IaC quality/security: `terraform fmt/validate`, `tflint` (optional `tfsec`/`checkov`)
+  - Supply chain (hardening phase): `syft` + `cosign`
 - Container artifact registry: Google Artifact Registry.
 - CD operating model: Pipeline-driven deployment (GitHub Actions + Helm).
 - AI task-to-code automation: Custom worker runtime in dedicated `platform-ai-workers` repository, executed as scheduled Cloud Run Jobs.
@@ -176,6 +181,10 @@
   - Auto-open incidents for `P1`.
   - Notify-only for `P2/P3/P4` by default.
   - Escalate unacknowledged `P2` to auto-open incident after 15 minutes.
+- Later-phase AI Ops automation:
+  - Add alert-triggered diagnostic worker lanes that consume Grafana/Prometheus alert signals.
+  - Use MCP-integrated telemetry access (metrics/logs/traces) for evidence-driven diagnosis.
+  - Automatically generate remediation tasks in GitHub Projects from validated diagnostic outputs.
 - Vulnerability gating policy baseline:
   - Block `Critical` findings in runtime dependencies/container images.
   - Block `High` findings in runtime dependencies/container images when a fix is available.
@@ -332,6 +341,10 @@
 - Governance:
   - Store alert payload + enrichment snapshots + AI output for auditability and postmortems.
   - Apply dedup/rate limits to avoid alert storms and repeated analyses.
+- Later-phase extension (Phase 8 hardening):
+  - Trigger AI diagnostic workers from Grafana Cloud / Prometheus-style alerts.
+  - Use MCP integrations to retrieve metrics/logs/traces and generate structured root-cause hypotheses.
+  - Create remediation GitHub Issues/Project tasks automatically with evidence links and suggested priority/ownership.
 
 ## 16. Grafana Cloud Setup Checklist
 - Account and stack:
@@ -427,5 +440,7 @@
 - v1.25 (2026-02-21): Locked baseline secret rotation cadence/policy for RC and prod, including emergency SLA, rollback window, and governance controls.
 - v1.26 (2026-02-22): Locked task management platform/workflow baseline to GitHub Issues + GitHub Projects with a standardized cross-repo board model.
 - v1.27 (2026-02-22): Locked AI task-to-code automation baseline to a dedicated `platform-ai-workers` repo with scheduled Cloud Run Jobs, per-repo worker-job deployments, and human-reviewed draft PR controls.
+- v1.28 (2026-02-22): Added later-phase AI Ops automation scope: alert-triggered diagnostic workers with MCP-based telemetry analysis and automated remediation task generation.
+- v1.29 (2026-02-22): Added concrete CI code-quality/security tooling baseline and alternatives framework for pipeline integration.
 
 

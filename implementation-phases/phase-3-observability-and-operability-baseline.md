@@ -23,6 +23,9 @@ Detailed tasks: `implementation-phase-tasks/phase-3-observability-and-operabilit
   - Grafana alert webhook -> automation service endpoint.
   - Enrichment queries to Grafana Cloud APIs (metrics/logs/traces) and optional Sentry API.
   - AI analysis output routed to incident.io/Slack with links to source evidence.
+- Defer advanced AI Ops automation to later phases:
+  - alert-triggered diagnostic worker lanes using MCP-integrated telemetry access.
+  - automatic remediation task generation in GitHub from diagnostics.
 
 Exit criteria:
 - Traces visible end-to-end for one synthetic flow.

@@ -10,6 +10,15 @@ Detailed tasks: `implementation-phase-tasks/phase-4-ci-pipeline-tasks.md`
   - push signed/immutable-tagged images to Google Artifact Registry
   - authenticate CI to GCP via Workload Identity Federation (no static keys)
   - vulnerability scan (dependencies + images)
+- Code quality/security tooling baseline (recommended defaults):
+  - Go quality: `golangci-lint`, `go test`, `go vet`
+  - Frontend quality: `eslint`, `tsc --noEmit`, optional `prettier --check`
+  - Protobuf contracts: `buf lint`, `buf breaking`
+  - Secrets scanning: `gitleaks`
+  - Dependency + container vulnerability scanning: `trivy` (filesystem + image)
+  - SAST: `semgrep` (or `codeql` as alternative)
+  - IaC checks: `terraform fmt -check`, `terraform validate`, `tflint` (plus `tfsec`/`checkov` optional)
+  - Supply chain (later hardening): `syft` (SBOM), `cosign` (signing), provenance attestation
 - Vulnerability merge gate policy baseline:
   - Block merges on `Critical` findings in runtime dependencies or container images.
   - Block merges on `High` findings in runtime dependencies or container images when a fix is available.

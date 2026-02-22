@@ -81,7 +81,7 @@ Done when: Alert-generated incidents are created and assigned as expected.
 Owner: Agent  
 Type: Coding  
 Dependencies: P3-T07  
-Action: Build webhook endpoint with signature validation, parse payload, request enrichment data from Grafana APIs.  
+Action: Build webhook endpoint with signature validation, parse payload, request enrichment data from Grafana APIs, and emit machine-readable diagnostic payloads that can be consumed by later-phase AI diagnostic/task-generation workers.  
 Output: Automation service baseline running with deterministic output format.  
 Done when: Synthetic alert generates a structured AI-ready incident summary payload.
 

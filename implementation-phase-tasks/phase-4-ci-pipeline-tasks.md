@@ -17,7 +17,9 @@ Done when: Each repo has a consistent CI entrypoint and naming convention.
 Owner: Agent  
 Type: CI coding  
 Dependencies: P4-T01  
-Action: Add jobs for Go/TS linting and unit tests with caching and deterministic tooling versions.  
+Action: Add jobs for Go/TS linting and unit tests with caching and deterministic tooling versions; baseline tools:
+- Go: `golangci-lint`, `go test`, `go vet`
+- Frontend: `eslint`, `tsc --noEmit` (plus optional `prettier --check`)  
 Output: CI quality gates on every PR.  
 Done when: PRs fail on lint/test errors.
 
@@ -57,7 +59,11 @@ Done when: CI can authenticate to GCP via OIDC and no service account key files 
 Owner: Agent  
 Type: CI coding  
 Dependencies: P4-T02, P4-T04  
-Action: Integrate scanners (language dependencies + container images), and enforce baseline gate policy (block `Critical` in runtime deps/images; block `High` in runtime deps/images when fix is available; notify-only for `High` without fix, `Medium`/`Low`, and dev/test-only findings; support time-boxed waiver tickets).  
+Action: Integrate scanners (language dependencies + container images), and enforce baseline gate policy (block `Critical` in runtime deps/images; block `High` in runtime deps/images when fix is available; notify-only for `High` without fix, `Medium`/`Low`, and dev/test-only findings; support time-boxed waiver tickets). Baseline tooling:
+- `trivy` for dependency + image vulnerability scanning
+- `gitleaks` for secret scanning
+- `semgrep` for SAST (or `codeql` as alternative)
+- `tflint` + `terraform fmt/validate` for IaC quality (with optional `tfsec`/`checkov`)  
 Output: Vulnerability reports and gate policy.  
 Done when: CI enforces the defined gate policy and accepted exceptions are traceable via time-boxed waiver records.
 
@@ -93,12 +99,21 @@ Action: Configure required checks and review policy for AI-generated PRs (draft-
 Output: Enforced governance policy for automation-created PRs.  
 Done when: AI-created PRs cannot merge without the same required review/check gates as human-authored PRs.
 
+### P4-T12: Document approved tool alternatives and migration path
+Owner: Human + Agent  
+Type: Governance + documentation  
+Dependencies: P4-T02, P4-T07  
+Action: Document approved alternatives and swap criteria for core CI tools (for example `semgrep` vs `codeql`, `trivy` vs `grype`, `tfsec` vs `checkov`) and define migration trigger points (cost, false positives, runtime impact, enterprise compliance).  
+Output: `docs/standards/ci-quality-security-tooling.md`.  
+Done when: Tool substitutions can be made with explicit rationale and no policy ambiguity.
+
 ## Artifacts Checklist
 - Workflow templates and repo CI YAMLs
 - Contract check jobs
 - image build/tag policy docs
 - WIF/OIDC integration docs
 - vulnerability scan configuration
+- code quality + security tooling standard document
 - CI artifact retention policy
 - GitHub branch protection settings evidence
 - AI-generated PR governance policy evidence

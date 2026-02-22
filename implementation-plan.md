@@ -118,6 +118,18 @@ Out of scope until baseline completion:
   - Required human review and existing CI checks remain mandatory.
   - Worker lanes are configured per target repo using environment variables and least-privilege credentials.
 
+### 3.2 Later-Phase AI Ops Automation
+- Objective:
+  - Automate alert-driven diagnostics and remediation task creation from production telemetry signals.
+- Delivery target:
+  - Phase 8 hardening (after baseline observability and task workflow are stable).
+- Core flow:
+  - Grafana Cloud / Prometheus-style alert triggers diagnostic worker lanes.
+  - Workers use MCP-integrated access to metrics, logs, and traces for bounded diagnosis.
+  - Validated outputs create GitHub Issues/Project tasks with evidence links and suggested priority labels.
+- Governance:
+  - Keep human approval for high-impact actions; task creation is automated, code changes still follow PR review controls.
+
 ## 4. Workstreams (Parallel)
 - App Platform: frontend/api/worker skeletons.
 - Infrastructure: Terraform and Kubernetes foundations.
@@ -148,6 +160,7 @@ For each decision capture:
 - Define Sentry and incident.io projects/workspaces and API credentials.
 - Define GitHub Actions environments/secrets and GCP Workload Identity Federation for CI auth.
 - Define GitHub Issues/Projects task-management workflow baseline (issue templates, labels, board states, automation) across repos.
+- Define and codify CI code-quality/security tooling standards (`golangci-lint`, `eslint`, `tsc`, `trivy`, `gitleaks`, `semgrep/codeql`, IaC checks) with swap criteria.
 - Define and bootstrap `platform-ai-workers` repo with task-state machine and draft-PR flow (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`).
 - Provision minimal AI worker runtime prerequisites early (Cloud Run Job + Cloud Scheduler + GSM/IAM) to enable task-to-code automation before full platform completion.
 - Define per-target-repo worker deployment config model (`WORKER_ID`, `TARGET_REPO`, limits, credential refs).
@@ -209,3 +222,5 @@ For each decision capture:
 - v2.18 (2026-02-21): Locked baseline secret rotation cadence/policy for RC and prod, including emergency rotation SLA, rollback window, and prod approval governance.
 - v2.19 (2026-02-22): Locked task management baseline to GitHub Issues + GitHub Projects with a standardized cross-repo workflow model.
 - v2.20 (2026-02-22): Added fast-track AI task-to-code automation bootstrap plan (dedicated worker repo, early Cloud Run Job/Scheduler prerequisites, per-repo worker lanes, and review governance).
+- v2.21 (2026-02-22): Added later-phase AI Ops automation plan for alert-driven diagnostics using MCP-integrated telemetry access and automatic remediation task generation.
+- v2.22 (2026-02-22): Added explicit CI code-quality/security tooling integration plan with approved alternatives and migration criteria.

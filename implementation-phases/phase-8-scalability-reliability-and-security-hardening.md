@@ -26,6 +26,11 @@ Detailed tasks: `implementation-phase-tasks/phase-8-scalability-reliability-and-
   - Governance:
     - weekly secret-age audit job;
     - prod rotation requires manual approval.
+- Add alert-driven AI diagnostic workers (later-phase extension):
+  - Triggered by Grafana Cloud / Prometheus-style alert events.
+  - Use MCP-integrated tool access to read metrics, logs, and traces.
+  - Generate diagnosis summaries and open GitHub tasks for remediation.
+  - Reuse the worker-lane deployment model used for task-to-code automation where applicable.
 - Enforce security controls:
   - RBAC
   - network policies

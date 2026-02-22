@@ -1,4 +1,1 @@
-- for now, only one human developer (plus ai agents), so only one maintainer of repos
-- don't we need the repos created (phase 1) before we start task P0-T01, P0-T02 ?
-- make necessary additions or changes: 
-  - we want to integrate agents in development. a
+

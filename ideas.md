@@ -1,4 +1,3 @@
-observability MCPs : automatic processing of alerts/logs by agents and usage of MCPs for diagnostic and task generation
 
 code quality checks?
 security checks?

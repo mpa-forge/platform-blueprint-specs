@@ -95,6 +95,30 @@ Action: Confirm all phase objectives and baseline MVP acceptance criteria are me
 Output: Reusable platform blueprint release record.  
 Done when: Template release is tagged and handoff docs are complete.
 
+### P8-T11: Define MCP-based diagnostic tool access model
+Owner: Human + Agent  
+Type: Architecture + security  
+Dependencies: Phase 3 observability baseline, P8-T06  
+Action: Define MCP integration boundaries for telemetry access (metrics/logs/traces), allowed tools/endpoints, credential isolation, and data redaction policy for AI diagnostics.  
+Output: `docs/automation/ai-ops-mcp-model.md`.  
+Done when: MCP/tool permissions and safe-data handling rules are approved for alert-driven diagnostics.
+
+### P8-T12: Implement alert-driven AI diagnostic worker pipeline
+Owner: Agent  
+Type: Automation coding  
+Dependencies: P8-T11, Phase 3 alert routing, Phase 1 `platform-ai-workers` baseline  
+Action: Add worker pipeline triggered by Grafana Cloud / Prometheus-style alert events, retrieve telemetry context (metrics/logs/traces), run diagnostic analysis, and emit structured remediation proposals with evidence links.  
+Output: Alert -> diagnostics worker implementation and deployment manifests/config.  
+Done when: Synthetic alerts trigger deterministic diagnostics with linked telemetry evidence.
+
+### P8-T13: Automate remediation task generation from diagnostics
+Owner: Agent  
+Type: Automation integration  
+Dependencies: P8-T12, Phase 0 task workflow baseline  
+Action: Convert validated diagnostic outputs into GitHub Issues/Project tasks with standard labels/priority suggestions, links to evidence, and optional worker-lane assignment for follow-up automation.  
+Output: Diagnostics -> task generation integration.  
+Done when: At least one synthetic alert produces a correctly formatted remediation issue in the project board.
+
 ## Artifacts Checklist
 - SLO/SLI baseline docs
 - autoscaling/resource tuning configs
@@ -106,3 +130,6 @@ Done when: Template release is tagged and handoff docs are complete.
 - SBOM/signing CI outputs
 - security audit report
 - template certification record
+- MCP/tool access model for AI diagnostics
+- alert-driven diagnostic worker implementation evidence
+- diagnostics-to-task generation validation evidence
