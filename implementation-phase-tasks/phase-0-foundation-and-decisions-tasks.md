@@ -5,10 +5,18 @@ Lock all foundational platform decisions, accounts, access, and governance neede
 
 ## Tasks
 
+### P0-T00: Bootstrap repositories required for Phase 0 artifacts
+Owner: Human  
+Type: Repo setup  
+Dependencies: None  
+Action: Create the dedicated docs repository first (required), and optionally create placeholder repos (`frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`) so ownership/governance can be recorded against real repositories.  
+Output: Repository bootstrap evidence (URLs/IDs).  
+Done when: Dedicated docs repo exists and is writable; optional placeholder repos exist if chosen.
+
 ### P0-T01: Create decision register and ADR template
 Owner: Agent  
 Type: Documentation  
-Dependencies: None  
+Dependencies: P0-T00  
 Action: Create `docs/adr/README.md` and `docs/adr/adr-template.md` in the dedicated docs repository.  
 Output: ADR structure committed.  
 Done when: Team can add dated decision records with context/options/consequences.
@@ -16,10 +24,10 @@ Done when: Team can add dated decision records with context/options/consequences
 ### P0-T02: Define and document repository ownership model
 Owner: Human  
 Type: Governance  
-Dependencies: P0-T01  
-Action: Assign one human maintainer for each repo (`frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`, dedicated docs repo), and document optional AI-agent ownership/execution responsibilities.  
+Dependencies: P0-T00, P0-T01  
+Action: Assign one human maintainer for each existing repo (`frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`, dedicated docs repo), and document optional AI-agent ownership/execution responsibilities. If some repositories are not created yet, record provisional ownership and finalize immediately after repo creation in Phase 1.  
 Output: `docs/governance/repo-ownership.md`.  
-Done when: Every repo has at least one human maintainer and documented AI-agent responsibilities where applicable.
+Done when: Every existing repo has at least one human maintainer and documented AI-agent responsibilities where applicable; missing repos are marked as provisional ownership entries.
 
 ### P0-T03: Create or confirm cloud/account tenants
 Owner: Human  
@@ -112,7 +120,7 @@ Done when: Credential model supports per-target-repo worker deployments without 
 ### P0-T14: Sign-off phase gate
 Owner: Human  
 Type: Approval  
-Dependencies: P0-T01..P0-T13  
+Dependencies: P0-T00..P0-T13  
 Action: Review phase artifacts and approve transition to Phase 1.  
 Output: Phase 0 sign-off note in `docs/phase-gates/phase-0-signoff.md`.  
 Done when: Sign-off completed with approver names and date.
@@ -121,6 +129,7 @@ Done when: Sign-off completed with approver names and date.
 - `docs/adr/README.md`
 - `docs/adr/adr-template.md`
 - `docs/adr/decision-matrix.md`
+- repository bootstrap evidence (`P0-T00`)
 - `docs/governance/repo-ownership.md`
 - `docs/standards/environment-and-region.md`
 - `docs/standards/naming-and-labeling.md`
