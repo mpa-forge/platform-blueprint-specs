@@ -119,6 +119,14 @@ Action: Convert validated diagnostic outputs into GitHub Issues/Project tasks wi
 Output: Diagnostics -> task generation integration.  
 Done when: At least one synthetic alert produces a correctly formatted remediation issue in the project board.
 
+### P8-T14: Resolve edge-provider layering decision with production evidence
+Owner: Human + Agent  
+Type: Security/perimeter decision  
+Dependencies: Phase 6 ingress/CDN path in production-like load, P8-T03, P8-T09  
+Action: Evaluate internet edge strategy using observed traffic and threat signals; compare keeping GCP-native edge only versus adding an external edge provider layer (for example advanced WAF/bot controls), including cost, operational complexity, and lock-in implications.  
+Output: ADR with selected direction, migration plan (if any), and rollback criteria.  
+Done when: Decision is approved and reflected in platform spec, infra plan, and runbooks.
+
 ## Artifacts Checklist
 - SLO/SLI baseline docs
 - autoscaling/resource tuning configs
@@ -133,3 +141,4 @@ Done when: At least one synthetic alert produces a correctly formatted remediati
 - MCP/tool access model for AI diagnostics
 - alert-driven diagnostic worker implementation evidence
 - diagnostics-to-task generation validation evidence
+- edge-provider layering ADR and implementation plan

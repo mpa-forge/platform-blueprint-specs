@@ -171,12 +171,15 @@ For each decision capture:
 - Define event-trigger rules for AI runs (`ai:ready`, PR `changes requested`, `/ai rework`) and idempotent rework behavior tied to review/comment ids.
 - Define Cloud SQL instance topology and connectivity model for RC/prod.
 - Apply GKE cost guardrail: keep one active Autopilot cluster during baseline (RC) and gate prod cluster provisioning until explicit production cutover.
+- Define and implement ephemeral prod cluster lifecycle requirements (create/destroy/recover) to control cost while keeping prod fully separate.
+  - Specification artifact: `ops/ephemeral-gke-cluster-lifecycle-requirements.md`.
 - Apply `us-east4` as the primary region baseline for RC/prod infrastructure components.
 - Define RC isolation model implementation details (namespaces, DB boundaries, secret namespaces, and domain layout).
 - Define Google Secret Manager namespace/secret naming and ESO sync mappings for all services.
 - Implement authenticated frontend CDN path first (asset hosting, cache policy, invalidation strategy).
 - Keep public website/blog scope deferred until authenticated app baseline is complete.
 - Keep queue/broker scope deferred until post-baseline feature implementation requires async messaging.
+- Keep external edge-provider layering decision deferred (GCP-native edge only in baseline; evaluate Cloudflare-like overlay during hardening).
 - Define proto package/versioning conventions and set up Buf generation pipeline.
   - Create `buf.yaml`, `buf.gen.yaml`, and conventions doc in contracts repo template.
   - Keep baseline workflow on Buf CLI in local/CI (no paid BSR dependency).
@@ -241,3 +244,5 @@ For each decision capture:
 - v2.28 (2026-02-28): Added observability ops specification artifact `ops/observability-telemetry-budget-profile.md` and linked Phase 3 implementation references.
 - v2.29 (2026-02-28): Locked `platform-contracts` TypeScript client package publishing to GitHub Packages and added producer/consumer setup tasks.
 - v2.30 (2026-02-28): Added GKE credit guardrail to keep one active Autopilot cluster during baseline and defer prod cluster provisioning until production cutover.
+- v2.31 (2026-02-28): Added ephemeral prod cluster lifecycle requirements artifact and linked Phase 5/6 create-destroy-recover validation tasks.
+- v2.32 (2026-02-28): Deferred external edge-provider layering decision to hardening phase while keeping baseline internet edge path GCP-native.

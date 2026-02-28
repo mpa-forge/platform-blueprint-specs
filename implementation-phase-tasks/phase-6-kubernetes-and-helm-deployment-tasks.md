@@ -85,6 +85,14 @@ Action: Validate full cloud path: frontend CDN -> Auth0 -> API ingress -> DB and
 Output: Deployment validation report with defects/issues.  
 Done when: Phase 6 exit criteria are met and documented.
 
+### P6-T11: Validate cluster recreation deployment recovery path
+Owner: Human + Agent  
+Type: Validation  
+Dependencies: P6-T01..P6-T10, P5-T12  
+Action: Execute a controlled fresh-cluster deployment validation (bootstrap add-ons + Helm releases + smoke checks) using the prod/reusable lifecycle model defined in `ops/ephemeral-gke-cluster-lifecycle-requirements.md`; record steps needed to restore a cluster from zero to healthy workloads.  
+Output: Cluster recreation validation report and deployment recovery checklist.  
+Done when: Team can recover workloads on a newly created cluster with documented, repeatable steps and no manual drift corrections.
+
 ## Artifacts Checklist
 - Helm charts for API and worker
 - ESO manifests and secret mappings
@@ -93,3 +101,4 @@ Done when: Phase 6 exit criteria are met and documented.
 - CI deployment workflows (backend and frontend)
 - rollout safety configurations
 - end-to-end deployment validation evidence
+- cluster recreation/recovery validation evidence

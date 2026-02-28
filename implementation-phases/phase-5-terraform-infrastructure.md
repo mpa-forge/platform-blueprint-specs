@@ -1,6 +1,7 @@
 # Phase 5: Terraform Infrastructure
 
 Detailed tasks: `implementation-phase-tasks/phase-5-terraform-infrastructure-tasks.md`
+Specification artifact: `ops/ephemeral-gke-cluster-lifecycle-requirements.md`
 
 - Create Terraform modules for:
   - network/VPC
@@ -12,6 +13,7 @@ Detailed tasks: `implementation-phase-tasks/phase-5-terraform-infrastructure-tas
   - observability dependencies (as needed)
 - Create env stacks (`rc`, `prod`) with separate project-level isolation for prod.
 - Apply cluster-count cost guardrail: one active GKE Autopilot cluster during baseline (RC), with prod cluster resources gated/deferred until explicit production cutover.
+- Implement lifecycle controls so prod cluster can be created/destroyed/recovered on demand via Terraform + Helm workflows.
 - Enforce one Terraform root per environment (`rc`, `prod`) with shared modules.
 - Do not use Terraform workspaces for environment isolation/switching.
 - Add remote state and locking.

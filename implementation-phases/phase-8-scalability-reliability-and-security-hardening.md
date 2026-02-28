@@ -37,6 +37,8 @@ Detailed tasks: `implementation-phase-tasks/phase-8-scalability-reliability-and-
   - secret rotation
   - SBOM and signed images
   - deployment-time signature verification deferred to a later phase
+- Resolve deferred edge-provider layering decision:
+  - Evaluate whether to keep GCP-native edge only, or add external provider capabilities (for example advanced WAF/bot controls) based on real traffic/threat/cost signals.
 
 Exit criteria:
 - Performance SLO baseline documented.

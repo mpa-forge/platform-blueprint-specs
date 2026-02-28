@@ -9,6 +9,7 @@ Detailed tasks: `implementation-phase-tasks/phase-6-kubernetes-and-helm-deployme
   - deploy External Secrets Operator and define SecretStore/ExternalSecret mappings
   - ingress (NGINX) and TLS
 - Implement pipeline-driven deployment via GitHub Actions invoking Helm releases.
+- Ensure Helm deployment path supports cluster recreation (fresh cluster bootstrap and redeploy without manual drift).
 - API ingress routing uses a single domain with path-based routing.
 - TLS certificate management defaults to managed certificates.
 - Authenticated frontend delivery is standardized on Cloud CDN + External HTTPS Load Balancer + Cloud Storage backend bucket.

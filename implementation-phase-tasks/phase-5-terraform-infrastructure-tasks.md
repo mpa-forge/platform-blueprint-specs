@@ -73,7 +73,7 @@ Done when: At least one worker-job deployment can be created per environment and
 Owner: Agent  
 Type: IaC coding  
 Dependencies: P5-T03..P5-T08  
-Action: Create per-environment root stack composition and parameter files with minimal drift, while enforcing prod full separation and RC internal isolation boundaries; keep environment selection explicit by root path, not Terraform workspace; include explicit gating variable(s) so baseline provisions only one active RC cluster until prod enable decision.  
+Action: Create per-environment root stack composition and parameter files with minimal drift, while enforcing prod full separation and RC internal isolation boundaries; keep environment selection explicit by root path, not Terraform workspace; include explicit gating variable(s) so baseline provisions only one active RC cluster until prod enable decision, aligned with `ops/ephemeral-gke-cluster-lifecycle-requirements.md`.  
 Output: Environment-specific IaC layers.  
 Done when: `terraform plan` works for all environments from their dedicated root paths.
 
@@ -93,12 +93,21 @@ Action: Apply full stack from empty state, capture timings, rollback instruction
 Output: Provisioning evidence and runbook.  
 Done when: `rc` can be recreated from scratch reproducibly.
 
+### P5-T12: Implement prod cluster lifecycle runbooks and guarded workflows
+Owner: Human + Agent  
+Type: IaC operations design  
+Dependencies: P5-T04, P5-T09, P5-T10  
+Action: Define and implement guarded Terraform workflow paths for prod cluster `create`, `destroy`, and `recover` operations (explicit enable flags, approval gates, plan visibility, and state protections), and document procedures per `ops/ephemeral-gke-cluster-lifecycle-requirements.md`.  
+Output: `docs/operations/create-prod-cluster.md`, `docs/operations/destroy-prod-cluster.md`, and `docs/operations/recover-prod-cluster.md`.  
+Done when: Operators can run controlled create/destroy/recover flows for prod cluster without manual infrastructure drift.
+
 ## Artifacts Checklist
 - Terraform module/stacks structure
 - remote state backend/locking configuration
 - network, cluster, GAR, Cloud SQL, GSM modules
 - Cloud Run Job/Scheduler module for AI workers
 - `ops/ai-comment-trigger-cloud-run-jobs.md` IAM mapping reference
+- `ops/ephemeral-gke-cluster-lifecycle-requirements.md` conformance mapping
 - environment variable files and outputs
 - IaC CI validation checks
 - `rc` apply evidence and infra runbook

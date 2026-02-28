@@ -37,6 +37,7 @@ Detailed tasks: `implementation-phase-tasks/phase-0-foundation-and-decisions-tas
 - Confirmed: Frontend sequencing is authenticated app first.
 - Confirmed: Authenticated frontend serving path is CDN-first.
 - Confirmed: Queue/broker decision remains deferred until after the first end-to-end baseline implementation is complete.
+- Confirmed: External edge-provider layering decision (GCP-native edge only vs Cloudflare-like overlay) is deferred to hardening phase review; baseline remains GCP-native edge stack.
 - Define naming conventions, branch strategy, semantic versioning.
 - Confirmed: SonarQube Cloud Free as baseline repository quality tier.
 

@@ -117,11 +117,13 @@
 
 ## 9. Key Decisions To Finalize
 - Queue/broker approach (only if asynchronous workflows become a requirement).
+- Edge perimeter/security provider layering for internet traffic (`GCP-native` only vs adding an external provider such as Cloudflare for WAF/bot controls) is deferred to hardening phase review.
 
 ## 10. Locked Decisions (Current)
 - Cloud provider and Kubernetes: GCP + GKE.
 - GKE cluster mode: Autopilot.
 - GKE cost-control baseline: keep a single Autopilot cluster during baseline implementation (RC only) to preserve available GKE credit; defer prod cluster provisioning until explicit production cutover.
+- Ephemeral cluster lifecycle baseline: prod cluster must be create/destroy/recover capable through Terraform + Helm workflows for cost control and reusable project templates.
 - Repository strategy: Polyrepo.
 - Ingress: NGINX Ingress Controller.
 - Queue/broker: Deferred until product requirements demand it.
@@ -162,11 +164,15 @@
 - Frontend/API single-domain routing baseline:
   - frontend/static assets served from CDN path.
   - `/api/*` routed to backend ingress/API service path.
+- Edge provider layering baseline:
+  - Keep internet edge stack GCP-native in baseline (`Cloud CDN + External HTTPS LB + managed certs`).
+  - Defer the decision to add an additional external edge provider (for example Cloudflare for advanced WAF/bot controls) until hardening phase cost/traffic review.
 - Queue/broker decision timing: Deferred until after the first end-to-end baseline implementation is complete.
 - Environment model: Local + RC + prod.
 - Environment separation: prod fully separate from RC; RC enforces strict internal isolation boundaries.
 - GCP project separation: `rc` and `prod` run in separate projects.
 - Cluster-count guardrail: no extra/non-essential clusters; baseline target is one active GKE Autopilot cluster until prod is explicitly enabled.
+- Ephemeral lifecycle requirements reference: `ops/ephemeral-gke-cluster-lifecycle-requirements.md`.
 - API ingress routing model: Single domain with path-based routing.
 - TLS certificate management default: Managed certificates.
 - Production deployment timing: On-demand with required approvals.
@@ -488,5 +494,7 @@
 - v1.35 (2026-02-28): Added observability ops specification artifact `ops/observability-telemetry-budget-profile.md` and linked profile/cardinality operational requirements.
 - v1.36 (2026-02-28): Locked `platform-contracts` TypeScript client distribution to GitHub Packages with versioned npm releases consumed by frontend.
 - v1.37 (2026-02-28): Added GKE credit guardrail: maintain a single Autopilot cluster during baseline (RC), deferring prod cluster provisioning until production cutover.
+- v1.38 (2026-02-28): Added ephemeral GKE cluster lifecycle requirements artifact (`ops/ephemeral-gke-cluster-lifecycle-requirements.md`) for create/destroy/recover workflows.
+- v1.39 (2026-02-28): Deferred external edge provider decision (Cloudflare-like overlay vs GCP-native edge only) to Phase 8 hardening review, while keeping baseline on GCP-native edge stack.
 
 
