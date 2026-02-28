@@ -2,6 +2,8 @@
 
 ## Purpose
 Define how human review feedback triggers immediate AI rework runs without waiting for scheduler cadence.
+Runtime parity requirements for local/cloud execution are defined in `ops/ai-worker-local-cloud-parity.md`.
+This trigger wakes the cloud worker poller loop; it does not define a separate worker logic path.
 
 ## Trigger Sources
 - `pull_request_review` with `state=changes_requested`
@@ -12,8 +14,9 @@ Define how human review feedback triggers immediate AI rework runs without waiti
 2. GitHub Actions workflow validates actor permissions and PR eligibility (`ai-generated` label or equivalent).
 3. Workflow updates labels/state (`ai:rework-requested`, remove `ai:ready-for-review`).
 4. Workflow authenticates to GCP through Workload Identity Federation.
-5. Workflow executes mapped Cloud Run Job on-demand.
-6. Worker processes target PR/task, pushes updates to the same PR branch, and sets resulting state (`ai:ready-for-review` or `ai:failed`).
+5. Workflow executes mapped Cloud Run Job on-demand (wake-up).
+6. Worker enters the standard poll loop, prioritizes eligible rework items for its lane, pushes updates to the same PR branch, and sets resulting state (`ai:ready-for-review` or `ai:failed`).
+7. Worker exits by normal cloud lifecycle rules (`no_work`, `pending_review_limit_reached`, or timeout), then waits for next wake-up.
 
 ## GitHub Actions Events and Conditions
 - `on.pull_request_review.types: [submitted]` and guard `github.event.review.state == 'changes_requested'`
@@ -23,7 +26,8 @@ Define how human review feedback triggers immediate AI rework runs without waiti
   - actor is trusted (`OWNER`, `MEMBER`, `COLLABORATOR`)
 
 ## Cloud Run Job Execution Contract
-Pass rework context as runtime env overrides when executing job:
+Pass wake-up context as runtime env overrides when executing job:
+- `WORKER_RUNTIME_MODE=cloud`
 - `TRIGGER_SOURCE=rework`
 - `TARGET_PR=<pr_number>`
 - `EVENT_ID=<review_or_comment_id>`
@@ -33,6 +37,7 @@ Worker requirements:
 - Idempotency keyed by `EVENT_ID`
 - Deterministic worker lane ownership (`WORKER_ID`)
 - Rework updates the existing draft PR branch by default
+- Same poll/execution logic as local mode; only lifecycle differs.
 
 ## IAM and Security
 - GitHub Actions uses OIDC/WIF (`id-token: write`) to impersonate a dedicated service account.
@@ -85,4 +90,3 @@ jobs:
             --wait \
             --update-env-vars "TRIGGER_SOURCE=rework,TARGET_PR=$PR_NUMBER,EVENT_ID=$EVENT_ID"
 ```
-

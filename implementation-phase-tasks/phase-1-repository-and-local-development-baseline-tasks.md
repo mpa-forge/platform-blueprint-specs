@@ -88,16 +88,16 @@ Done when: New developer setup completes within targeted time window.
 ### P1-T11: Bootstrap `platform-ai-workers` repository baseline
 Owner: Agent  
 Type: Coding  
-Dependencies: P1-T01, Phase 0 AI automation decisions, `ops/ai-comment-trigger-cloud-run-jobs.md`  
-Action: Scaffold worker job codebase and container with configurable env vars (`WORKER_ID`, `TARGET_REPO`, `MAX_PENDING_REVIEW`, `POLL_WINDOW`, credential secret refs), support for scheduled and event-driven execution (`TRIGGER_SOURCE`, optional `TARGET_ISSUE`/`TARGET_PR`), GitHub task selection logic, task state transitions (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`), and draft PR creation/update path aligned to `ops/ai-comment-trigger-cloud-run-jobs.md`.  
+Dependencies: P1-T01, Phase 0 AI automation decisions, `ops/ai-comment-trigger-cloud-run-jobs.md`, `ops/ai-worker-local-cloud-parity.md`  
+Action: Scaffold worker job codebase and container with configurable env vars (`WORKER_RUNTIME_MODE`, `WORKER_ID`, `TARGET_REPO`, `MAX_PENDING_REVIEW`, `POLL_INTERVAL`, credential secret refs), support for trigger context (`TRIGGER_SOURCE`, optional `TARGET_ISSUE`/`TARGET_PR`/`EVENT_ID`), shared GitHub poll-loop task selection logic (ready + rework candidates), task state transitions (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`), and draft PR creation/update path aligned to `ops/ai-comment-trigger-cloud-run-jobs.md`. Implement one runtime entrypoint used by both local and Cloud Run executions, with environment-specific behavior only through lifecycle/config/adapters as defined in `ops/ai-worker-local-cloud-parity.md`.  
 Output: Runnable automation worker baseline in dedicated repo.  
-Done when: Worker can process one synthetic issue and produce a draft PR in a target sandbox repo.
+Done when: Worker can process one synthetic issue and produce a draft PR in a target sandbox repo, and the same image/entrypoint can be invoked locally and in Cloud Run mode.
 
 ### P1-T12: Add worker lane safety and resume behavior
 Owner: Agent  
 Type: Coding  
 Dependencies: P1-T11  
-Action: Implement single-lane processing guard per worker id, deterministic claim-before-work behavior, retry/resume handling for `ai:in-progress` tasks, idempotent rework handling keyed by review/comment event id, and pending-review cap stop condition.  
+Action: Implement single-lane processing guard per worker id, deterministic claim-before-work behavior, retry/resume handling for `ai:in-progress` tasks, idempotent rework handling keyed by review/comment event id, and pending-review cap control with mode-specific lifecycle (`local`: wait and continue polling; `cloud`: exit and wait for next wake-up).  
 Output: Safe worker execution loop with deterministic state transitions.  
 Done when: Repeated runs do not duplicate claims and can resume interrupted tasks for the same worker lane.
 
@@ -105,9 +105,9 @@ Done when: Repeated runs do not duplicate claims and can resume interrupted task
 Owner: Human + Agent  
 Type: Validation  
 Dependencies: P1-T11, P1-T12  
-Action: Execute controlled dry-run against a sandbox repository and verify end-to-end path (issue selection, branch changes, draft PR creation, state updates, reviewer handoff, and comment/review-triggered rework updating the same PR) according to `ops/ai-comment-trigger-cloud-run-jobs.md`.  
+Action: Execute controlled dry-run against a sandbox repository and verify end-to-end path (issue selection, branch changes, draft PR creation, state updates, reviewer handoff, and comment/review-triggered rework updating the same PR) according to `ops/ai-comment-trigger-cloud-run-jobs.md`; include local/cloud parity checks per `ops/ai-worker-local-cloud-parity.md` by running equivalent inputs locally and via Cloud Run execution, including idle and outstanding-review-cap behavior.  
 Output: `docs/automation/ai-worker-dry-run.md` with findings and fixes.  
-Done when: One end-to-end task-to-draft-PR flow plus one rework loop succeeds under manual observation.
+Done when: One end-to-end task-to-draft-PR flow plus one rework loop succeeds under manual observation, and parity evidence confirms equivalent behavior for local and Cloud Run runs.
 
 ## Artifacts Checklist
 - Repository settings screenshots/exports
@@ -118,6 +118,7 @@ Done when: One end-to-end task-to-draft-PR flow plus one rework loop succeeds un
 - Dockerfiles for frontend/API/worker
 - `platform-ai-workers` bootstrap code and container
 - `ops/ai-comment-trigger-cloud-run-jobs.md` conformance notes
+- `ops/ai-worker-local-cloud-parity.md` conformance notes
 - `docker-compose.yml`
 - local smoke test scripts
 - AI worker dry-run report

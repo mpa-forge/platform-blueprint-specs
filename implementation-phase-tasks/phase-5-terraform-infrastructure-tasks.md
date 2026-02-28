@@ -65,7 +65,7 @@ Done when: Workloads can retrieve expected secrets via ESO sync path.
 Owner: Agent  
 Type: IaC coding  
 Dependencies: P5-T01, P5-T05, P5-T07  
-Action: Provision Cloud Run Job definitions, Cloud Scheduler triggers, service accounts/IAM, and Secret Manager bindings for `platform-ai-workers` execution. Support multiple worker-job deployments, each targeting a repository with environment-specific configuration (`WORKER_ID`, `TARGET_REPO`, limits, credential refs), and grant least-privilege on-demand execution permissions for GitHub Actions event-trigger workflows as defined in `ops/ai-comment-trigger-cloud-run-jobs.md`.  
+Action: Provision Cloud Run Job definitions (and optional low-frequency Scheduler backstop), service accounts/IAM, and Secret Manager bindings for `platform-ai-workers` execution. Support multiple worker-job deployments, each targeting a repository with environment-specific configuration (`WORKER_RUNTIME_MODE=cloud`, `WORKER_ID`, `TARGET_REPO`, `MAX_PENDING_REVIEW`, `POLL_INTERVAL`, credential refs), and grant least-privilege on-demand execution permissions for GitHub Actions event-trigger wake-up workflows as defined in `ops/ai-comment-trigger-cloud-run-jobs.md`. Ensure Cloud Run Job command/args invoke the same runtime entrypoint used for local execution, per `ops/ai-worker-local-cloud-parity.md`.  
 Output: AI worker runtime infrastructure module.  
 Done when: At least one worker-job deployment can be created per environment and triggered both on schedule and on-demand with least privilege.
 
@@ -107,6 +107,7 @@ Done when: Operators can run controlled create/destroy/recover flows for prod cl
 - network, cluster, GAR, Cloud SQL, GSM modules
 - Cloud Run Job/Scheduler module for AI workers
 - `ops/ai-comment-trigger-cloud-run-jobs.md` IAM mapping reference
+- `ops/ai-worker-local-cloud-parity.md` runtime parity mapping reference
 - `ops/ephemeral-gke-cluster-lifecycle-requirements.md` conformance mapping
 - environment variable files and outputs
 - IaC CI validation checks

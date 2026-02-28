@@ -107,7 +107,7 @@ Done when: Board is live, templates/labels are applied across repos, and at leas
 Owner: Human + Agent  
 Type: Governance + architecture  
 Dependencies: P0-T10  
-Action: Document the baseline automation architecture: dedicated `platform-ai-workers` repo, Cloud Run Jobs with hybrid trigger model (scheduled polling + event-driven execution), one worker-job deployment per target repo, environment-driven worker configuration (`WORKER_ID`, `TARGET_REPO`, credential refs, limits), and mandatory human review controls (draft PR + required checks/review).  
+Action: Document the baseline automation architecture: dedicated `platform-ai-workers` repo with one shared GitHub poll-loop logic for local and cloud runtimes, Cloud Run Jobs used as bounded wake-up executions, one worker-job deployment per target repo, environment-driven worker configuration (`WORKER_RUNTIME_MODE`, `WORKER_ID`, `TARGET_REPO`, credential refs, limits), local/cloud runtime parity requirement (same worker image and runtime entrypoint in both contexts), and mandatory human review controls (draft PR + required checks/review). Reference `ops/ai-worker-local-cloud-parity.md` for runtime parity contract.  
 Output: `docs/automation/ai-task-to-code-architecture.md`.  
 Done when: Architecture and control boundaries are approved and referenced by Phase 1/4/5 tasks.
 
@@ -159,5 +159,6 @@ Done when: Sign-off completed with approver names and date.
 - `docs/automation/ai-task-state-machine.md`
 - `docs/automation/ai-rework-trigger-protocol.md`
 - `ops/ai-comment-trigger-cloud-run-jobs.md`
+- `ops/ai-worker-local-cloud-parity.md`
 - `docs/security/ai-worker-credentials.md`
 - `docs/phase-gates/phase-0-signoff.md`

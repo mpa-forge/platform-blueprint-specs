@@ -111,7 +111,7 @@ Out of scope until baseline completion:
 - Delivery order:
   - Phase 0: lock automation architecture, task state machine, and credential model.
   - Phase 1: bootstrap `platform-ai-workers` repo and validate one end-to-end task -> draft PR flow in a sandbox repo.
-  - Phase 5 (minimal subset pulled earlier as needed): provision Cloud Run Job + Cloud Scheduler + GSM/IAM bindings plus on-demand execute permissions for worker runtime.
+- Phase 5 (minimal subset pulled earlier as needed): provision Cloud Run Job + GSM/IAM bindings plus on-demand execute permissions for worker runtime (optional low-frequency scheduler backstop).
   - Phase 4: enforce governance checks for AI-generated PRs (required review/checks/metadata) and event-trigger workflows for immediate rework runs.
 - Guardrails:
   - Draft PR only, no direct protected-branch writes.
@@ -166,9 +166,12 @@ For each decision capture:
 - Define and codify CI code-quality/security tooling standards (`golangci-lint`, `eslint`, `tsc`, `sonar`/`SonarQube Cloud`, `trivy`, `gitleaks`, `semgrep/codeql`, IaC checks) with swap criteria.
   - Lock SonarQube Cloud Free as baseline tier.
 - Define and bootstrap `platform-ai-workers` repo with task-state machine and draft-PR flow (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`).
-- Provision minimal AI worker runtime prerequisites early (Cloud Run Job + Cloud Scheduler + GSM/IAM + on-demand execute permissions) to enable task-to-code automation before full platform completion.
-- Define per-target-repo worker deployment config model (`WORKER_ID`, `TARGET_REPO`, limits, credential refs).
-- Define event-trigger rules for AI runs (`ai:ready`, PR `changes requested`, `/ai rework`) and idempotent rework behavior tied to review/comment ids.
+- Provision minimal AI worker runtime prerequisites early (Cloud Run Job + GSM/IAM + on-demand execute permissions; optional scheduler backstop) to enable task-to-code automation before full platform completion.
+- Define per-target-repo worker deployment config model (`WORKER_RUNTIME_MODE`, `WORKER_ID`, `TARGET_REPO`, limits, credential refs).
+- Define shared poll-loop behavior (ready tasks + rework tasks + outstanding-review cap) with mode-specific lifecycle: local keeps polling; cloud exits on cap/idle and is re-woken by GitHub events.
+- Define event-trigger rules for cloud wake-up runs (`ai:ready`, PR `changes requested`, `/ai rework`) and idempotent rework behavior tied to review/comment ids.
+- Enforce local/cloud runtime parity for AI workers (same image + runtime entrypoint) and validate with local dry-run plus Cloud Run execution using equivalent inputs.
+  - Specification artifact: `ops/ai-worker-local-cloud-parity.md`.
 - Define Cloud SQL instance topology and connectivity model for RC/prod.
 - Apply GKE cost guardrail: keep one active Autopilot cluster during baseline (RC) and gate prod cluster provisioning until explicit production cutover.
 - Define and implement ephemeral prod cluster lifecycle requirements (create/destroy/recover) to control cost while keeping prod fully separate.
@@ -246,3 +249,5 @@ For each decision capture:
 - v2.30 (2026-02-28): Added GKE credit guardrail to keep one active Autopilot cluster during baseline and defer prod cluster provisioning until production cutover.
 - v2.31 (2026-02-28): Added ephemeral prod cluster lifecycle requirements artifact and linked Phase 5/6 create-destroy-recover validation tasks.
 - v2.32 (2026-02-28): Deferred external edge-provider layering decision to hardening phase while keeping baseline internet edge path GCP-native.
+- v2.33 (2026-02-28): Added AI worker local/cloud runtime parity requirement and linked implementation artifact `ops/ai-worker-local-cloud-parity.md`.
+- v2.34 (2026-02-28): Locked AI worker shared poll-loop runtime model (local continuous polling, cloud bounded wake-up runs with optional scheduler backstop).

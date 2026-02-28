@@ -22,8 +22,10 @@ Detailed tasks: `implementation-phase-tasks/phase-0-foundation-and-decisions-tas
 - Confirmed: GitHub Issues + GitHub Projects as task management platform.
 - Confirmed: Single cross-repo project board workflow with standardized issue types, labels, states, and automation.
 - Confirmed: AI task-to-code automation will be implemented via a dedicated `platform-ai-workers` repository.
-- Confirmed: AI workers run as Cloud Run Jobs with hybrid triggering (scheduled cadence plus event-driven on-demand execution), one worker-job deployment per target repository.
+- Confirmed: AI workers use one shared GitHub poll-loop logic across local and cloud runtimes.
+- Confirmed: Cloud runtime uses bounded Cloud Run Job executions and is primarily event-woken from GitHub task/review changes (optional scheduler backstop), one worker-job deployment per target repository.
 - Confirmed: Worker-job configuration is environment-driven (target repo, worker id, credentials refs, and automation limits).
+- Confirmed: AI workers must keep local/cloud runtime parity (same worker image and runtime entrypoint in local runs and Cloud Run Jobs).
 - Confirmed: Human review remains mandatory through draft PR + branch protection before merge.
 - Confirmed: Google Artifact Registry for container images/artifacts.
 - Confirmed: Cloud SQL for PostgreSQL hosting.

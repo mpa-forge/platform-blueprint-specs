@@ -18,7 +18,9 @@ Detailed tasks: `implementation-phase-tasks/phase-1-repository-and-local-develop
   - frontend package manager standardized to `npm`.
 - Add Dockerfiles and `docker-compose.yml` for full local stack.
 - Local stack scope is minimal by default: frontend, API, worker, and Postgres only (no local observability components required).
-- Ensure AI worker baseline supports both scheduled polling and event-triggered runs for review rework loops.
+- Ensure AI worker baseline supports poll-loop processing for both ready tasks and rework tasks, with event-triggered cloud wake-ups for review rework loops.
+- Ensure AI worker uses one poll-loop logic across runtimes: local runs continuously (sleep + re-poll), cloud runs bounded and exits on idle/limits waiting for next wake-up trigger.
+- Ensure AI worker local/cloud parity: same container image and runtime entrypoint must run locally and in Cloud Run Jobs (config/adapters only differ).
 
 Exit criteria:
 - `docker compose up` runs all core services.

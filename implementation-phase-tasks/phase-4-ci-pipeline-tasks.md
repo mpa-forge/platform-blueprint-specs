@@ -113,7 +113,7 @@ Done when: Tool substitutions can be made with explicit rationale and no policy 
 Owner: Agent  
 Type: CI automation  
 Dependencies: P4-T06, P4-T11, Phase 1 AI worker bootstrap  
-Action: Add GitHub Actions workflows that trigger on task-ready and review-feedback events (issue label `ai:ready`, PR review `changes_requested`, maintainer `/ai rework` comment command), authenticate to GCP via WIF, and execute the mapped Cloud Run Job on-demand for the target worker lane following `ops/ai-comment-trigger-cloud-run-jobs.md`.  
+Action: Add GitHub Actions workflows that trigger on task-ready and review-feedback events (issue label `ai:ready`, PR review `changes_requested`, maintainer `/ai rework` comment command), authenticate to GCP via WIF, and execute the mapped Cloud Run Job on-demand as a wake-up signal for the target worker lane following `ops/ai-comment-trigger-cloud-run-jobs.md`.  
 Output: Event-driven trigger workflows and runbook referencing `ops/ai-comment-trigger-cloud-run-jobs.md`.  
 Done when: A review comment can trigger one deterministic rework run without waiting for the scheduler cadence.
 

@@ -151,10 +151,17 @@
   - Automation baseline: auto-add issues/PRs to board, auto-move states on PR events, close issues on merge.
 - AI task-to-code worker platform:
   - Dedicated `platform-ai-workers` repository.
-  - Cloud Run Jobs (custom code, not n8n) execute task-to-code loops with hybrid triggers (scheduled cadence + event-driven on-demand runs).
+  - AI workers use one shared GitHub poll-loop logic in both local and cloud runtimes.
+  - Cloud Run Jobs (custom code, not n8n) run the same poll loop in bounded executions; local runtime runs it continuously.
+  - Cloud wake-up is event-driven (GitHub task/review/comment changes) with optional low-frequency scheduler backstop.
+  - Local and cloud execution parity is required: the same worker codepath/container entrypoint runs locally and in Cloud Run Jobs, with environment-specific behavior limited to config/adapters.
   - One worker-job deployment per target repository, configured through environment variables (`WORKER_ID`, `TARGET_REPO`, limits, credential refs).
   - Worker state model is GitHub issue/PR driven (`ai:ready`, `ai:in-progress`, `ai:ready-for-review`, `ai:rework-requested`, `ai:failed`, `worker:<id>`).
+  - Outstanding-review cap behavior is mode-specific:
+    - local mode waits and polls again when cap is reached
+    - cloud mode exits and waits for next wake-up
   - Worker output path: branch + draft PR; review feedback can trigger rework on the same PR branch; merge requires standard human review and required CI checks.
+  - Runtime parity reference: `ops/ai-worker-local-cloud-parity.md`.
 - CD operating model: Pipeline-driven (GitHub Actions + Helm).
 - Container artifact registry: Google Artifact Registry.
 - Secrets management: Google Secret Manager + External Secrets Operator.
@@ -422,14 +429,20 @@
   - Convert approved GitHub tasks into code changes automatically while preserving human control at review/merge.
 - Runtime model:
   - A dedicated `platform-ai-workers` repo produces a worker container.
-  - Cloud Scheduler triggers Cloud Run Jobs on a cadence.
-  - GitHub event workflows can execute Cloud Run Jobs on-demand for immediate runs (task-ready and rework events).
+  - The same worker container and runtime entrypoint must run locally and in Cloud Run Jobs.
+  - Environment-specific differences are implemented as lifecycle/trigger/credentials adapters, not separate worker logic.
+  - Both local and cloud execute the same GitHub poll loop (ready tasks + rework tasks selection).
+  - Local mode runs continuously and sleeps between polls.
+  - Cloud mode runs bounded jobs that exit on no-work, outstanding-review-cap reached, or timeout.
+  - GitHub event workflows execute Cloud Run Jobs on-demand as wake-up triggers (task-ready and rework events).
+  - Optional low-frequency Cloud Scheduler runs can be kept as recovery backstop.
   - Each deployed job is a worker lane bound to one target repository via environment configuration.
 - Required runtime configuration per worker-job deployment:
+  - `WORKER_RUNTIME_MODE` (`local` or `cloud`)
   - `WORKER_ID`
   - `TARGET_REPO`
   - `MAX_PENDING_REVIEW`
-  - `POLL_WINDOW` (or equivalent cadence/selection window)
+  - `POLL_INTERVAL` (or equivalent cadence/selection window)
   - Secret references for GitHub credentials and agent credentials/config.
 - Task state machine baseline:
   - Select tasks by labels: `ai:ready` + `worker:<id>`.
@@ -444,7 +457,8 @@
   - No direct writes to protected branches.
 - Bootstrap priority:
   - Implement this automation stack early (immediately after foundational decisions and minimal infra bootstrap) so subsequent platform tasks can be accelerated by agents.
-  - Minimal infra prerequisites: Cloud Run Jobs, Cloud Scheduler, Secret Manager credential wiring, least-privilege IAM, and on-demand execute permissions for GitHub event workflows.
+  - Minimal infra prerequisites: Cloud Run Jobs, Secret Manager credential wiring, least-privilege IAM, and on-demand execute permissions for GitHub event workflows (optional scheduler backstop).
+  - Local/cloud parity requirements and validation flow are defined in `ops/ai-worker-local-cloud-parity.md`.
 
 ## 18. Living Change Log
 - v0.1 (2026-02-17): Initial high-level draft.
@@ -496,5 +510,7 @@
 - v1.37 (2026-02-28): Added GKE credit guardrail: maintain a single Autopilot cluster during baseline (RC), deferring prod cluster provisioning until production cutover.
 - v1.38 (2026-02-28): Added ephemeral GKE cluster lifecycle requirements artifact (`ops/ephemeral-gke-cluster-lifecycle-requirements.md`) for create/destroy/recover workflows.
 - v1.39 (2026-02-28): Deferred external edge provider decision (Cloudflare-like overlay vs GCP-native edge only) to Phase 8 hardening review, while keeping baseline on GCP-native edge stack.
+- v1.40 (2026-02-28): Added AI worker local/cloud runtime parity requirement (same codepath/container entrypoint) and linked operational spec `ops/ai-worker-local-cloud-parity.md`.
+- v1.41 (2026-02-28): Locked AI worker control-loop model to shared poll logic across local/cloud, with local continuous polling and cloud bounded wake-up executions.
 
 
