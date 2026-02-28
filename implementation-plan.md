@@ -34,7 +34,7 @@ Objective:
 - Deliver a fully operational platform slice from commit to running workloads, with minimal domain logic, so it can be reused as a blueprint.
 
 Target repositories (polyrepo):
-- `platform-contracts`: protobuf APIs, Buf config, generated artifact policy.
+- `platform-contracts`: protobuf APIs, Buf config, generated artifact policy, and versioned TypeScript client package publishing to GitHub Packages.
 - `backend-api`: Go API service (`net/http` + `connect-go`) with Auth0 validation and Cloud SQL connectivity.
 - `backend-worker`: Go worker service with scheduled/no-op job loop and shared platform libraries.
 - `platform-ai-workers`: AI task-to-code worker runtime (Cloud Run Jobs with scheduled + event-driven triggers) that converts GitHub tasks into draft PRs with human review gates.
@@ -170,6 +170,7 @@ For each decision capture:
 - Define per-target-repo worker deployment config model (`WORKER_ID`, `TARGET_REPO`, limits, credential refs).
 - Define event-trigger rules for AI runs (`ai:ready`, PR `changes requested`, `/ai rework`) and idempotent rework behavior tied to review/comment ids.
 - Define Cloud SQL instance topology and connectivity model for RC/prod.
+- Apply GKE cost guardrail: keep one active Autopilot cluster during baseline (RC) and gate prod cluster provisioning until explicit production cutover.
 - Apply `us-east4` as the primary region baseline for RC/prod infrastructure components.
 - Define RC isolation model implementation details (namespaces, DB boundaries, secret namespaces, and domain layout).
 - Define Google Secret Manager namespace/secret naming and ESO sync mappings for all services.
@@ -179,6 +180,8 @@ For each decision capture:
 - Define proto package/versioning conventions and set up Buf generation pipeline.
   - Create `buf.yaml`, `buf.gen.yaml`, and conventions doc in contracts repo template.
   - Keep baseline workflow on Buf CLI in local/CI (no paid BSR dependency).
+  - Define TypeScript contract package metadata (`name`, scope, versioning) and publish path to GitHub Packages.
+- Define GitHub Packages npm auth model (`.npmrc` scoped registry, CI publish/install permissions) for contract package producer/consumers.
 - Define webhook payload contract and auth scheme for alert-to-AI service.
   - Specification artifact: `ops/alert-ai-webhook-spec.md`.
 - Establish dedicated docs/ADR repository and migrate shared architecture decision records there.
@@ -236,3 +239,5 @@ For each decision capture:
 - v2.26 (2026-02-28): Locked baseline provider tiers to free plans for Grafana Cloud, Sentry, incident.io, and SonarQube Cloud.
 - v2.27 (2026-02-28): Added a single telemetry budget profile control (`OBS_TELEMETRY_PROFILE`) for adjustable trace/log/metric ingestion under tier limits.
 - v2.28 (2026-02-28): Added observability ops specification artifact `ops/observability-telemetry-budget-profile.md` and linked Phase 3 implementation references.
+- v2.29 (2026-02-28): Locked `platform-contracts` TypeScript client package publishing to GitHub Packages and added producer/consumer setup tasks.
+- v2.30 (2026-02-28): Added GKE credit guardrail to keep one active Autopilot cluster during baseline and defer prod cluster provisioning until production cutover.

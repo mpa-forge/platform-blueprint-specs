@@ -9,9 +9,19 @@ Lock all foundational platform decisions, accounts, access, and governance neede
 Owner: Human  
 Type: Repo setup  
 Dependencies: None  
-Action: Create the dedicated docs repository first (required), and optionally create placeholder repos (`frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`) so ownership/governance can be recorded against real repositories.  
+Action: Perform a minimal repository bootstrap to establish stable repository identities for Phase 0 governance artifacts. Create the dedicated docs repository first (required), and optionally create lightweight placeholder repos (`frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`) so ownership/decision documents can reference real repos/URLs. This task is identity/bootstrap only and is not the authoritative repo provisioning step.  
 Output: Repository bootstrap evidence (URLs/IDs).  
-Done when: Dedicated docs repo exists and is writable; optional placeholder repos exist if chosen.
+Done when: Dedicated docs repo exists and is writable; optional placeholder repos exist if chosen; Phase 1 remains the authoritative step for full repo provisioning and protection policy enforcement.
+Execution checklist:
+- Create the dedicated docs repo and confirm write access.
+- Optionally create placeholder repos with final intended names.
+- Record bootstrap evidence: repo name, URL, repo ID, owner/maintainer.
+- Mark each repo as `placeholder` or `finalized`.
+- Ensure Phase 0 governance artifacts can reference these repositories.
+Out of scope for P0-T00 (handled in P1-T01):
+- Full branch protection policy rollout.
+- Required CI checks and enforcement settings.
+- Full repository scaffolding and implementation initialization.
 
 ### P0-T01: Create decision register and ADR template
 Owner: Agent  
@@ -41,7 +51,7 @@ Done when: All required providers are accessible by the core team.
 Owner: Human  
 Type: Decision  
 Dependencies: P0-T03  
-Action: Confirm environment model (`local`, `rc`, `prod`), lock primary region to `us-east4` for `rc` and `prod`, and document prod full separation plus RC isolation boundaries (namespace, DB boundary, secret scope, domain).  
+Action: Confirm environment model (`local`, `rc`, `prod`), lock primary region to `us-east4` for `rc` and `prod`, document prod full separation plus RC isolation boundaries (namespace, DB boundary, secret scope, domain), and lock GKE cost guardrail to one active Autopilot cluster during baseline (RC) with prod cluster provisioning deferred until explicit production cutover.  
 Output: `docs/standards/environment-and-region.md`.  
 Done when: Names/regions are fixed and reused consistently in infra and CI.
 

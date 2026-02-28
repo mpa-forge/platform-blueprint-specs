@@ -39,6 +39,7 @@
   - Migrations: golang-migrate
 - Contract toolchain: Buf CLI (`buf lint`, `buf breaking`, CLI-based code generation in local/CI; no paid BSR dependency in baseline).
 - Frontend contract client: Connect ES generated TypeScript clients and types.
+  - Distribution: published as a versioned npm package from `platform-contracts` to GitHub Packages (`npm.pkg.github.com`).
 - Database: PostgreSQL 16.
 - Database hosting: Cloud SQL for PostgreSQL (managed).
 - Queue/Broker: Deferred until business requirements define delivery semantics.
@@ -120,6 +121,7 @@
 ## 10. Locked Decisions (Current)
 - Cloud provider and Kubernetes: GCP + GKE.
 - GKE cluster mode: Autopilot.
+- GKE cost-control baseline: keep a single Autopilot cluster during baseline implementation (RC only) to preserve available GKE credit; defer prod cluster provisioning until explicit production cutover.
 - Repository strategy: Polyrepo.
 - Ingress: NGINX Ingress Controller.
 - Queue/broker: Deferred until product requirements demand it.
@@ -164,6 +166,7 @@
 - Environment model: Local + RC + prod.
 - Environment separation: prod fully separate from RC; RC enforces strict internal isolation boundaries.
 - GCP project separation: `rc` and `prod` run in separate projects.
+- Cluster-count guardrail: no extra/non-essential clusters; baseline target is one active GKE Autopilot cluster until prod is explicitly enabled.
 - API ingress routing model: Single domain with path-based routing.
 - TLS certificate management default: Managed certificates.
 - Production deployment timing: On-demand with required approvals.
@@ -175,6 +178,8 @@
   - Worker heartbeat/no-op run is observed for deployed release.
   - Deployed image tag/digest matches release being promoted.
 - Contract generation artifacts: Committed to git.
+- Frontend contract package distribution baseline: generated TypeScript client published from `platform-contracts` to GitHub Packages and consumed as a pinned npm dependency.
+- Frontend contract package registry baseline: GitHub Packages npm registry (`npm.pkg.github.com`).
 - Buf operating mode baseline: CLI-only in local/CI (no paid BSR dependency for the initial platform slice).
 - Code quality provider tier baseline: SonarQube Cloud Free.
 - Baseline frontend token handling pattern: Direct SPA bearer tokens (BFF deferred).
@@ -313,12 +318,17 @@
   - Generated artifacts:
     - Go: `connect-go` handlers/clients + protobuf messages.
     - TypeScript: Connect ES clients/types.
+  - TypeScript package publishing:
+    - `platform-contracts` releases a versioned npm package to GitHub Packages (`npm.pkg.github.com`).
+    - package naming follows org scope (for example `@<org>/platform-contracts-client`).
+    - consuming repos (for example `frontend-web`) install/pin released versions and configure scoped `.npmrc` auth.
   - CI gates:
     - `buf lint`
     - `buf breaking` against main branch
     - generated-code drift check (fail if `git diff` after generation).
   - Contract releases:
     - Tag contract repo semantically (`contracts-vX.Y.Z`).
+    - Release workflow publishes the TypeScript client package for the same version.
     - App repos pin generated client/server dependencies to released versions.
 
 ## 14. Observability Architecture Baseline
@@ -476,5 +486,7 @@
 - v1.33 (2026-02-28): Locked baseline provider tiers to free plans for Grafana Cloud, Sentry, incident.io, and SonarQube Cloud.
 - v1.34 (2026-02-28): Added a single telemetry budget profile control (`OBS_TELEMETRY_PROFILE`) to tune trace/log/metric ingestion under tier limits.
 - v1.35 (2026-02-28): Added observability ops specification artifact `ops/observability-telemetry-budget-profile.md` and linked profile/cardinality operational requirements.
+- v1.36 (2026-02-28): Locked `platform-contracts` TypeScript client distribution to GitHub Packages with versioned npm releases consumed by frontend.
+- v1.37 (2026-02-28): Added GKE credit guardrail: maintain a single Autopilot cluster during baseline (RC), deferring prod cluster provisioning until production cutover.
 
 

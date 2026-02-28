@@ -33,9 +33,9 @@ Done when: Network resources apply cleanly and are consumable by cluster/DB modu
 Owner: Agent  
 Type: IaC coding  
 Dependencies: P5-T03  
-Action: Provision Autopilot cluster, workload identity config, node/network policies as baseline.  
+Action: Provision Autopilot cluster module with workload identity config and node/network policies as baseline; enforce baseline cost guardrail so only RC cluster is active initially, with prod cluster creation behind an explicit production enable flag/gate.  
 Output: Cluster module and environment bindings.  
-Done when: Cluster is reachable and ready for namespace/workload deployment.
+Done when: RC cluster is reachable and ready for namespace/workload deployment, and prod cluster provisioning is safely gated for later cutover.
 
 ### P5-T05: Implement GAR module and IAM bindings
 Owner: Agent  
@@ -73,7 +73,7 @@ Done when: At least one worker-job deployment can be created per environment and
 Owner: Agent  
 Type: IaC coding  
 Dependencies: P5-T03..P5-T08  
-Action: Create per-environment root stack composition and parameter files with minimal drift, while enforcing prod full separation and RC internal isolation boundaries; keep environment selection explicit by root path, not Terraform workspace.  
+Action: Create per-environment root stack composition and parameter files with minimal drift, while enforcing prod full separation and RC internal isolation boundaries; keep environment selection explicit by root path, not Terraform workspace; include explicit gating variable(s) so baseline provisions only one active RC cluster until prod enable decision.  
 Output: Environment-specific IaC layers.  
 Done when: `terraform plan` works for all environments from their dedicated root paths.
 

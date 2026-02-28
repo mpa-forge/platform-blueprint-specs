@@ -25,9 +25,9 @@ Done when: Contract represents one protected endpoint used by frontend and API.
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T02  
-Action: Generate `connect-go` and Connect ES clients/types; add reproducible generation scripts and commit generated artifacts to git.  
-Output: Generated code artifacts and generation command docs.  
-Done when: Regeneration produces zero drift after clean checkout.
+Action: Generate `connect-go` and Connect ES clients/types; add reproducible generation scripts and commit generated artifacts to git; add npm package metadata in `platform-contracts` for the generated TypeScript client intended for GitHub Packages publishing.  
+Output: Generated code artifacts, package metadata, and generation command docs.  
+Done when: Regeneration produces zero drift after clean checkout and package metadata is version-ready.
 
 ### P2-T04: Implement API runtime skeleton (`net/http` + `connect-go`)
 Owner: Agent  
@@ -81,7 +81,7 @@ Done when: Endpoint returns placeholder data from Postgres, not static in-memory
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T03, P2-T06  
-Action: Use generated client in authenticated page call to API with bearer token flow.  
+Action: Use generated client in authenticated page call to API with bearer token flow; structure consumption so it can switch from local/workspace source to versioned GitHub Packages dependency without code changes.  
 Output: Frontend-to-API typed integration.  
 Done when: Frontend protected page renders data from protected API call.
 
@@ -89,9 +89,9 @@ Done when: Frontend protected page renders data from protected API call.
 Owner: Agent  
 Type: Documentation/CI  
 Dependencies: P2-T01..P2-T03  
-Action: Document release/tag policy for contracts and dependency pinning in consuming repos.  
+Action: Document release/tag policy for contracts, GitHub Packages npm publish conventions for the TypeScript client (`npm.pkg.github.com`, package scope/name, semver alignment with `contracts-vX.Y.Z` tags), and dependency pinning in consuming repos.  
 Output: Versioning policy and release checklist.  
-Done when: Teams can publish and consume a tagged contract release.
+Done when: Teams can publish and consume a tagged contract release and have a clear package publish/install contract.
 
 ### P2-T12: End-to-end local validation
 Owner: Human  
@@ -105,6 +105,7 @@ Done when: Baseline protected request works end-to-end locally.
 - `buf.yaml`, `buf.gen.yaml`, generation scripts
 - v1 protobuf definitions
 - generated Go and TS clients
+- TypeScript client package metadata and GitHub Packages publish conventions
 - API runtime skeleton and auth middleware
 - Auth0 tenant/application config docs
 - worker skeleton runtime

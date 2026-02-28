@@ -9,9 +9,9 @@ Establish runnable local repositories and developer workflows that mirror the cl
 Owner: Human  
 Type: Repo setup  
 Dependencies: Phase 0 sign-off  
-Action: Create `frontend-web`, `backend-api`, dedicated `backend-worker`, dedicated `platform-ai-workers`, `platform-contracts`, `platform-infra`; configure protected `main` branch with required checks and single-maintainer-compatible review rules (AI-generated PRs require human review).  
+Action: Authoritatively provision the working repositories (`frontend-web`, `backend-api`, dedicated `backend-worker`, dedicated `platform-ai-workers`, `platform-contracts`, `platform-infra`) by creating any missing repos and converting Phase 0 placeholders into finalized repos; configure protected `main` branch with required checks and single-maintainer-compatible review rules (AI-generated PRs require human review).  
 Output: Repositories created with baseline settings.  
-Done when: All repos are accessible and protected policies are active.
+Done when: All repos exist as finalized working repos, are accessible, and protected policies are active.
 
 ### P1-T02: Scaffold repo directory structures and baseline READMEs
 Owner: Agent  

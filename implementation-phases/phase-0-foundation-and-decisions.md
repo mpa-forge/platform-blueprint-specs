@@ -4,6 +4,7 @@ Detailed tasks: `implementation-phase-tasks/phase-0-foundation-and-decisions-tas
 
 - Confirmed: GCP + GKE as target platform.
 - Confirmed: GKE Autopilot cluster mode.
+- Confirmed: Cost guardrail keeps a single active GKE Autopilot cluster during baseline (RC), with prod cluster provisioning deferred until production cutover.
 - Confirmed: Polyrepo strategy (frontend and backend separated, with additional backend repos as needed).
 - Confirmed: NGINX Ingress for portability.
 - Deferred: queue/broker choice until product requirements justify it.
@@ -12,6 +13,7 @@ Detailed tasks: `implementation-phase-tasks/phase-0-foundation-and-decisions-tas
   - Tier locked: Grafana Cloud Free (baseline).
 - Confirmed: Proto-first contracts with Connect for browser compatibility.
 - Confirmed: Native Go `net/http` runtime with `connect-go` handlers.
+- Confirmed: `platform-contracts` publishes generated TypeScript API client packages to GitHub Packages for frontend consumption.
 - Confirmed: Sentry for error tracking.
   - Tier locked: Sentry Developer (Free).
 - Confirmed: incident.io for incident response workflow.

@@ -117,6 +117,14 @@ Action: Add GitHub Actions workflows that trigger on task-ready and review-feedb
 Output: Event-driven trigger workflows and runbook referencing `ops/ai-comment-trigger-cloud-run-jobs.md`.  
 Done when: A review comment can trigger one deterministic rework run without waiting for the scheduler cadence.
 
+### P4-T14: Implement `platform-contracts` TypeScript package publish workflow
+Owner: Agent  
+Type: CI release automation  
+Dependencies: P4-T01, P4-T03, Phase 2 contracts baseline  
+Action: Add release workflow in `platform-contracts` that runs on contract release tags, verifies generation/lint/breaking gates, and publishes the generated TypeScript client package to GitHub Packages (`npm.pkg.github.com`) with scoped package naming and semver alignment to contract tags.  
+Output: Automated contracts package publish pipeline and release runbook.  
+Done when: Creating a release tag publishes a versioned TypeScript client package and `frontend-web` can install that version from GitHub Packages.
+
 ## Artifacts Checklist
 - Workflow templates and repo CI YAMLs
 - Contract check jobs
@@ -129,3 +137,4 @@ Done when: A review comment can trigger one deterministic rework run without wai
 - AI-generated PR governance policy evidence
 - event-driven AI worker trigger workflow definitions
 - `ops/ai-comment-trigger-cloud-run-jobs.md` implementation reference
+- contracts TypeScript package publish workflow definitions

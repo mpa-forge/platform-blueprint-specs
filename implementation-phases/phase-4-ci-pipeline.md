@@ -6,6 +6,7 @@ Detailed tasks: `implementation-phase-tasks/phase-4-ci-pipeline-tasks.md`
   - lint + unit tests
   - `buf lint` and `buf breaking`
   - contract/proto generation checks (fail if generated code is stale)
+  - contracts TypeScript client package publish workflow (release tags -> GitHub Packages)
   - container image builds
   - push signed/immutable-tagged images to Google Artifact Registry
   - authenticate CI to GCP via Workload Identity Federation (no static keys)
@@ -38,6 +39,7 @@ Detailed tasks: `implementation-phase-tasks/phase-4-ci-pipeline-tasks.md`
 Exit criteria:
 - PRs blocked unless CI passes.
 - Image artifacts generated with immutable tags and published to Google Artifact Registry.
+- Contract TypeScript client package can be published from `platform-contracts` to GitHub Packages on release tags.
 
 ## Open Questions / Choices To Clarify Later
 - None currently.

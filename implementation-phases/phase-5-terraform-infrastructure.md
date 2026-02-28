@@ -11,6 +11,7 @@ Detailed tasks: `implementation-phase-tasks/phase-5-terraform-infrastructure-tas
   - Cloud Run Jobs + Cloud Scheduler + IAM for AI task-to-code workers, including on-demand execution permissions for event-trigger workflows
   - observability dependencies (as needed)
 - Create env stacks (`rc`, `prod`) with separate project-level isolation for prod.
+- Apply cluster-count cost guardrail: one active GKE Autopilot cluster during baseline (RC), with prod cluster resources gated/deferred until explicit production cutover.
 - Enforce one Terraform root per environment (`rc`, `prod`) with shared modules.
 - Do not use Terraform workspaces for environment isolation/switching.
 - Add remote state and locking.

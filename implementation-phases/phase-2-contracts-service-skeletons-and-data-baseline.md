@@ -13,6 +13,7 @@ Detailed tasks: `implementation-phase-tasks/phase-2-contracts-service-skeletons-
 - Generate:
   - Go service stubs/handlers and message types.
   - TypeScript frontend clients/types via Connect ES.
+  - Package generated TypeScript client with npm metadata for GitHub Packages publishing.
   - Commit generated artifacts to git as part of normal development flow.
 - Implement Go API skeleton:
   - Native `net/http` server, health/readiness, config loading, structured logging, auth middleware scaffold.
@@ -32,6 +33,7 @@ Exit criteria:
 - Worker process runs scheduled or triggered no-op jobs with health/readiness.
 - At least one protected API endpoint validates JWT and enforces one role-based policy.
 - Frontend consumes at least one generated TypeScript client from protobuf definitions (no manual DTO drift).
+- Contract repo includes TypeScript package metadata and release conventions for GitHub Packages distribution.
 - Contract repo includes documented versioning policy and release tags consumed by app repos.
 
 ## Open Questions / Choices To Clarify Later
