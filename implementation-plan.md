@@ -158,6 +158,8 @@ For each decision capture:
 ## 7. Immediate Next Iteration
 - Define Auth0 tenant/app configuration for local, RC, and prod environments.
 - Define Grafana Cloud org/stack setup and telemetry credentials for local, RC, and prod.
+- Define a single observability ingestion control (`OBS_TELEMETRY_PROFILE`) and implement collector/alloy mappings for traces/logs/metrics (`balanced`/`cost`/`debug`) to manage free-tier caps.
+  - Specification artifact: `ops/observability-telemetry-budget-profile.md`.
 - Define Sentry Developer (Free) and incident.io Basic (Free) projects/workspaces and API credentials.
 - Define GitHub Actions environments/secrets and GCP Workload Identity Federation for CI auth.
 - Define GitHub Issues/Projects task-management workflow baseline (issue templates, labels, board states, automation) across repos.
@@ -232,3 +234,5 @@ For each decision capture:
 - v2.24 (2026-02-22): Added hybrid AI worker trigger model (scheduled + event-driven) and review-feedback rework workflow requirements.
 - v2.25 (2026-02-28): Locked contracts workflow to Buf CLI-only in local/CI with no paid BSR dependency for baseline.
 - v2.26 (2026-02-28): Locked baseline provider tiers to free plans for Grafana Cloud, Sentry, incident.io, and SonarQube Cloud.
+- v2.27 (2026-02-28): Added a single telemetry budget profile control (`OBS_TELEMETRY_PROFILE`) for adjustable trace/log/metric ingestion under tier limits.
+- v2.28 (2026-02-28): Added observability ops specification artifact `ops/observability-telemetry-budget-profile.md` and linked Phase 3 implementation references.

@@ -41,9 +41,9 @@ Done when: Worker loop activity is visible in traces and dashboard metrics.
 Owner: Agent  
 Type: Deployment/config  
 Dependencies: P3-T01  
-Action: Configure collector gateway receivers/processors/exporters for OTLP traces, metrics scrape forwarding, and log shipping before forwarding to Grafana Cloud; implement initial trace sampling policy (`rc` 25%, `prod` 5%) and force-sample rules for errors, high-latency traces (>1s initial threshold), and explicit debug/incident traffic.  
-Output: Collector/alloy deployment manifests.  
-Done when: Logs/metrics/traces arrive in Grafana Cloud with expected labels.
+Action: Configure collector gateway receivers/processors/exporters for OTLP traces, metrics scrape forwarding, and log shipping before forwarding to Grafana Cloud; implement initial trace sampling policy (`rc` 25%, `prod` 5%) and force-sample rules for errors, high-latency traces (>1s initial threshold), and explicit debug/incident traffic; add centralized `OBS_TELEMETRY_PROFILE` mapping (`balanced`/`cost`/`debug`) to adjust trace sampling, log sampling/drop rules, and metric cardinality/drop filters from one config toggle, aligned with `ops/observability-telemetry-budget-profile.md`.  
+Output: Collector/alloy deployment manifests and profile mapping aligned with `ops/observability-telemetry-budget-profile.md`.  
+Done when: Logs/metrics/traces arrive in Grafana Cloud with expected labels and profile-based ingestion controls can be changed without code changes.
 
 ### P3-T06: Build baseline dashboards from code
 Owner: Agent  
@@ -101,10 +101,20 @@ Action: Trigger synthetic load/errors and verify dashboard, alerts, incident rou
 Output: Test report and remediation list.  
 Done when: All phase 3 exit criteria are objectively validated.
 
+### P3-T13: Validate telemetry budget profile controls and runbook
+Owner: Human + Agent  
+Type: Validation + operations documentation  
+Dependencies: P3-T05, P3-T06, P3-T12  
+Action: Execute controlled toggles of `OBS_TELEMETRY_PROFILE` (`balanced` -> `cost` -> `balanced`, optional `debug` window), validate expected ingestion-volume changes for traces/logs/metrics, and document safe operating thresholds plus rollback steps for free-tier cap protection.  
+Output: `docs/operations/telemetry-budget-profile-runbook.md`, validation evidence, and conformance notes to `ops/observability-telemetry-budget-profile.md`.  
+Done when: Operators can adjust telemetry ingestion within one config change, observe impact in dashboards, and revert safely.
+
 ## Artifacts Checklist
 - Grafana Cloud stack/token inventory
 - OTel instrumentation PRs for API and worker
 - collector/alloy configs
+- `OBS_TELEMETRY_PROFILE` mapping config and runbook
+- `ops/observability-telemetry-budget-profile.md` conformance evidence
 - dashboard definitions as code
 - alert rules and routing policies
 - Sentry integration evidence

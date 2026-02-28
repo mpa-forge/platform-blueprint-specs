@@ -1,6 +1,7 @@
 # Phase 3: Observability & Operability Baseline
 
 Detailed tasks: `implementation-phase-tasks/phase-3-observability-and-operability-baseline-tasks.md`
+Specification artifact: `ops/observability-telemetry-budget-profile.md`
 
 - Instrument API and worker with OpenTelemetry.
 - Route telemetry through a cluster-level collector gateway (Grafana Alloy / OTel Collector baseline).
@@ -10,6 +11,7 @@ Detailed tasks: `implementation-phase-tasks/phase-3-observability-and-operabilit
   - `rc`: 25% baseline trace sampling.
   - `prod`: 5% baseline trace sampling.
   - Force sample 100% for error traces, high-latency traces (>1s initial threshold), and explicit debug/incident traffic.
+- Implement one centrally changeable telemetry budget profile (`OBS_TELEMETRY_PROFILE`) at collector/alloy level to control traces/logs/metrics ingestion and stay within tier caps.
 - Configure Grafana Cloud dashboards (golden signals + service deep-dive views).
 - Set up log shipping via Grafana Alloy to Grafana Cloud Logs.
 - Define ingestion/cardinality guardrails and retention budgets per environment.
@@ -32,12 +34,14 @@ Exit criteria:
 - Traces visible end-to-end for one synthetic flow.
 - Dashboard and at least 3 actionable alerts active.
 - Alert-to-AI flow produces deterministic, testable incident summaries from synthetic alerts.
+- Telemetry budget profile can be toggled (`balanced`/`cost`/`debug`) through configuration only, and the effect is visible in ingestion volume dashboards.
 
 Phase 3 checklist:
 - Provision Grafana Cloud org/stack and service accounts.
 - Create and store telemetry/API tokens in secret manager.
 - Configure OTEL env vars in API/worker deployments.
 - Deploy collector/alloy config and verify ingest for logs/metrics/traces.
+- Verify `OBS_TELEMETRY_PROFILE` toggle path and ingestion impact without application redeploy.
 - Provision baseline dashboards from code (JSON or Terraform provider).
 - Create alert routing and webhook endpoint with signature validation.
 - Run synthetic observability test suite and record evidence.

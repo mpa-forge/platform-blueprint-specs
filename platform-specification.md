@@ -184,6 +184,15 @@
   - `rc`: 25%
   - `prod`: 5%
   - Force sample 100% for error/high-latency (>1s initial threshold)/debug-incident traces.
+- Telemetry budget control baseline:
+  - Use one centrally managed profile value `OBS_TELEMETRY_PROFILE` to tune telemetry ingestion by environment without code changes.
+  - Profile is applied in the collector/alloy layer and maps to per-signal controls:
+    - traces: sampling rates and force-sample exceptions
+    - logs: sampling/drop rules by severity/category
+    - metrics: cardinality/drop filters and scrape/forwarding budgets
+  - Default profile is `balanced` and must preserve baseline trace policy (`rc` 25%, `prod` 5%).
+  - Alternative profiles (for example `cost` and `debug`) are runbook-controlled and can be dialed up/down to stay under free-tier caps.
+  - Detailed operational specification: `ops/observability-telemetry-budget-profile.md`.
 - Alert incident policy baseline:
   - Auto-open incidents for `P1`.
   - Notify-only for `P2/P3/P4` by default.
@@ -324,6 +333,13 @@
   - OpenTelemetry SDK in services exports spans to a cluster-level OTEL collector/gateway.
   - Collector forwards spans to Grafana Cloud Traces (Tempo-managed).
   - Sampling baseline starts at `rc` 25% / `prod` 5%, with force-sample rules for errors, high latency, and debug/incident traces.
+- Telemetry budget profile:
+  - A single runtime value `OBS_TELEMETRY_PROFILE` controls collector-side ingestion behavior across traces/logs/metrics.
+  - `balanced` profile is default and aligns to baseline sampling/cardinality policy.
+  - `cost` profile reduces ingestion aggressiveness to protect free-tier limits.
+  - `debug` profile increases signal detail for short, operator-approved windows.
+  - Profile changes are operational toggles (Helm values/env/config), not application code changes.
+  - Source cardinality requirements and profile operations are defined in `ops/observability-telemetry-budget-profile.md`.
 - Errors:
   - Sentry is used for frontend and backend exception/error aggregation.
 - Incident response:
@@ -369,6 +385,8 @@
   - Configure traces pipeline: OTLP receiver -> processors (batch/redaction/sampling) -> Grafana Cloud Traces.
   - Configure metrics pipeline: Prometheus scrape and/or OTLP metrics -> Grafana Cloud Metrics.
   - Configure logs pipeline: Kubernetes/container logs -> parsing/labels -> Grafana Cloud Logs.
+  - Implement `OBS_TELEMETRY_PROFILE` mapping in collector/alloy config and expose the selected profile as a dashboard/runbook-visible setting.
+  - Follow `ops/observability-telemetry-budget-profile.md` for profile semantics, threshold actions, and emergency change path.
 - Dashboards and alerts:
   - Import/create baseline dashboards for API, worker, ingress, and Postgres.
   - Create SLO-adjacent alerts (availability, latency, error-rate, saturation).
@@ -456,5 +474,7 @@
 - v1.31 (2026-02-22): Added hybrid AI worker trigger model (scheduled + event-driven) and review-feedback rework loop updating the same draft PR.
 - v1.32 (2026-02-28): Locked Buf usage mode to CLI-only in local/CI with no paid BSR dependency for baseline.
 - v1.33 (2026-02-28): Locked baseline provider tiers to free plans for Grafana Cloud, Sentry, incident.io, and SonarQube Cloud.
+- v1.34 (2026-02-28): Added a single telemetry budget profile control (`OBS_TELEMETRY_PROFILE`) to tune trace/log/metric ingestion under tier limits.
+- v1.35 (2026-02-28): Added observability ops specification artifact `ops/observability-telemetry-budget-profile.md` and linked profile/cardinality operational requirements.
 
 
