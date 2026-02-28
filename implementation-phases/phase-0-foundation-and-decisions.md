@@ -9,10 +9,13 @@ Detailed tasks: `implementation-phase-tasks/phase-0-foundation-and-decisions-tas
 - Deferred: queue/broker choice until product requirements justify it.
 - Confirmed: Auth0 Free plan for external auth, B2C-first.
 - Confirmed: Grafana Cloud managed observability (metrics, logs, traces, alerting).
+  - Tier locked: Grafana Cloud Free (baseline).
 - Confirmed: Proto-first contracts with Connect for browser compatibility.
 - Confirmed: Native Go `net/http` runtime with `connect-go` handlers.
 - Confirmed: Sentry for error tracking.
+  - Tier locked: Sentry Developer (Free).
 - Confirmed: incident.io for incident response workflow.
+  - Tier locked: incident.io Basic (Free).
 - Confirmed: GitHub Actions for CI/CD.
 - Confirmed: GitHub Issues + GitHub Projects as task management platform.
 - Confirmed: Single cross-repo project board workflow with standardized issue types, labels, states, and automation.
@@ -33,6 +36,7 @@ Detailed tasks: `implementation-phase-tasks/phase-0-foundation-and-decisions-tas
 - Confirmed: Authenticated frontend serving path is CDN-first.
 - Confirmed: Queue/broker decision remains deferred until after the first end-to-end baseline implementation is complete.
 - Define naming conventions, branch strategy, semantic versioning.
+- Confirmed: SonarQube Cloud Free as baseline repository quality tier.
 
 Exit criteria:
 - Architecture decisions log created and approved.

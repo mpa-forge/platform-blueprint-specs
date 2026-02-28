@@ -33,7 +33,7 @@ Done when: Every existing repo has at least one human maintainer and documented 
 Owner: Human  
 Type: Account setup  
 Dependencies: None  
-Action: Ensure availability of GCP project(s), Auth0 tenant, Grafana Cloud stack, Sentry org/project, incident.io workspace, and GitHub org under a single ownership model.  
+Action: Ensure availability of GCP project(s), Auth0 tenant, Grafana Cloud stack, Sentry org/project, incident.io workspace, and GitHub org under a single ownership model. Lock baseline provider tiers: Grafana Cloud Free, Sentry Developer (Free), incident.io Basic (Free), and SonarQube Cloud Free.  
 Output: Account inventory with owner and billing account mappings.  
 Done when: All required providers are accessible by the core team.
 

@@ -13,7 +13,7 @@ Detailed tasks: `implementation-phase-tasks/phase-4-ci-pipeline-tasks.md`
 - Code quality/security tooling baseline (recommended defaults):
   - Go quality: `golangci-lint`, `go test`, `go vet`
   - Frontend quality: `eslint`, `tsc --noEmit`, optional `prettier --check`
-  - Repository quality gate: `sonar` (`sonarcloud` free tier where eligible)
+  - Repository quality gate: `sonar` (`SonarQube Cloud` Free tier baseline)
   - Protobuf contracts: `buf lint`, `buf breaking`
   - Secrets scanning: `gitleaks`
   - Dependency + container vulnerability scanning: `trivy` (filesystem + image)

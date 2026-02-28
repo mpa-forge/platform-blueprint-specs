@@ -4,6 +4,7 @@ Detailed tasks: `implementation-phase-tasks/phase-2-contracts-service-skeletons-
 
 - Define protobuf contracts as the single source of truth for browser and internal APIs.
 - Configure Buf workspace/module and generation templates.
+- Keep Buf usage CLI-only in local/CI for baseline (no paid BSR dependency).
 - Implement proto convention baseline:
   - package format `dynamicplaylists.<domain>.v<major>`
   - domain/version folder layout

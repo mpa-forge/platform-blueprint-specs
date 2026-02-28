@@ -5,6 +5,7 @@ Detailed tasks: `implementation-phase-tasks/phase-3-observability-and-operabilit
 - Instrument API and worker with OpenTelemetry.
 - Route telemetry through a cluster-level collector gateway (Grafana Alloy / OTel Collector baseline).
 - Configure telemetry export to Grafana Cloud (OTLP endpoints + API auth).
+- Use free-tier provider baselines in this phase: Grafana Cloud Free, Sentry Developer (Free), incident.io Basic (Free).
 - Apply initial trace sampling policy:
   - `rc`: 25% baseline trace sampling.
   - `prod`: 5% baseline trace sampling.

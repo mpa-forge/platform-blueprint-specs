@@ -76,7 +76,7 @@ Required platform integrations in MVP:
 - Auth: Auth0 (B2C, free plan) wired in frontend and API.
 - Secrets: GSM + ESO for runtime secret sync.
 - Data: Cloud SQL Postgres private connectivity from GKE.
-- Observability: Grafana Cloud (metrics/logs/traces + alert), Sentry, incident.io routing.
+- Observability: Grafana Cloud Free (metrics/logs/traces + alert), Sentry Developer (Free), incident.io Basic (Free) routing.
 - CD: GitHub Actions pipeline-driven deploy with Helm.
 
 Acceptance checklist (Definition of Done for baseline):
@@ -158,10 +158,11 @@ For each decision capture:
 ## 7. Immediate Next Iteration
 - Define Auth0 tenant/app configuration for local, RC, and prod environments.
 - Define Grafana Cloud org/stack setup and telemetry credentials for local, RC, and prod.
-- Define Sentry and incident.io projects/workspaces and API credentials.
+- Define Sentry Developer (Free) and incident.io Basic (Free) projects/workspaces and API credentials.
 - Define GitHub Actions environments/secrets and GCP Workload Identity Federation for CI auth.
 - Define GitHub Issues/Projects task-management workflow baseline (issue templates, labels, board states, automation) across repos.
-- Define and codify CI code-quality/security tooling standards (`golangci-lint`, `eslint`, `tsc`, `sonar`/`sonarcloud`, `trivy`, `gitleaks`, `semgrep/codeql`, IaC checks) with swap criteria.
+- Define and codify CI code-quality/security tooling standards (`golangci-lint`, `eslint`, `tsc`, `sonar`/`SonarQube Cloud`, `trivy`, `gitleaks`, `semgrep/codeql`, IaC checks) with swap criteria.
+  - Lock SonarQube Cloud Free as baseline tier.
 - Define and bootstrap `platform-ai-workers` repo with task-state machine and draft-PR flow (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`).
 - Provision minimal AI worker runtime prerequisites early (Cloud Run Job + Cloud Scheduler + GSM/IAM + on-demand execute permissions) to enable task-to-code automation before full platform completion.
 - Define per-target-repo worker deployment config model (`WORKER_ID`, `TARGET_REPO`, limits, credential refs).
@@ -175,6 +176,7 @@ For each decision capture:
 - Keep queue/broker scope deferred until post-baseline feature implementation requires async messaging.
 - Define proto package/versioning conventions and set up Buf generation pipeline.
   - Create `buf.yaml`, `buf.gen.yaml`, and conventions doc in contracts repo template.
+  - Keep baseline workflow on Buf CLI in local/CI (no paid BSR dependency).
 - Define webhook payload contract and auth scheme for alert-to-AI service.
   - Specification artifact: `ops/alert-ai-webhook-spec.md`.
 - Establish dedicated docs/ADR repository and migrate shared architecture decision records there.
@@ -228,3 +230,5 @@ For each decision capture:
 - v2.22 (2026-02-22): Added explicit CI code-quality/security tooling integration plan with approved alternatives and migration criteria.
 - v2.23 (2026-02-22): Added Sonar (`SonarCloud` free-tier path where eligible) to the CI quality baseline and near-term rollout tasks.
 - v2.24 (2026-02-22): Added hybrid AI worker trigger model (scheduled + event-driven) and review-feedback rework workflow requirements.
+- v2.25 (2026-02-28): Locked contracts workflow to Buf CLI-only in local/CI with no paid BSR dependency for baseline.
+- v2.26 (2026-02-28): Locked baseline provider tiers to free plans for Grafana Cloud, Sentry, incident.io, and SonarQube Cloud.

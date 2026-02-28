@@ -9,9 +9,9 @@ Implement the contract-first service baseline with authenticated API access, wor
 Owner: Agent  
 Type: Coding  
 Dependencies: Phase 1 complete  
-Action: Add `buf.yaml`, `buf.gen.yaml`, lint/breaking rules, module naming, and README.  
+Action: Add `buf.yaml`, `buf.gen.yaml`, lint/breaking rules, module naming, and README; standardize on Buf CLI execution in local/CI and avoid paid BSR dependencies in baseline.  
 Output: Contract repo with enforceable policy.  
-Done when: `buf lint` and `buf breaking` pass locally.
+Done when: `buf lint` and `buf breaking` pass locally and in CI with no dependency on paid Buf features.
 
 ### P2-T02: Define v1 protobuf service and messages
 Owner: Agent  

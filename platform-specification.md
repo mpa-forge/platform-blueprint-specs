@@ -37,7 +37,7 @@
   - Config: viper/envconfig + explicit env schema
   - Persistence: pgx + sqlc (typed queries)
   - Migrations: golang-migrate
-- Contract toolchain: Buf (`buf lint`, `buf breaking`, managed code generation).
+- Contract toolchain: Buf CLI (`buf lint`, `buf breaking`, CLI-based code generation in local/CI; no paid BSR dependency in baseline).
 - Frontend contract client: Connect ES generated TypeScript clients and types.
 - Database: PostgreSQL 16.
 - Database hosting: Cloud SQL for PostgreSQL (managed).
@@ -49,7 +49,7 @@
 - CI/CD: GitHub Actions.
 - CI quality/security tooling baseline:
   - Quality: `golangci-lint`, `go test`, `go vet`, `eslint`, `tsc --noEmit`, `buf lint`, `buf breaking`
-  - Repository quality gate: `sonar` (`sonarcloud` free tier where eligible)
+  - Repository quality gate: `sonar` (`SonarQube Cloud` Free tier baseline)
   - Security: `trivy` (dependency + image scanning), `gitleaks` (secret scanning), `semgrep` (or `codeql`) for SAST
   - IaC quality/security: `terraform fmt/validate`, `tflint` (optional `tfsec`/`checkov`)
   - Supply chain (hardening phase): `syft` + `cosign`
@@ -67,6 +67,7 @@
   - Dashboards: Grafana Cloud (locked)
   - Traces: Grafana Cloud Traces / Tempo (managed)
   - Logs: Grafana Cloud Logs / Loki (managed, locked)
+  - Plan baseline: Grafana Cloud Free tier
 
 ## 5. Environments
 - Local: Docker Compose minimal stack (frontend, api, worker, postgres) with no local observability components required by default.
@@ -127,11 +128,14 @@
 - Browser/API contract model: Proto-first with Connect-compatible endpoints.
 - Go HTTP stack: native `net/http` with `connect-go` handlers.
 - Observability platform: Grafana Cloud (managed metrics, logs, traces, alerting).
+- Observability provider tier baseline: Grafana Cloud Free.
 - Observability logs: Grafana Cloud Logs (Loki-managed).
 - Observability dashboards: Grafana Cloud.
 - Observability metrics runtime: Grafana Cloud Metrics (Prometheus-compatible managed backend).
 - Error tracking platform: Sentry (managed).
+- Error tracking provider tier baseline: Sentry Developer (Free).
 - Incident response platform: incident.io (managed).
+- Incident response provider tier baseline: incident.io Basic (Free).
 - CI/CD platform: GitHub Actions.
 - CI workflow model: Centralized reusable workflow templates across repositories.
 - Task management platform: GitHub Issues + GitHub Projects.
@@ -171,6 +175,8 @@
   - Worker heartbeat/no-op run is observed for deployed release.
   - Deployed image tag/digest matches release being promoted.
 - Contract generation artifacts: Committed to git.
+- Buf operating mode baseline: CLI-only in local/CI (no paid BSR dependency for the initial platform slice).
+- Code quality provider tier baseline: SonarQube Cloud Free.
 - Baseline frontend token handling pattern: Direct SPA bearer tokens (BFF deferred).
 - Typed DB access standard: `sqlc` with handwritten SQL and `pgx` runtime.
 - Telemetry routing baseline: Cluster-level collector gateway (Grafana Alloy / OTel Collector) before Grafana Cloud.
@@ -448,5 +454,7 @@
 - v1.29 (2026-02-22): Added concrete CI code-quality/security tooling baseline and alternatives framework for pipeline integration.
 - v1.30 (2026-02-22): Added Sonar (`SonarCloud` free-tier path where eligible) to the CI quality baseline.
 - v1.31 (2026-02-22): Added hybrid AI worker trigger model (scheduled + event-driven) and review-feedback rework loop updating the same draft PR.
+- v1.32 (2026-02-28): Locked Buf usage mode to CLI-only in local/CI with no paid BSR dependency for baseline.
+- v1.33 (2026-02-28): Locked baseline provider tiers to free plans for Grafana Cloud, Sentry, incident.io, and SonarQube Cloud.
 
 

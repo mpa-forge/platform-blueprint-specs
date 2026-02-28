@@ -9,7 +9,7 @@ Deliver production-grade visibility and incident wiring for the baseline stack w
 Owner: Human  
 Type: Provider configuration  
 Dependencies: Phase 0 accounts  
-Action: Create stack(s), define env labeling strategy, create scoped API tokens for metrics/logs/traces/alerts.  
+Action: Create Grafana Cloud Free stack(s), define env labeling strategy, create scoped API tokens for metrics/logs/traces/alerts, and document free-tier limits/watchpoints.  
 Output: Provider credentials inventory.  
 Done when: All required endpoints and tokens are available for integration.
 
@@ -65,7 +65,7 @@ Done when: Synthetic trigger tests demonstrate expected routing behavior.
 Owner: Human + Agent  
 Type: Provider config + coding  
 Dependencies: Phase 2 services  
-Action: Create Sentry projects (frontend/backend), add DSNs, verify release/environment tagging.  
+Action: Create Sentry Developer (Free) projects (frontend/backend), add DSNs, verify release/environment tagging, and document quota watchpoints.  
 Output: Sentry ingestion in both app tiers.  
 Done when: Test errors from frontend/API appear with release metadata.
 
@@ -73,7 +73,7 @@ Done when: Test errors from frontend/API appear with release metadata.
 Owner: Human + Agent  
 Type: Provider config + integration  
 Dependencies: P3-T07  
-Action: Set escalation policies, service catalog mapping, and incident creation pathways aligned with severity policy (auto-open `P1`, deferred auto-open for unacknowledged `P2` after 15 minutes).  
+Action: Set incident.io Basic (Free) escalation policies, service catalog mapping, and incident creation pathways aligned with severity policy (auto-open `P1`, deferred auto-open for unacknowledged `P2` after 15 minutes); document any tier-driven constraints.  
 Output: Incident response routing baseline.  
 Done when: Alert-generated incidents are created and assigned as expected.
 

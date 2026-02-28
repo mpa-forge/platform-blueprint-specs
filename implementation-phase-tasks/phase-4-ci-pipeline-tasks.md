@@ -20,7 +20,7 @@ Dependencies: P4-T01
 Action: Add jobs for Go/TS linting and unit tests with caching and deterministic tooling versions; baseline tools:
 - Go: `golangci-lint`, `go test`, `go vet`
 - Frontend: `eslint`, `tsc --noEmit` (plus optional `prettier --check`)
-- Repository quality gate: `sonar` (`sonarcloud` free tier where eligible)  
+- Repository quality gate: `sonar` (`SonarQube Cloud` Free tier baseline)  
 Output: CI quality gates on every PR.  
 Done when: PRs fail on lint/test errors.
 
@@ -64,7 +64,7 @@ Action: Integrate scanners (language dependencies + container images), and enfor
 - `trivy` for dependency + image vulnerability scanning
 - `gitleaks` for secret scanning
 - `semgrep` for SAST (or `codeql` as alternative)
-- `sonar` (`sonarcloud` free tier where eligible) for code quality and maintainability gates
+- `sonar` (`SonarQube Cloud` Free tier baseline) for code quality and maintainability gates
 - `tflint` + `terraform fmt/validate` for IaC quality (with optional `tfsec`/`checkov`)  
 Output: Vulnerability reports and gate policy.  
 Done when: CI enforces the defined gate policy and accepted exceptions are traceable via time-boxed waiver records.
