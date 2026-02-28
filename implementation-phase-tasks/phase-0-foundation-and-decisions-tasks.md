@@ -97,7 +97,7 @@ Done when: Board is live, templates/labels are applied across repos, and at leas
 Owner: Human + Agent  
 Type: Governance + architecture  
 Dependencies: P0-T10  
-Action: Document the baseline automation architecture: dedicated `platform-ai-workers` repo, scheduled Cloud Run Jobs, one worker-job deployment per target repo, environment-driven worker configuration (`WORKER_ID`, `TARGET_REPO`, credential refs, limits), and mandatory human review controls (draft PR + required checks/review).  
+Action: Document the baseline automation architecture: dedicated `platform-ai-workers` repo, Cloud Run Jobs with hybrid trigger model (scheduled polling + event-driven execution), one worker-job deployment per target repo, environment-driven worker configuration (`WORKER_ID`, `TARGET_REPO`, credential refs, limits), and mandatory human review controls (draft PR + required checks/review).  
 Output: `docs/automation/ai-task-to-code-architecture.md`.  
 Done when: Architecture and control boundaries are approved and referenced by Phase 1/4/5 tasks.
 
@@ -105,7 +105,7 @@ Done when: Architecture and control boundaries are approved and referenced by Ph
 Owner: Human + Agent  
 Type: Workflow design  
 Dependencies: P0-T11  
-Action: Define GitHub issue labels/states for AI execution (`ai:ready`, `ai:in-progress`, `ai:ready-for-review`, `ai:failed`, `worker:<id>`), claim rules, retry/resume behavior, and pending-review cap policy.  
+Action: Define GitHub issue/PR labels and states for AI execution (`ai:ready`, `ai:in-progress`, `ai:ready-for-review`, `ai:rework-requested`, `ai:failed`, `worker:<id>`), claim rules, retry/resume behavior, review-comment-driven rework transitions, and pending-review cap policy.  
 Output: `docs/automation/ai-task-state-machine.md`.  
 Done when: State transitions are deterministic and testable with one worker lane.
 
@@ -113,14 +113,22 @@ Done when: State transitions are deterministic and testable with one worker lane
 Owner: Human + Agent  
 Type: Security design  
 Dependencies: P0-T11  
-Action: Define GitHub credential strategy (GitHub App preferred), least-privilege scopes, GSM secret layout, and runtime injection model for Cloud Run Jobs.  
+Action: Define GitHub credential strategy (GitHub App preferred), least-privilege scopes, GSM secret layout, runtime injection model for Cloud Run Jobs, and authorization model for on-demand job execution from GitHub Actions (WIF principal + minimal run permissions).  
 Output: `docs/security/ai-worker-credentials.md`.  
 Done when: Credential model supports per-target-repo worker deployments without static keys in git.
 
-### P0-T14: Sign-off phase gate
+### P0-T14: Define AI rework trigger protocol
+Owner: Human + Agent  
+Type: Workflow design  
+Dependencies: P0-T11, P0-T12  
+Action: Define the event trigger contract for rework (for example PR review `changes requested`, or maintainer command comment like `/ai rework`), dedup/idempotency key strategy (review/comment id), and rules for updating the same draft PR branch instead of opening a new PR. Use `ops/ai-comment-trigger-cloud-run-jobs.md` as the baseline implementation reference in this planning repo.  
+Output: `docs/automation/ai-rework-trigger-protocol.md` and `ops/ai-comment-trigger-cloud-run-jobs.md`.  
+Done when: Rework trigger and PR update behavior are explicit, automatable, and auditable.
+
+### P0-T15: Sign-off phase gate
 Owner: Human  
 Type: Approval  
-Dependencies: P0-T00..P0-T13  
+Dependencies: P0-T00..P0-T14  
 Action: Review phase artifacts and approve transition to Phase 1.  
 Output: Phase 0 sign-off note in `docs/phase-gates/phase-0-signoff.md`.  
 Done when: Sign-off completed with approver names and date.
@@ -139,5 +147,7 @@ Done when: Sign-off completed with approver names and date.
 - `docs/governance/task-management-workflow.md`
 - `docs/automation/ai-task-to-code-architecture.md`
 - `docs/automation/ai-task-state-machine.md`
+- `docs/automation/ai-rework-trigger-protocol.md`
+- `ops/ai-comment-trigger-cloud-run-jobs.md`
 - `docs/security/ai-worker-credentials.md`
 - `docs/phase-gates/phase-0-signoff.md`

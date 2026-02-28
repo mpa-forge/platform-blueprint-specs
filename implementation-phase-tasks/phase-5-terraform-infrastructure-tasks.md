@@ -65,9 +65,9 @@ Done when: Workloads can retrieve expected secrets via ESO sync path.
 Owner: Agent  
 Type: IaC coding  
 Dependencies: P5-T01, P5-T05, P5-T07  
-Action: Provision Cloud Run Job definitions, Cloud Scheduler triggers, service accounts/IAM, and Secret Manager bindings for `platform-ai-workers` execution. Support multiple worker-job deployments, each targeting a repository with environment-specific configuration (`WORKER_ID`, `TARGET_REPO`, limits, credential refs).  
+Action: Provision Cloud Run Job definitions, Cloud Scheduler triggers, service accounts/IAM, and Secret Manager bindings for `platform-ai-workers` execution. Support multiple worker-job deployments, each targeting a repository with environment-specific configuration (`WORKER_ID`, `TARGET_REPO`, limits, credential refs), and grant least-privilege on-demand execution permissions for GitHub Actions event-trigger workflows as defined in `ops/ai-comment-trigger-cloud-run-jobs.md`.  
 Output: AI worker runtime infrastructure module.  
-Done when: At least one worker-job deployment can be created per environment and triggered on schedule with least privilege.
+Done when: At least one worker-job deployment can be created per environment and triggered both on schedule and on-demand with least privilege.
 
 ### P5-T09: Build environment stacks (`rc`, `prod`)
 Owner: Agent  
@@ -98,6 +98,7 @@ Done when: `rc` can be recreated from scratch reproducibly.
 - remote state backend/locking configuration
 - network, cluster, GAR, Cloud SQL, GSM modules
 - Cloud Run Job/Scheduler module for AI workers
+- `ops/ai-comment-trigger-cloud-run-jobs.md` IAM mapping reference
 - environment variable files and outputs
 - IaC CI validation checks
 - `rc` apply evidence and infra runbook

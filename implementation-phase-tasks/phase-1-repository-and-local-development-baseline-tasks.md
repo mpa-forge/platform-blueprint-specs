@@ -88,8 +88,8 @@ Done when: New developer setup completes within targeted time window.
 ### P1-T11: Bootstrap `platform-ai-workers` repository baseline
 Owner: Agent  
 Type: Coding  
-Dependencies: P1-T01, Phase 0 AI automation decisions  
-Action: Scaffold worker job codebase and container with configurable env vars (`WORKER_ID`, `TARGET_REPO`, `MAX_PENDING_REVIEW`, `POLL_WINDOW`, credential secret refs), GitHub task selection logic, task state transitions (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`), and draft PR creation path.  
+Dependencies: P1-T01, Phase 0 AI automation decisions, `ops/ai-comment-trigger-cloud-run-jobs.md`  
+Action: Scaffold worker job codebase and container with configurable env vars (`WORKER_ID`, `TARGET_REPO`, `MAX_PENDING_REVIEW`, `POLL_WINDOW`, credential secret refs), support for scheduled and event-driven execution (`TRIGGER_SOURCE`, optional `TARGET_ISSUE`/`TARGET_PR`), GitHub task selection logic, task state transitions (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`), and draft PR creation/update path aligned to `ops/ai-comment-trigger-cloud-run-jobs.md`.  
 Output: Runnable automation worker baseline in dedicated repo.  
 Done when: Worker can process one synthetic issue and produce a draft PR in a target sandbox repo.
 
@@ -97,7 +97,7 @@ Done when: Worker can process one synthetic issue and produce a draft PR in a ta
 Owner: Agent  
 Type: Coding  
 Dependencies: P1-T11  
-Action: Implement single-lane processing guard per worker id, deterministic claim-before-work behavior, retry/resume handling for `ai:in-progress` tasks, and pending-review cap stop condition.  
+Action: Implement single-lane processing guard per worker id, deterministic claim-before-work behavior, retry/resume handling for `ai:in-progress` tasks, idempotent rework handling keyed by review/comment event id, and pending-review cap stop condition.  
 Output: Safe worker execution loop with deterministic state transitions.  
 Done when: Repeated runs do not duplicate claims and can resume interrupted tasks for the same worker lane.
 
@@ -105,9 +105,9 @@ Done when: Repeated runs do not duplicate claims and can resume interrupted task
 Owner: Human + Agent  
 Type: Validation  
 Dependencies: P1-T11, P1-T12  
-Action: Execute controlled dry-run against a sandbox repository and verify end-to-end path (issue selection, branch changes, draft PR creation, state updates, reviewer handoff).  
+Action: Execute controlled dry-run against a sandbox repository and verify end-to-end path (issue selection, branch changes, draft PR creation, state updates, reviewer handoff, and comment/review-triggered rework updating the same PR) according to `ops/ai-comment-trigger-cloud-run-jobs.md`.  
 Output: `docs/automation/ai-worker-dry-run.md` with findings and fixes.  
-Done when: One end-to-end task-to-draft-PR flow succeeds under manual observation.
+Done when: One end-to-end task-to-draft-PR flow plus one rework loop succeeds under manual observation.
 
 ## Artifacts Checklist
 - Repository settings screenshots/exports
@@ -117,6 +117,7 @@ Done when: One end-to-end task-to-draft-PR flow succeeds under manual observatio
 - `.env.example` contracts
 - Dockerfiles for frontend/API/worker
 - `platform-ai-workers` bootstrap code and container
+- `ops/ai-comment-trigger-cloud-run-jobs.md` conformance notes
 - `docker-compose.yml`
 - local smoke test scripts
 - AI worker dry-run report

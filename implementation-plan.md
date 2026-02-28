@@ -37,7 +37,7 @@ Target repositories (polyrepo):
 - `platform-contracts`: protobuf APIs, Buf config, generated artifact policy.
 - `backend-api`: Go API service (`net/http` + `connect-go`) with Auth0 validation and Cloud SQL connectivity.
 - `backend-worker`: Go worker service with scheduled/no-op job loop and shared platform libraries.
-- `platform-ai-workers`: AI task-to-code worker runtime (scheduled Cloud Run Jobs) that converts GitHub tasks into draft PRs with human review gates.
+- `platform-ai-workers`: AI task-to-code worker runtime (Cloud Run Jobs with scheduled + event-driven triggers) that converts GitHub tasks into draft PRs with human review gates.
 - `frontend-web`: authenticated React app using generated TypeScript client from protobuf contracts.
 - `platform-infra`: Terraform + Helm + GitHub Actions deployment workflows.
 - dedicated docs repository: ADRs, platform standards, runbooks, and cross-repo operational documentation.
@@ -111,11 +111,12 @@ Out of scope until baseline completion:
 - Delivery order:
   - Phase 0: lock automation architecture, task state machine, and credential model.
   - Phase 1: bootstrap `platform-ai-workers` repo and validate one end-to-end task -> draft PR flow in a sandbox repo.
-  - Phase 5 (minimal subset pulled earlier as needed): provision Cloud Run Job + Cloud Scheduler + GSM/IAM bindings for worker runtime.
-  - Phase 4: enforce governance checks for AI-generated PRs (required review/checks/metadata).
+  - Phase 5 (minimal subset pulled earlier as needed): provision Cloud Run Job + Cloud Scheduler + GSM/IAM bindings plus on-demand execute permissions for worker runtime.
+  - Phase 4: enforce governance checks for AI-generated PRs (required review/checks/metadata) and event-trigger workflows for immediate rework runs.
 - Guardrails:
   - Draft PR only, no direct protected-branch writes.
   - Required human review and existing CI checks remain mandatory.
+  - Human review feedback should trigger rework on the same draft PR branch by default.
   - Worker lanes are configured per target repo using environment variables and least-privilege credentials.
 
 ### 3.2 Later-Phase AI Ops Automation
@@ -162,8 +163,9 @@ For each decision capture:
 - Define GitHub Issues/Projects task-management workflow baseline (issue templates, labels, board states, automation) across repos.
 - Define and codify CI code-quality/security tooling standards (`golangci-lint`, `eslint`, `tsc`, `sonar`/`sonarcloud`, `trivy`, `gitleaks`, `semgrep/codeql`, IaC checks) with swap criteria.
 - Define and bootstrap `platform-ai-workers` repo with task-state machine and draft-PR flow (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`).
-- Provision minimal AI worker runtime prerequisites early (Cloud Run Job + Cloud Scheduler + GSM/IAM) to enable task-to-code automation before full platform completion.
+- Provision minimal AI worker runtime prerequisites early (Cloud Run Job + Cloud Scheduler + GSM/IAM + on-demand execute permissions) to enable task-to-code automation before full platform completion.
 - Define per-target-repo worker deployment config model (`WORKER_ID`, `TARGET_REPO`, limits, credential refs).
+- Define event-trigger rules for AI runs (`ai:ready`, PR `changes requested`, `/ai rework`) and idempotent rework behavior tied to review/comment ids.
 - Define Cloud SQL instance topology and connectivity model for RC/prod.
 - Apply `us-east4` as the primary region baseline for RC/prod infrastructure components.
 - Define RC isolation model implementation details (namespaces, DB boundaries, secret namespaces, and domain layout).
@@ -225,3 +227,4 @@ For each decision capture:
 - v2.21 (2026-02-22): Added later-phase AI Ops automation plan for alert-driven diagnostics using MCP-integrated telemetry access and automatic remediation task generation.
 - v2.22 (2026-02-22): Added explicit CI code-quality/security tooling integration plan with approved alternatives and migration criteria.
 - v2.23 (2026-02-22): Added Sonar (`SonarCloud` free-tier path where eligible) to the CI quality baseline and near-term rollout tasks.
+- v2.24 (2026-02-22): Added hybrid AI worker trigger model (scheduled + event-driven) and review-feedback rework workflow requirements.

@@ -97,7 +97,7 @@ Done when: PR pipeline runtime meets SLO baseline (`p50 <= 10 min`, `p95 <= 15 m
 Owner: Human + Agent  
 Type: CI governance  
 Dependencies: P4-T09, Phase 1 AI worker bootstrap  
-Action: Configure required checks and review policy for AI-generated PRs (draft-first, mandatory human reviewer, CODEOWNERS enforcement, and required metadata labels such as `ai-generated` and `ai-run-id`).  
+Action: Configure required checks and review policy for AI-generated PRs (draft-first, mandatory human reviewer, CODEOWNERS enforcement, required metadata labels such as `ai-generated` and `ai-run-id`, and explicit rework trigger controls for `changes requested` or `/ai rework` command usage) aligned to `ops/ai-comment-trigger-cloud-run-jobs.md`.  
 Output: Enforced governance policy for automation-created PRs.  
 Done when: AI-created PRs cannot merge without the same required review/check gates as human-authored PRs.
 
@@ -109,6 +109,14 @@ Action: Document approved alternatives and swap criteria for core CI tools (for 
 Output: `docs/standards/ci-quality-security-tooling.md`.  
 Done when: Tool substitutions can be made with explicit rationale and no policy ambiguity.
 
+### P4-T13: Implement event-driven AI worker trigger workflows
+Owner: Agent  
+Type: CI automation  
+Dependencies: P4-T06, P4-T11, Phase 1 AI worker bootstrap  
+Action: Add GitHub Actions workflows that trigger on task-ready and review-feedback events (issue label `ai:ready`, PR review `changes_requested`, maintainer `/ai rework` comment command), authenticate to GCP via WIF, and execute the mapped Cloud Run Job on-demand for the target worker lane following `ops/ai-comment-trigger-cloud-run-jobs.md`.  
+Output: Event-driven trigger workflows and runbook referencing `ops/ai-comment-trigger-cloud-run-jobs.md`.  
+Done when: A review comment can trigger one deterministic rework run without waiting for the scheduler cadence.
+
 ## Artifacts Checklist
 - Workflow templates and repo CI YAMLs
 - Contract check jobs
@@ -119,3 +127,5 @@ Done when: Tool substitutions can be made with explicit rationale and no policy 
 - CI artifact retention policy
 - GitHub branch protection settings evidence
 - AI-generated PR governance policy evidence
+- event-driven AI worker trigger workflow definitions
+- `ops/ai-comment-trigger-cloud-run-jobs.md` implementation reference

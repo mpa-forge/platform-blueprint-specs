@@ -143,10 +143,10 @@
   - Automation baseline: auto-add issues/PRs to board, auto-move states on PR events, close issues on merge.
 - AI task-to-code worker platform:
   - Dedicated `platform-ai-workers` repository.
-  - Scheduled Cloud Run Jobs (custom code, not n8n) execute task-to-code loops.
+  - Cloud Run Jobs (custom code, not n8n) execute task-to-code loops with hybrid triggers (scheduled cadence + event-driven on-demand runs).
   - One worker-job deployment per target repository, configured through environment variables (`WORKER_ID`, `TARGET_REPO`, limits, credential refs).
-  - Worker state model is GitHub-issue driven (`ai:ready`, `ai:in-progress`, `ai:ready-for-review`, `ai:failed`, `worker:<id>`).
-  - Worker output path: branch + draft PR; merge requires standard human review and required CI checks.
+  - Worker state model is GitHub issue/PR driven (`ai:ready`, `ai:in-progress`, `ai:ready-for-review`, `ai:rework-requested`, `ai:failed`, `worker:<id>`).
+  - Worker output path: branch + draft PR; review feedback can trigger rework on the same PR branch; merge requires standard human review and required CI checks.
 - CD operating model: Pipeline-driven (GitHub Actions + Helm).
 - Container artifact registry: Google Artifact Registry.
 - Secrets management: Google Secret Manager + External Secrets Operator.
@@ -383,6 +383,7 @@
 - Runtime model:
   - A dedicated `platform-ai-workers` repo produces a worker container.
   - Cloud Scheduler triggers Cloud Run Jobs on a cadence.
+  - GitHub event workflows can execute Cloud Run Jobs on-demand for immediate runs (task-ready and rework events).
   - Each deployed job is a worker lane bound to one target repository via environment configuration.
 - Required runtime configuration per worker-job deployment:
   - `WORKER_ID`
@@ -394,14 +395,16 @@
   - Select tasks by labels: `ai:ready` + `worker:<id>`.
   - Claim task by moving to `ai:in-progress` before code execution.
   - On success move to `ai:ready-for-review` and open/update draft PR.
+  - On human review feedback (`changes requested` or explicit rework command), mark `ai:rework-requested` and re-enter `ai:in-progress` on the next triggered run.
   - On failure mark `ai:failed` (with retry/resume policy retaining deterministic ownership by worker id).
 - Control and governance:
   - Worker-generated PRs are draft-first and carry machine-readable metadata (`ai-generated`, run id).
   - Branch protection/CODEOWNERS/required checks remain mandatory before merge.
+  - Rework runs must update the existing PR branch unless an explicit override is approved.
   - No direct writes to protected branches.
 - Bootstrap priority:
   - Implement this automation stack early (immediately after foundational decisions and minimal infra bootstrap) so subsequent platform tasks can be accelerated by agents.
-  - Minimal infra prerequisites: Cloud Run Jobs, Cloud Scheduler, Secret Manager credential wiring, and least-privilege IAM.
+  - Minimal infra prerequisites: Cloud Run Jobs, Cloud Scheduler, Secret Manager credential wiring, least-privilege IAM, and on-demand execute permissions for GitHub event workflows.
 
 ## 18. Living Change Log
 - v0.1 (2026-02-17): Initial high-level draft.
@@ -444,5 +447,6 @@
 - v1.28 (2026-02-22): Added later-phase AI Ops automation scope: alert-triggered diagnostic workers with MCP-based telemetry analysis and automated remediation task generation.
 - v1.29 (2026-02-22): Added concrete CI code-quality/security tooling baseline and alternatives framework for pipeline integration.
 - v1.30 (2026-02-22): Added Sonar (`SonarCloud` free-tier path where eligible) to the CI quality baseline.
+- v1.31 (2026-02-22): Added hybrid AI worker trigger model (scheduled + event-driven) and review-feedback rework loop updating the same draft PR.
 
 
