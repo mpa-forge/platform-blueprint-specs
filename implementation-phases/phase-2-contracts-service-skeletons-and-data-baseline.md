@@ -1,6 +1,7 @@
 # Phase 2: Contracts, Service Skeletons, and Data Baseline
 
 Detailed tasks: `implementation-phase-tasks/phase-2-contracts-service-skeletons-and-data-baseline-tasks.md`
+Observability package contract artifact: `ops/observability-telemetry-budget-profile.md`
 
 - Define protobuf contracts as the single source of truth for browser and internal APIs.
 - Configure Buf workspace/module and generation templates.
@@ -25,6 +26,10 @@ Detailed tasks: `implementation-phase-tasks/phase-2-contracts-service-skeletons-
   - B2C claims mapping to internal roles (no Organizations/SCIM assumptions).
 - Implement worker skeleton:
   - background process loop, graceful shutdown, and pluggable async adapter (queue can be added later).
+- Create shared backend observability library package skeleton:
+  - runtime mode config (`direct_otlp` for Cloud Run, `collector_gateway` for GKE path)
+  - common resource attributes and telemetry initialization API
+  - centralized `OBS_TELEMETRY_PROFILE` config contract hooks
 - Add PostgreSQL migrations and seed script.
 - Implement persistence layer scaffolding using `sqlc` with handwritten SQL and `pgx` runtime.
 
@@ -35,6 +40,7 @@ Exit criteria:
 - Frontend consumes at least one generated TypeScript client from protobuf definitions (no manual DTO drift).
 - Contract repo includes TypeScript package metadata and release conventions for GitHub Packages distribution.
 - Contract repo includes documented versioning policy and release tags consumed by app repos.
+- Shared observability library package compiles and is consumed by API/worker startup in baseline mode.
 
 ## Open Questions / Choices To Clarify Later
 - None currently.

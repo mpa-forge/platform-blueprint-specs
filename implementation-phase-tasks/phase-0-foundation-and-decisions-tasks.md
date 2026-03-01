@@ -51,7 +51,7 @@ Done when: All required providers are accessible by the core team.
 Owner: Human  
 Type: Decision  
 Dependencies: P0-T03  
-Action: Confirm environment model (`local`, `rc`, `prod`), lock primary region to `us-east4` for `rc` and `prod`, document prod full separation plus RC isolation boundaries (namespace, DB boundary, secret scope, domain), and lock GKE cost guardrail to one active Autopilot cluster during baseline (RC) with prod cluster provisioning deferred until explicit production cutover.  
+Action: Confirm environment model (`local`, `rc`, `prod`), lock primary region to `us-east4` for `rc` and `prod`, document prod full separation plus RC isolation boundaries (DB boundary, secret scope, domain; namespace boundary when GKE path is enabled), lock API runtime baseline to Cloud Run for first iteration, and defer initial GKE cluster provisioning until explicitly needed; capture runtime selection contract in `ops/api-runtime-paths-cloud-run-gke.md`.  
 Output: `docs/standards/environment-and-region.md`.  
 Done when: Names/regions are fixed and reused consistently in infra and CI.
 
@@ -59,7 +59,7 @@ Done when: Names/regions are fixed and reused consistently in infra and CI.
 Owner: Agent  
 Type: Documentation  
 Dependencies: P0-T04  
-Action: Document naming conventions for repos, GAR images, Terraform resources, k8s namespaces, labels, and tags.  
+Action: Document naming conventions for repos, GAR images, Terraform resources, Cloud Run services/revisions, optional k8s namespaces, labels, and tags.  
 Output: `docs/standards/naming-and-labeling.md`.  
 Done when: Convention includes examples and required tags per environment.
 
@@ -160,5 +160,6 @@ Done when: Sign-off completed with approver names and date.
 - `docs/automation/ai-rework-trigger-protocol.md`
 - `ops/ai-comment-trigger-cloud-run-jobs.md`
 - `ops/ai-worker-local-cloud-parity.md`
+- `ops/api-runtime-paths-cloud-run-gke.md`
 - `docs/security/ai-worker-credentials.md`
 - `docs/phase-gates/phase-0-signoff.md`

@@ -13,43 +13,49 @@ Action: Create Grafana Cloud Free stack(s), define env labeling strategy, create
 Output: Provider credentials inventory.  
 Done when: All required endpoints and tokens are available for integration.
 
-### P3-T02: Store observability credentials in GSM and sync via ESO
+### P3-T02: Store observability credentials in GSM and wire runtime-specific delivery
 Owner: Agent  
 Type: Infra/config  
-Dependencies: P3-T01, Phase 5 baseline GSM/ESO availability or temporary local secret strategy  
-Action: Create secret definitions and sync manifests for API/worker/collector components.  
+Dependencies: P3-T01, Phase 5 baseline GSM availability (plus ESO when GKE path is enabled) or temporary local secret strategy  
+Action: Create secret definitions for Grafana Cloud OTLP/auth credentials and wire runtime-specific delivery:
+- Cloud Run baseline path: direct GSM-based secret injection for API/worker runtime envs.
+- GKE path: ESO sync manifests for API/worker/collector components.  
 Output: Secrets wired into workloads without plaintext in repo.  
-Done when: Services read credentials from synced Kubernetes secrets.
+Done when: Services read credentials through their selected runtime path without plaintext credentials in repo.
 
 ### P3-T03: Instrument API with OpenTelemetry
 Owner: Agent  
 Type: Coding  
-Dependencies: Phase 2 API ready  
-Action: Add traces/metrics context propagation, semantic resource attributes, and error status mapping.  
+Dependencies: Phase 2 API ready, P2-T13  
+Action: Implement/consume a shared observability library package for backend services and instrument API with traces/metrics/logs context propagation, semantic resource attributes, error status mapping, and runtime-mode support (`direct_otlp`, `collector_gateway`) controlled by config.  
 Output: API telemetry instrumentation.  
 Done when: API requests produce correlated traces and metrics in Grafana Cloud.
 
 ### P3-T04: Instrument worker with OpenTelemetry
 Owner: Agent  
 Type: Coding  
-Dependencies: Phase 2 worker ready  
-Action: Emit traces and metrics for scheduled tasks, retries, and failures; include service/resource labels.  
+Dependencies: Phase 2 worker ready, P2-T13  
+Action: Use the shared observability library in worker runtime to emit traces/metrics/logs for scheduled tasks, retries, and failures; include consistent service/resource labels and runtime-mode compatibility.  
 Output: Worker telemetry instrumentation.  
 Done when: Worker loop activity is visible in traces and dashboard metrics.
 
-### P3-T05: Deploy telemetry pipeline via cluster-level collector gateway (Grafana Alloy / OTel Collector)
+### P3-T05: Implement dual-mode telemetry pipeline (Cloud Run direct OTLP + GKE collector path)
 Owner: Agent  
 Type: Deployment/config  
 Dependencies: P3-T01  
-Action: Configure collector gateway receivers/processors/exporters for OTLP traces, metrics scrape forwarding, and log shipping before forwarding to Grafana Cloud; implement initial trace sampling policy (`rc` 25%, `prod` 5%) and force-sample rules for errors, high-latency traces (>1s initial threshold), and explicit debug/incident traffic; add centralized `OBS_TELEMETRY_PROFILE` mapping (`balanced`/`cost`/`debug`) to adjust trace sampling, log sampling/drop rules, and metric cardinality/drop filters from one config toggle, aligned with `ops/observability-telemetry-budget-profile.md`.  
-Output: Collector/alloy deployment manifests and profile mapping aligned with `ops/observability-telemetry-budget-profile.md`.  
-Done when: Logs/metrics/traces arrive in Grafana Cloud with expected labels and profile-based ingestion controls can be changed without code changes.
+Action: Implement telemetry export and budget controls for both runtime modes:
+- Cloud Run baseline path: direct OTLP/HTTP export config to Grafana Cloud for traces/metrics/logs via shared library.
+- GKE alternative path: collector/alloy receivers/processors/exporters for OTLP traces, metrics scrape forwarding, and log shipping.
+- Apply initial trace sampling policy (`rc` 25%, `prod` 5%) and force-sample rules for errors, high-latency traces (>1s initial threshold), and explicit debug/incident traffic.
+- Add centralized `OBS_TELEMETRY_PROFILE` mapping (`balanced`/`cost`/`debug`) with equivalent profile behavior across both modes, aligned with `ops/observability-telemetry-budget-profile.md`.  
+Output: Dual-mode telemetry config artifacts (library/runtime config + optional collector/alloy manifests) aligned with `ops/observability-telemetry-budget-profile.md`.  
+Done when: Logs/metrics/traces arrive in Grafana Cloud with expected labels in Cloud Run direct mode and GKE collector mode, and profile controls can be changed without instrumentation code changes.
 
 ### P3-T06: Build baseline dashboards from code
 Owner: Agent  
 Type: Observability config  
 Dependencies: P3-T03..P3-T05  
-Action: Define dashboards for API golden signals, worker health, ingress status, and DB connectivity symptoms.  
+Action: Define dashboards for API golden signals, worker health, edge/runtime path status, and DB connectivity symptoms.  
 Output: Dashboard JSON/Terraform definitions.  
 Done when: Dashboards can be recreated from source-controlled definitions.
 
@@ -105,14 +111,24 @@ Done when: All phase 3 exit criteria are objectively validated.
 Owner: Human + Agent  
 Type: Validation + operations documentation  
 Dependencies: P3-T05, P3-T06, P3-T12  
-Action: Execute controlled toggles of `OBS_TELEMETRY_PROFILE` (`balanced` -> `cost` -> `balanced`, optional `debug` window), validate expected ingestion-volume changes for traces/logs/metrics, and document safe operating thresholds plus rollback steps for free-tier cap protection.  
+Action: Execute controlled toggles of `OBS_TELEMETRY_PROFILE` (`balanced` -> `cost` -> `balanced`, optional `debug` window) in both runtime modes, validate expected ingestion-volume changes for traces/logs/metrics, and document safe operating thresholds plus rollback steps for free-tier cap protection.  
 Output: `docs/operations/telemetry-budget-profile-runbook.md`, validation evidence, and conformance notes to `ops/observability-telemetry-budget-profile.md`.  
 Done when: Operators can adjust telemetry ingestion within one config change, observe impact in dashboards, and revert safely.
+
+### P3-T14: Validate Cloud Run direct OTLP observability path
+Owner: Human + Agent  
+Type: Validation  
+Dependencies: P3-T03, P3-T05, P5-T04  
+Action: Validate end-to-end Cloud Run API telemetry export without a cluster collector: traces, metrics, and logs are exported via OTLP/HTTP to Grafana Cloud; verify resource labels, profile behavior, and correlation ids.  
+Output: Cloud Run observability validation report with evidence links.  
+Done when: Cloud Run API observability is fully operational with direct OTLP export and no dependency on in-cluster scraping/collector components.
 
 ## Artifacts Checklist
 - Grafana Cloud stack/token inventory
 - OTel instrumentation PRs for API and worker
-- collector/alloy configs
+- shared observability library configuration and usage evidence
+- Cloud Run direct OTLP configuration evidence
+- collector/alloy configs (GKE path)
 - `OBS_TELEMETRY_PROFILE` mapping config and runbook
 - `ops/observability-telemetry-budget-profile.md` conformance evidence
 - dashboard definitions as code

@@ -4,16 +4,20 @@ Detailed tasks: `implementation-phase-tasks/phase-3-observability-and-operabilit
 Specification artifact: `ops/observability-telemetry-budget-profile.md`
 
 - Instrument API and worker with OpenTelemetry.
-- Route telemetry through a cluster-level collector gateway (Grafana Alloy / OTel Collector baseline).
+- Implement dual observability runtime modes with one shared configuration contract:
+  - Cloud Run baseline path: direct OTLP/HTTP export to Grafana Cloud.
+  - GKE alternative path: cluster-level collector gateway (Grafana Alloy / OTel Collector).
 - Configure telemetry export to Grafana Cloud (OTLP endpoints + API auth).
 - Use free-tier provider baselines in this phase: Grafana Cloud Free, Sentry Developer (Free), incident.io Basic (Free).
 - Apply initial trace sampling policy:
   - `rc`: 25% baseline trace sampling.
   - `prod`: 5% baseline trace sampling.
   - Force sample 100% for error traces, high-latency traces (>1s initial threshold), and explicit debug/incident traffic.
-- Implement one centrally changeable telemetry budget profile (`OBS_TELEMETRY_PROFILE`) at collector/alloy level to control traces/logs/metrics ingestion and stay within tier caps.
+- Implement one centrally changeable telemetry budget profile (`OBS_TELEMETRY_PROFILE`) that works in both runtime modes to control traces/logs/metrics ingestion and stay within tier caps.
 - Configure Grafana Cloud dashboards (golden signals + service deep-dive views).
-- Set up log shipping via Grafana Alloy to Grafana Cloud Logs.
+- Set up log export for both modes:
+  - direct OTLP/HTTP export for Cloud Run baseline
+  - Alloy/collector shipping for GKE path
 - Define ingestion/cardinality guardrails and retention budgets per environment.
 - Add alert rules for critical platform signals.
 - Apply incident opening severity policy:
@@ -40,7 +44,8 @@ Phase 3 checklist:
 - Provision Grafana Cloud org/stack and service accounts.
 - Create and store telemetry/API tokens in secret manager.
 - Configure OTEL env vars in API/worker deployments.
-- Deploy collector/alloy config and verify ingest for logs/metrics/traces.
+- Configure shared observability library mode (`direct_otlp` vs `collector_gateway`) and verify profile parity.
+- Deploy collector/alloy config only for GKE mode and verify ingest for logs/metrics/traces.
 - Verify `OBS_TELEMETRY_PROFILE` toggle path and ingestion impact without application redeploy.
 - Provision baseline dashboards from code (JSON or Terraform provider).
 - Create alert routing and webhook endpoint with signature validation.

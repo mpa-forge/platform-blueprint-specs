@@ -1,12 +1,37 @@
 # Observability Telemetry Budget Profile Spec
 
 ## Purpose
-Define a single, easy-to-change control for observability ingestion so the platform can stay within Grafana Cloud free-tier limits while preserving consistent operational visibility.
+Define one runtime-configurable observability control that works for both API runtime paths:
+- Cloud Run baseline path (`direct_otlp`)
+- GKE alternative path (`collector_gateway`)
+
+The goal is to stay within Grafana Cloud free-tier limits while preserving consistent operational visibility.
 
 ## Scope
-- Applies to telemetry routed through the cluster collector gateway (Grafana Alloy / OTel Collector).
-- Covers traces, logs, and metrics export behavior to Grafana Cloud.
+- Traces, metrics, and logs exported to Grafana Cloud.
 - Applies to `rc` and `prod`.
+- Applies to API and worker services using the shared backend observability package.
+
+## Runtime Modes
+- `OBS_RUNTIME_MODE=direct_otlp`
+  - Baseline path for Cloud Run API.
+  - Services export traces/metrics/logs via OTLP/HTTP directly to Grafana Cloud endpoints.
+- `OBS_RUNTIME_MODE=collector_gateway`
+  - Alternative path for GKE workloads.
+  - Services export to collector/alloy; collector forwards to Grafana Cloud.
+
+## Shared Library Requirement
+Implement a reusable backend observability package consumed by API/worker services.
+
+Required capabilities:
+- Initialize traces/metrics/logs with one config contract.
+- Support both runtime modes (`direct_otlp`, `collector_gateway`) without changing service instrumentation call sites.
+- Expose consistent resource attributes and label conventions across modes.
+- Apply profile-driven controls (sampling/filtering/export options) through configuration.
+- Emit startup diagnostics that include active mode/profile/version.
+
+Non-goal:
+- Forked instrumentation logic per runtime path.
 
 ## Locked Control
 - Runtime control value: `OBS_TELEMETRY_PROFILE`
@@ -31,48 +56,49 @@ Define a single, easy-to-change control for observability ingestion so the platf
   - Operator-approved and time-boxed.
   - Must auto-revert or be reverted back to `balanced` after investigation.
 
-## Implementation Model
-- Control location:
-  - Collector/alloy config (not service code).
-  - Exposed through Helm values/env so one config change updates policy.
-- Processing behavior by signal:
-  - Traces:
-    - probabilistic sampling by profile
-    - force-sample exceptions for error/high-latency/incident traffic
-  - Logs:
-    - severity/category filters and sampling by profile
-    - preserve warning/error logs in all profiles
-  - Metrics:
-    - drop/filter noisy series and high-cardinality labels by profile
-    - enforce metric allow/deny patterns for budget control
+## Mode-Specific Implementation
+- `direct_otlp` (Cloud Run baseline):
+  - Profile behavior is applied by shared library/runtime config:
+    - traces: sampling and force-sample exceptions
+    - logs: severity/category sampling/filtering
+    - metrics: cardinality hygiene and optional drop/filter rules before export
+  - Changes are applied by Cloud Run config/env update and new revision rollout.
+
+- `collector_gateway` (GKE path):
+  - Shared library keeps instrumentation and baseline defaults consistent.
+  - Collector/alloy applies additional profile policies:
+    - sampling processors
+    - log filtering/sampling
+    - metric relabel/drop filters
+  - Changes are applied by collector config update.
 
 ## Source Instrumentation Requirements
-Collector filtering is the budget control plane, but source instrumentation must avoid telemetry explosions.
+Source cardinality discipline is mandatory in both modes:
 
-- Do not use high-cardinality metric labels at source:
+- Do not use high-cardinality metric labels:
   - `user_id`, `request_id`, `session_id`, `email`, unique identifiers
   - raw URL paths with IDs
-- Use low-cardinality labels for metrics:
+- Use low-cardinality labels:
   - `service`, `endpoint_template`, `method`, `status_class`, `env`, `region`
 - Put unique request/user identifiers in logs/traces, not metric labels.
 - Normalize dynamic paths for metrics (for example `/users/:id/orders/:id`).
 
 ## Why Source Cardinality Rules Are Mandatory
-Collector drops protect vendor ingestion cost, but do not eliminate upstream runtime overhead:
-- app still creates/exports the series
-- app -> collector network still carries the payload
-- collector still spends CPU/memory parsing before dropping
+Even with downstream filtering:
+- app still creates/exports the telemetry
+- network still carries payloads
+- exporters/collectors still spend CPU/memory parsing before drops
 
 Therefore:
-- Source-side cardinality discipline is mandatory.
-- Collector profile control is the safety layer.
+- source-side cardinality control is required
+- profile-based filtering is a safety layer, not a substitute
 
 ## Operational Procedure
-1. Monitor ingestion usage dashboards for traces/logs/metrics.
-2. If usage trend is unsafe, switch profile to `cost`.
-3. Validate impact in usage and signal quality dashboards.
-4. If incident debugging requires detail, switch to `debug` temporarily.
-5. Revert to `balanced` after the debugging window.
+1. Monitor Grafana Cloud usage dashboards for traces/logs/metrics.
+2. If trend is unsafe, switch to `cost`.
+3. Validate impact on usage and signal quality.
+4. For incident deep-dive, switch to `debug` temporarily.
+5. Revert to `balanced` when incident window closes.
 
 ## Suggested Threshold Policy (Initial)
 - `>= 70%` of tier budget: watch and prepare.
@@ -81,22 +107,27 @@ Therefore:
 
 ## Change Path
 - Standard path:
-  - Update Helm/env configuration for `OBS_TELEMETRY_PROFILE`.
+  - Update runtime configuration:
+    - Cloud Run path: env/config revision rollout.
+    - GKE path: collector/Helm config rollout.
   - Deploy via normal CI/CD pipeline.
 - Emergency path:
-  - Patch collector runtime profile directly in cluster.
-  - Backport the same setting to git immediately after stabilization.
+  - Apply runtime-mode-specific hotfix (Cloud Run revision/env patch or collector runtime patch).
+  - Backport configuration to git immediately after stabilization.
 
 ## Validation Requirements
-- Demonstrate profile toggles (`balanced -> cost -> balanced`, optional `debug` window).
+- Demonstrate profile toggles in both runtime modes:
+  - `balanced -> cost -> balanced`
+  - optional `debug` window
 - Confirm ingestion-volume changes in Grafana usage dashboards.
 - Confirm critical telemetry remains intact in `cost` profile:
-  - error signals
-  - health/readiness behavior
+  - errors
+  - health/readiness
   - core latency/error-rate alerts
+- Confirm dashboards/alerts keep working across mode switches.
 
 ## Required Artifacts
-- Collector/alloy profile mapping config in source control.
-- Operator runbook describing thresholds and rollback.
-- Validation report with evidence links for each profile transition.
-
+- Shared observability library package design/usage docs.
+- Mode-aware profile mapping config in source control.
+- Operator runbook describing thresholds, mode-specific toggle mechanics, and rollback.
+- Validation report with evidence links for both runtime modes.

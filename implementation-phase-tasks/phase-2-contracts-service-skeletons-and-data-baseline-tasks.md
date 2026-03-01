@@ -101,6 +101,19 @@ Action: Execute local full flow: login -> protected frontend call -> API -> DB.
 Output: Validation evidence and defect list.  
 Done when: Baseline protected request works end-to-end locally.
 
+### P2-T13: Scaffold shared backend observability library package
+Owner: Agent  
+Type: Coding  
+Dependencies: P2-T04, P2-T07  
+Action: Create a reusable observability package for backend services with:
+- runtime mode switch (`direct_otlp` for Cloud Run baseline, `collector_gateway` for GKE path),
+- common resource/service labeling contract,
+- initialization API for traces/metrics/logs exporters,
+- `OBS_TELEMETRY_PROFILE` config hook points for later Phase 3 policy mapping,
+- usage wiring in API and worker startup paths (without final provider credentials hardcoding), aligned with `ops/observability-telemetry-budget-profile.md`.  
+Output: Shared observability library package and API/worker integration stubs.  
+Done when: API and worker initialize observability through the shared package and runtime mode can be selected by config.
+
 ## Artifacts Checklist
 - `buf.yaml`, `buf.gen.yaml`, generation scripts
 - v1 protobuf definitions
@@ -113,3 +126,4 @@ Done when: Baseline protected request works end-to-end locally.
 - typed query layer and API integration
 - frontend protected page using generated client
 - local end-to-end validation notes
+- shared observability library package skeleton and integration stubs

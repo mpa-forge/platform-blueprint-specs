@@ -45,8 +45,8 @@ Action: Run mandatory baseline smoke tests after each deployment and gate promot
 - API health and readiness (`/healthz`, `/readyz`).
 - Authenticated frontend -> protected API happy-path check.
 - API -> DB deterministic read check.
-- Worker heartbeat/no-op scheduled execution check.
-- Release version check (expected image tag/digest running).  
+- Worker heartbeat/no-op scheduled execution check (when worker deployment path is enabled).
+- Release version check (expected image tag/digest running in selected runtime target).  
 Output: Automated post-deploy verification.  
 Done when: Failed smoke tests block subsequent promotion stages.
 
@@ -54,7 +54,7 @@ Done when: Failed smoke tests block subsequent promotion stages.
 Owner: Agent  
 Type: CI/CD coding  
 Dependencies: P7-T02, P7-T04  
-Action: Add rollback jobs for Helm releases and define DB rollback policy as forward-fix only.  
+Action: Add rollback jobs for selected runtime path (Cloud Run revision rollback baseline; Helm rollback for GKE path) and define DB rollback policy as forward-fix only.  
 Output: Rollback pipeline actions.  
 Done when: Team can execute rollback through repeatable documented commands/workflows.
 

@@ -24,9 +24,13 @@
 - Async Layer: Go worker process model kept, but queue/broker technology is intentionally deferred until product requirements are clearer.
 - Data Layer: PostgreSQL as primary relational database.
 - Messaging: Deferred decision (not part of initial platform baseline).
-- Platform: Docker containers deployed to Kubernetes.
-- Packaging: Helm charts per environment.
-- Infra: Terraform modules for networking, cluster, data services, secrets integration.
+- Platform runtime paths:
+  - Path A (baseline): API on Google Cloud Run (scale-to-zero capable).
+  - Path B (alternative): API on GKE Autopilot with Helm-managed workloads.
+- Packaging:
+  - Cloud Run path: container image deploys through Cloud Run service revisions.
+  - GKE path: Helm charts per environment.
+- Infra: Terraform modules for networking, Cloud Run, optional GKE cluster, data services, and secrets integration.
 - Observability: OpenTelemetry -> Grafana Cloud (managed metrics/logs/traces/alerting) + automation workflows.
 
 ## 4. Proposed Stack (Initial)
@@ -37,6 +41,7 @@
   - Config: viper/envconfig + explicit env schema
   - Persistence: pgx + sqlc (typed queries)
   - Migrations: golang-migrate
+  - Observability package: shared internal library supporting `direct_otlp` and `collector_gateway` modes with one profile contract
 - Contract toolchain: Buf CLI (`buf lint`, `buf breaking`, CLI-based code generation in local/CI; no paid BSR dependency in baseline).
 - Frontend contract client: Connect ES generated TypeScript clients and types.
   - Distribution: published as a versioned npm package from `platform-contracts` to GitHub Packages (`npm.pkg.github.com`).
@@ -45,7 +50,8 @@
 - Queue/Broker: Deferred until business requirements define delivery semantics.
 - Cache (optional): Redis.
 - Build: Docker multi-stage builds.
-- Orchestration: GKE Autopilot + Helm.
+- API runtime baseline: Cloud Run (managed, scale-to-zero).
+- Optional orchestration path: GKE Autopilot + Helm.
 - IaC: Terraform.
 - CI/CD: GitHub Actions.
 - CI quality/security tooling baseline:
@@ -55,9 +61,13 @@
   - IaC quality/security: `terraform fmt/validate`, `tflint` (optional `tfsec`/`checkov`)
   - Supply chain (hardening phase): `syft` + `cosign`
 - Container artifact registry: Google Artifact Registry.
-- CD operating model: Pipeline-driven deployment (GitHub Actions + Helm).
-- AI task-to-code automation: Custom worker runtime in dedicated `platform-ai-workers` repository, executed as scheduled Cloud Run Jobs.
-- Secrets management: Google Secret Manager + External Secrets Operator (ESO).
+- CD operating model:
+  - baseline: pipeline-driven deployment with GitHub Actions -> Cloud Run for API
+  - alternative path: GitHub Actions + Helm for GKE workloads
+- AI task-to-code automation: Custom worker runtime in dedicated `platform-ai-workers` repository, executed as event-woken/bounded Cloud Run Jobs (optional low-frequency scheduler backstop).
+- Secrets management:
+  - baseline Cloud Run path: Google Secret Manager direct injection/retrieval
+  - GKE path: Google Secret Manager + External Secrets Operator (ESO)
 - Repository strategy: Polyrepo.
 - Worker repository model: Dedicated `backend-worker` repository from the start.
 - Shared docs/ADR repository: Dedicated docs repository.
@@ -72,7 +82,7 @@
 
 ## 5. Environments
 - Local: Docker Compose minimal stack (frontend, api, worker, postgres) with no local observability components required by default.
-- RC: release-candidate environment with continuous deploy from `main` and strict internal isolation (separate namespaces, DB boundaries, secrets, and domains).
+- RC: release-candidate environment with continuous deploy from `main` and strict internal isolation (separate DB boundaries, secret scopes, and domains; namespaces apply when GKE path is enabled).
 - Prod: fully separate production environment with controlled rollout strategy and stronger change controls.
 
 ### Frontend Delivery Options
@@ -101,6 +111,7 @@
 
 ## 7. Scalability Strategy
 - Stateless API and worker containers.
+- Cloud Run API path scales by request concurrency and can scale to zero between traffic windows.
 - Horizontal pod autoscaling based on CPU/memory and HTTP/service metrics.
 - Postgres: start single primary with managed backups; evolve to read replicas/partitioning.
 - Postgres hosting path: Cloud SQL primary with managed backups; evolve to replicas as needed.
@@ -108,24 +119,28 @@
 
 ## 8. Security Baseline
 - Secrets in cloud secret manager (no plaintext in git).
-- Secrets are delivered to workloads via External Secrets Operator; raw secret values are not stored in git.
-- RC isolation baseline: separate namespace, DB boundary, secret scope, and domain per service surface as needed.
+- Secrets are delivered to workloads through runtime-specific integrations:
+  - Cloud Run path: GSM secret references/versions.
+  - GKE path: ESO sync from GSM.
+- RC isolation baseline: separate DB boundary, secret scope, and domain per service surface as needed (namespace boundary when GKE path is active).
 - Image scanning and dependency scanning in CI.
 - SAST/DAST checkpoints.
 - TLS everywhere, ingress with cert management.
-- RBAC and least privilege in Kubernetes and cloud IAM.
+- Least privilege in cloud IAM (and Kubernetes RBAC when GKE path is enabled).
 
 ## 9. Key Decisions To Finalize
 - Queue/broker approach (only if asynchronous workflows become a requirement).
 - Edge perimeter/security provider layering for internet traffic (`GCP-native` only vs adding an external provider such as Cloudflare for WAF/bot controls) is deferred to hardening phase review.
 
 ## 10. Locked Decisions (Current)
-- Cloud provider and Kubernetes: GCP + GKE.
-- GKE cluster mode: Autopilot.
-- GKE cost-control baseline: keep a single Autopilot cluster during baseline implementation (RC only) to preserve available GKE credit; defer prod cluster provisioning until explicit production cutover.
-- Ephemeral cluster lifecycle baseline: prod cluster must be create/destroy/recover capable through Terraform + Helm workflows for cost control and reusable project templates.
+- Cloud provider: GCP.
+- API runtime baseline: Cloud Run (scale-to-zero).
+- API runtime alternative path: GKE Autopilot + Helm (kept fully supported in IaC/deployment design).
+- API runtime path reference: `ops/api-runtime-paths-cloud-run-gke.md`.
+- GKE baseline policy: do not create a cluster for the initial iteration; provision GKE only when product requirements justify it.
+- Ephemeral cluster lifecycle baseline (when GKE path is enabled): prod cluster must be create/destroy/recover capable through Terraform + Helm workflows for cost control and reusable project templates.
 - Repository strategy: Polyrepo.
-- Ingress: NGINX Ingress Controller.
+- GKE ingress choice (alternative path): NGINX Ingress Controller.
 - Queue/broker: Deferred until product requirements demand it.
 - External authentication: Auth0 Free plan.
 - Auth scope: B2C-first (independent users, no Organizations or SCIM in initial phase).
@@ -162,15 +177,19 @@
     - cloud mode exits and waits for next wake-up
   - Worker output path: branch + draft PR; review feedback can trigger rework on the same PR branch; merge requires standard human review and required CI checks.
   - Runtime parity reference: `ops/ai-worker-local-cloud-parity.md`.
-- CD operating model: Pipeline-driven (GitHub Actions + Helm).
+- CD operating model:
+  - baseline path: Pipeline-driven GitHub Actions deployment to Cloud Run for API.
+  - alternative path: Pipeline-driven GitHub Actions + Helm for GKE workloads.
 - Container artifact registry: Google Artifact Registry.
-- Secrets management: Google Secret Manager + External Secrets Operator.
+- Secrets management:
+  - baseline Cloud Run path: Google Secret Manager direct integration.
+  - alternative GKE path: Google Secret Manager + External Secrets Operator.
 - Frontend sequencing: Authenticated app first.
 - Authenticated frontend serving path: CDN-first.
 - Authenticated frontend CDN implementation: Cloud CDN + External HTTPS Load Balancer + Cloud Storage backend bucket.
 - Frontend/API single-domain routing baseline:
   - frontend/static assets served from CDN path.
-  - `/api/*` routed to backend ingress/API service path.
+  - `/api/*` routed to selected backend runtime path (Cloud Run baseline or ingress/service path on GKE).
 - Edge provider layering baseline:
   - Keep internet edge stack GCP-native in baseline (`Cloud CDN + External HTTPS LB + managed certs`).
   - Defer the decision to add an additional external edge provider (for example Cloudflare for advanced WAF/bot controls) until hardening phase cost/traffic review.
@@ -178,8 +197,8 @@
 - Environment model: Local + RC + prod.
 - Environment separation: prod fully separate from RC; RC enforces strict internal isolation boundaries.
 - GCP project separation: `rc` and `prod` run in separate projects.
-- Cluster-count guardrail: no extra/non-essential clusters; baseline target is one active GKE Autopilot cluster until prod is explicitly enabled.
-- Ephemeral lifecycle requirements reference: `ops/ephemeral-gke-cluster-lifecycle-requirements.md`.
+- Cluster creation guardrail: no non-essential clusters; initial iteration runs with no GKE cluster by default.
+- GKE lifecycle requirements reference (when cluster path is enabled): `ops/ephemeral-gke-cluster-lifecycle-requirements.md`.
 - API ingress routing model: Single domain with path-based routing.
 - TLS certificate management default: Managed certificates.
 - Production deployment timing: On-demand with required approvals.
@@ -188,7 +207,7 @@
   - API `healthz` and `readyz` checks pass on deployed release.
   - Authenticated frontend -> protected API request succeeds.
   - API -> DB deterministic read check succeeds.
-  - Worker heartbeat/no-op run is observed for deployed release.
+  - Worker heartbeat/no-op run is observed for deployed release when worker deployment path is enabled.
   - Deployed image tag/digest matches release being promoted.
 - Contract generation artifacts: Committed to git.
 - Frontend contract package distribution baseline: generated TypeScript client published from `platform-contracts` to GitHub Packages and consumed as a pinned npm dependency.
@@ -197,17 +216,23 @@
 - Code quality provider tier baseline: SonarQube Cloud Free.
 - Baseline frontend token handling pattern: Direct SPA bearer tokens (BFF deferred).
 - Typed DB access standard: `sqlc` with handwritten SQL and `pgx` runtime.
-- Telemetry routing baseline: Cluster-level collector gateway (Grafana Alloy / OTel Collector) before Grafana Cloud.
+- Telemetry routing baseline:
+  - Cloud Run API path (baseline): direct OTLP/HTTP export to Grafana Cloud OTLP endpoints for traces/metrics/logs.
+  - GKE path (alternative): cluster-level collector gateway (Grafana Alloy / OTel Collector) before Grafana Cloud.
 - Initial trace sampling baseline:
   - `rc`: 25%
   - `prod`: 5%
   - Force sample 100% for error/high-latency (>1s initial threshold)/debug-incident traces.
 - Telemetry budget control baseline:
   - Use one centrally managed profile value `OBS_TELEMETRY_PROFILE` to tune telemetry ingestion by environment without code changes.
-  - Profile is applied in the collector/alloy layer and maps to per-signal controls:
+  - Implement a shared observability library/package that supports both runtime export modes (`direct_otlp` and `collector_gateway`) with one profile contract.
+  - Profile control implementation is runtime-mode aware:
+    - Cloud Run path: profile behavior is applied in the application observability library (sampling/filtering/export settings).
+    - GKE path: profile behavior is applied in collector/alloy policy (with compatible library defaults).
+  - Profile mapping includes per-signal controls:
     - traces: sampling rates and force-sample exceptions
     - logs: sampling/drop rules by severity/category
-    - metrics: cardinality/drop filters and scrape/forwarding budgets
+    - metrics: cardinality/drop filters and export/scrape budgets
   - Default profile is `balanced` and must preserve baseline trace policy (`rc` 25%, `prod` 5%).
   - Alternative profiles (for example `cost` and `debug`) are runbook-controlled and can be dialed up/down to stay under free-tier caps.
   - Detailed operational specification: `ops/observability-telemetry-budget-profile.md`.
@@ -237,6 +262,10 @@
 - Terraform environment structure baseline:
   - One Terraform root per environment (`rc`, `prod`) with shared modules.
   - No workspace-based environment switching.
+- Terraform runtime module baseline:
+  - Keep both API runtime modules available in the same IaC repo:
+    - Cloud Run API module (baseline enabled).
+    - GKE API module (disabled by default, enable on demand).
 - Deploy-time image signature verification: Deferred to a later hardening phase.
 - Primary cloud region baseline: `us-east4` for both RC and prod.
 - Local environment stack scope: Minimal app stack only (frontend, api, worker, postgres).
@@ -346,22 +375,31 @@
 
 ## 14. Observability Architecture Baseline
 - Metrics:
-  - Services expose `/metrics` and/or OTEL metrics.
   - Telemetry is forwarded to Grafana Cloud Metrics (Prometheus-compatible query model).
+  - Runtime path handling:
+    - Cloud Run API path: service exports metrics through OTLP/HTTP directly to Grafana Cloud endpoints.
+    - GKE path: service metrics can be scraped/exported via collector/alloy gateway.
   - Alerting rules evaluate SLO/SLI symptoms (latency, error rate, saturation, availability).
 - Logs:
-  - Grafana Alloy (or equivalent agent) ships container logs to Grafana Cloud Logs.
+  - Cloud Run API path: app logs are exported through OTLP/HTTP pipeline to Grafana Cloud Logs endpoint.
+  - GKE path: Grafana Alloy (or equivalent agent) ships container logs to Grafana Cloud Logs.
   - Structured JSON logs with request and trace correlation ids.
 - Traces:
-  - OpenTelemetry SDK in services exports spans to a cluster-level OTEL collector/gateway.
-  - Collector forwards spans to Grafana Cloud Traces (Tempo-managed).
+  - Cloud Run API path: OpenTelemetry SDK exports spans directly over OTLP/HTTP to Grafana Cloud Traces.
+  - GKE path: OpenTelemetry SDK exports spans to collector/alloy, then collector forwards to Grafana Cloud Traces.
   - Sampling baseline starts at `rc` 25% / `prod` 5%, with force-sample rules for errors, high latency, and debug/incident traces.
+- Shared observability library/package:
+  - Build a reusable package for backend services with one configuration contract for instrumentation, resource attributes, sampling/filtering, and exporter wiring.
+  - Required runtime modes:
+    - `direct_otlp` (Cloud Run baseline)
+    - `collector_gateway` (GKE alternative)
+  - The package must preserve the same metric names, labels, span attributes, and log fields across both modes so dashboards/alerts remain portable.
 - Telemetry budget profile:
-  - A single runtime value `OBS_TELEMETRY_PROFILE` controls collector-side ingestion behavior across traces/logs/metrics.
+  - A single runtime value `OBS_TELEMETRY_PROFILE` controls ingestion behavior across traces/logs/metrics in both runtime modes.
   - `balanced` profile is default and aligns to baseline sampling/cardinality policy.
   - `cost` profile reduces ingestion aggressiveness to protect free-tier limits.
   - `debug` profile increases signal detail for short, operator-approved windows.
-  - Profile changes are operational toggles (Helm values/env/config), not application code changes.
+  - Profile changes are operational toggles (Cloud Run env/revision settings or Helm/collector values), not instrumentation code changes.
   - Source cardinality requirements and profile operations are defined in `ops/observability-telemetry-budget-profile.md`.
 - Errors:
   - Sentry is used for frontend and backend exception/error aggregation.
@@ -398,20 +436,24 @@
   - Enable products: Metrics, Logs, Traces, Alerting.
 - Credentials and access:
   - Create service accounts and least-privilege API tokens for telemetry ingest and API queries.
-  - Store tokens in secret manager and inject via Kubernetes secrets/CI variables.
+  - Store tokens in secret manager and inject via Cloud Run or Kubernetes runtime paths as applicable.
 - Endpoints and app config:
   - Define OTLP endpoint env vars for services (`OTEL_EXPORTER_OTLP_ENDPOINT`, protocol, headers).
   - Define metrics/logs/traces query API credentials for automation service.
   - Standardize resource attributes: `service.name`, `service.version`, `deployment.environment`, `cloud.region`.
 - Telemetry pipeline:
-  - Deploy OTel Collector or Grafana Alloy as gateway for exporters.
-  - Configure traces pipeline: OTLP receiver -> processors (batch/redaction/sampling) -> Grafana Cloud Traces.
-  - Configure metrics pipeline: Prometheus scrape and/or OTLP metrics -> Grafana Cloud Metrics.
-  - Configure logs pipeline: Kubernetes/container logs -> parsing/labels -> Grafana Cloud Logs.
-  - Implement `OBS_TELEMETRY_PROFILE` mapping in collector/alloy config and expose the selected profile as a dashboard/runbook-visible setting.
+  - Cloud Run baseline path:
+    - configure API to export traces/metrics/logs via OTLP/HTTP directly to Grafana Cloud endpoints.
+    - implement `OBS_TELEMETRY_PROFILE` behavior in shared observability library and expose effective mode/profile in service startup logs and dashboard metadata.
+  - GKE alternative path:
+    - deploy OTel Collector or Grafana Alloy as gateway for exporters.
+    - configure traces pipeline: OTLP receiver -> processors (batch/redaction/sampling) -> Grafana Cloud Traces.
+    - configure metrics pipeline: Prometheus scrape and/or OTLP metrics -> Grafana Cloud Metrics.
+    - configure logs pipeline: Kubernetes/container logs -> parsing/labels -> Grafana Cloud Logs.
+    - implement `OBS_TELEMETRY_PROFILE` mapping in collector/alloy config and expose selected profile as dashboard/runbook-visible setting.
   - Follow `ops/observability-telemetry-budget-profile.md` for profile semantics, threshold actions, and emergency change path.
 - Dashboards and alerts:
-  - Import/create baseline dashboards for API, worker, ingress, and Postgres.
+  - Import/create baseline dashboards for API, worker, edge/runtime path, and Postgres.
   - Create SLO-adjacent alerts (availability, latency, error-rate, saturation).
   - Configure contact points and routing policies (Slack/email/incident.io/webhook).
 - Alert -> AI workflow wiring:
@@ -512,5 +554,7 @@
 - v1.39 (2026-02-28): Deferred external edge provider decision (Cloudflare-like overlay vs GCP-native edge only) to Phase 8 hardening review, while keeping baseline on GCP-native edge stack.
 - v1.40 (2026-02-28): Added AI worker local/cloud runtime parity requirement (same codepath/container entrypoint) and linked operational spec `ops/ai-worker-local-cloud-parity.md`.
 - v1.41 (2026-02-28): Locked AI worker control-loop model to shared poll logic across local/cloud, with local continuous polling and cloud bounded wake-up executions.
+- v1.42 (2026-03-01): Switched API runtime baseline to Cloud Run (scale-to-zero), preserved GKE+Helm as alternative path, and deferred initial cluster creation until required.
+- v1.43 (2026-03-01): Expanded observability architecture to dual runtime modes (`direct_otlp` for Cloud Run baseline, `collector_gateway` for GKE path) and locked shared observability library requirement with profile parity.
 
 

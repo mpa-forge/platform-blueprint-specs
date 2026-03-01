@@ -37,9 +37,9 @@ Target repositories (polyrepo):
 - `platform-contracts`: protobuf APIs, Buf config, generated artifact policy, and versioned TypeScript client package publishing to GitHub Packages.
 - `backend-api`: Go API service (`net/http` + `connect-go`) with Auth0 validation and Cloud SQL connectivity.
 - `backend-worker`: Go worker service with scheduled/no-op job loop and shared platform libraries.
-- `platform-ai-workers`: AI task-to-code worker runtime (Cloud Run Jobs with scheduled + event-driven triggers) that converts GitHub tasks into draft PRs with human review gates.
+- `platform-ai-workers`: AI task-to-code worker runtime (Cloud Run Jobs with event-driven wake-ups and optional scheduler backstop) that converts GitHub tasks into draft PRs with human review gates.
 - `frontend-web`: authenticated React app using generated TypeScript client from protobuf contracts.
-- `platform-infra`: Terraform + Helm + GitHub Actions deployment workflows.
+- `platform-infra`: Terraform + GitHub Actions deployment workflows for Cloud Run baseline, plus Helm workflows for optional GKE path.
 - dedicated docs repository: ADRs, platform standards, runbooks, and cross-repo operational documentation.
 
 Minimum functional scope (no business logic):
@@ -64,20 +64,25 @@ Pipeline and deployment path (must be proven end-to-end):
 - Merge to `main`:
   - Build containers, scan, push immutable image tags to GAR.
   - Publish frontend build to CDN origin bucket/path.
-  - Deploy API/worker via Helm to `rc` on GKE Autopilot.
+  - Deploy API to Cloud Run in `rc` (baseline path).
+  - Keep optional GKE/Helm deployment path runnable but disabled by default.
   - Invalidate CDN cache for changed frontend assets.
 - Post-deploy:
   - Smoke test: authenticated frontend -> protected API -> DB read.
-  - Smoke test: worker heartbeat + scheduled no-op execution.
+  - Smoke test: worker heartbeat + scheduled no-op execution (when worker deployment path is enabled).
   - Smoke test: trace/log/metric visibility in Grafana Cloud.
   - Prod promotion gate: require passing baseline blockers (API health/readiness, authenticated protected API path, DB read path, worker heartbeat, deployed version match).
 
 Required platform integrations in MVP:
 - Auth: Auth0 (B2C, free plan) wired in frontend and API.
-- Secrets: GSM + ESO for runtime secret sync.
-- Data: Cloud SQL Postgres private connectivity from GKE.
+- Secrets:
+  - Cloud Run baseline path: GSM secret integration for runtime envs.
+  - GKE path: GSM + ESO for runtime secret sync.
+- Data: Cloud SQL Postgres connectivity from Cloud Run baseline runtime (and from GKE when enabled).
 - Observability: Grafana Cloud Free (metrics/logs/traces + alert), Sentry Developer (Free), incident.io Basic (Free) routing.
-- CD: GitHub Actions pipeline-driven deploy with Helm.
+- CD:
+  - baseline path: GitHub Actions pipeline-driven deploy to Cloud Run.
+  - optional path: GitHub Actions + Helm for GKE.
 
 Acceptance checklist (Definition of Done for baseline):
 - Local:
@@ -85,11 +90,11 @@ Acceptance checklist (Definition of Done for baseline):
   - Local authenticated flow reaches protected API endpoint.
 - Cloud RC:
   - Terraform provisions/updates required infrastructure from clean state.
-  - Helm releases API/worker successfully with zero-downtime rollout behavior.
-  - Frontend is served through CDN and can call RC API through ingress.
-  - RC isolation boundaries are enforced: separate namespaces, databases (or DB names), secrets, and domains.
+  - API deploys successfully to Cloud Run with revisioned rollout.
+  - Frontend is served through CDN and can call RC API through single-domain `/api/*` routing.
+  - RC isolation boundaries are enforced: separate databases (or DB names), secrets, and domains; namespace boundaries apply when GKE path is enabled.
 - Operability:
-  - Dashboard exists with API latency, error rate, and worker health.
+  - Dashboard exists with API latency and error rate (plus worker health when worker deployment path is enabled).
   - At least 3 actionable alerts configured and tested.
   - One synthetic alert triggers the alert -> AI workflow and produces an incident summary artifact.
 - Security/governance:
@@ -111,7 +116,7 @@ Out of scope until baseline completion:
 - Delivery order:
   - Phase 0: lock automation architecture, task state machine, and credential model.
   - Phase 1: bootstrap `platform-ai-workers` repo and validate one end-to-end task -> draft PR flow in a sandbox repo.
-- Phase 5 (minimal subset pulled earlier as needed): provision Cloud Run Job + GSM/IAM bindings plus on-demand execute permissions for worker runtime (optional low-frequency scheduler backstop).
+  - Phase 5 (minimal subset pulled earlier as needed): provision Cloud Run Job + GSM/IAM bindings plus on-demand execute permissions for worker runtime (optional low-frequency scheduler backstop).
   - Phase 4: enforce governance checks for AI-generated PRs (required review/checks/metadata) and event-trigger workflows for immediate rework runs.
 - Guardrails:
   - Draft PR only, no direct protected-branch writes.
@@ -133,7 +138,7 @@ Out of scope until baseline completion:
 
 ## 4. Workstreams (Parallel)
 - App Platform: frontend/api/worker skeletons.
-- Infrastructure: Terraform and Kubernetes foundations.
+- Infrastructure: Terraform foundations (Cloud Run baseline, optional GKE path).
 - Quality & Security: CI, scans, policies.
 - Operations: observability, runbooks, alerts.
 
@@ -158,14 +163,15 @@ For each decision capture:
 ## 7. Immediate Next Iteration
 - Define Auth0 tenant/app configuration for local, RC, and prod environments.
 - Define Grafana Cloud org/stack setup and telemetry credentials for local, RC, and prod.
-- Define a single observability ingestion control (`OBS_TELEMETRY_PROFILE`) and implement collector/alloy mappings for traces/logs/metrics (`balanced`/`cost`/`debug`) to manage free-tier caps.
-  - Specification artifact: `ops/observability-telemetry-budget-profile.md`.
+- Define a single observability ingestion control (`OBS_TELEMETRY_PROFILE`) and implement dual-mode mappings for traces/logs/metrics (`balanced`/`cost`/`debug`) across Cloud Run direct OTLP and GKE collector paths with one shared observability library contract.
+- Specification artifact for dual-mode observability budget control: `ops/observability-telemetry-budget-profile.md`.
 - Define Sentry Developer (Free) and incident.io Basic (Free) projects/workspaces and API credentials.
 - Define GitHub Actions environments/secrets and GCP Workload Identity Federation for CI auth.
 - Define GitHub Issues/Projects task-management workflow baseline (issue templates, labels, board states, automation) across repos.
 - Define and codify CI code-quality/security tooling standards (`golangci-lint`, `eslint`, `tsc`, `sonar`/`SonarQube Cloud`, `trivy`, `gitleaks`, `semgrep/codeql`, IaC checks) with swap criteria.
   - Lock SonarQube Cloud Free as baseline tier.
 - Define and bootstrap `platform-ai-workers` repo with task-state machine and draft-PR flow (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`).
+- Build shared backend observability library package supporting `direct_otlp` (Cloud Run) and `collector_gateway` (GKE) modes with one `OBS_TELEMETRY_PROFILE` contract.
 - Provision minimal AI worker runtime prerequisites early (Cloud Run Job + GSM/IAM + on-demand execute permissions; optional scheduler backstop) to enable task-to-code automation before full platform completion.
 - Define per-target-repo worker deployment config model (`WORKER_RUNTIME_MODE`, `WORKER_ID`, `TARGET_REPO`, limits, credential refs).
 - Define shared poll-loop behavior (ready tasks + rework tasks + outstanding-review cap) with mode-specific lifecycle: local keeps polling; cloud exits on cap/idle and is re-woken by GitHub events.
@@ -173,11 +179,13 @@ For each decision capture:
 - Enforce local/cloud runtime parity for AI workers (same image + runtime entrypoint) and validate with local dry-run plus Cloud Run execution using equivalent inputs.
   - Specification artifact: `ops/ai-worker-local-cloud-parity.md`.
 - Define Cloud SQL instance topology and connectivity model for RC/prod.
-- Apply GKE cost guardrail: keep one active Autopilot cluster during baseline (RC) and gate prod cluster provisioning until explicit production cutover.
+- Lock API runtime baseline to Cloud Run for first iteration and defer initial GKE cluster creation until needed.
+- Keep Terraform modules for both API runtimes (Cloud Run baseline enabled; GKE module available but disabled by default).
+  - Specification artifact: `ops/api-runtime-paths-cloud-run-gke.md`.
 - Define and implement ephemeral prod cluster lifecycle requirements (create/destroy/recover) to control cost while keeping prod fully separate.
   - Specification artifact: `ops/ephemeral-gke-cluster-lifecycle-requirements.md`.
 - Apply `us-east4` as the primary region baseline for RC/prod infrastructure components.
-- Define RC isolation model implementation details (namespaces, DB boundaries, secret namespaces, and domain layout).
+- Define RC isolation model implementation details (DB boundaries, secret scopes, and domain layout; namespace boundaries for GKE path).
 - Define Google Secret Manager namespace/secret naming and ESO sync mappings for all services.
 - Implement authenticated frontend CDN path first (asset hosting, cache policy, invalidation strategy).
 - Keep public website/blog scope deferred until authenticated app baseline is complete.
@@ -192,7 +200,7 @@ For each decision capture:
   - Specification artifact: `ops/alert-ai-webhook-spec.md`.
 - Establish dedicated docs/ADR repository and migrate shared architecture decision records there.
 - Standardize frontend tooling on `npm` across repo templates and CI.
-- Apply single-domain path-based API ingress and managed TLS certificate defaults in deployment design.
+- Apply single-domain path-based `/api/*` routing and managed TLS certificate defaults in deployment design (Cloud Run backend baseline, ingress backend for GKE path).
 - Scaffold repo folders and minimal service skeletons.
 - Stand up local end-to-end via Docker Compose.
 
@@ -251,3 +259,5 @@ For each decision capture:
 - v2.32 (2026-02-28): Deferred external edge-provider layering decision to hardening phase while keeping baseline internet edge path GCP-native.
 - v2.33 (2026-02-28): Added AI worker local/cloud runtime parity requirement and linked implementation artifact `ops/ai-worker-local-cloud-parity.md`.
 - v2.34 (2026-02-28): Locked AI worker shared poll-loop runtime model (local continuous polling, cloud bounded wake-up runs with optional scheduler backstop).
+- v2.35 (2026-03-01): Switched first-iteration API deployment baseline to Cloud Run and deferred initial GKE cluster creation to an optional later path.
+- v2.36 (2026-03-01): Added dual-runtime observability implementation model and shared observability library requirement for Cloud Run direct OTLP and GKE collector modes.

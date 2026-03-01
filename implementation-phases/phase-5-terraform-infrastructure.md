@@ -2,18 +2,21 @@
 
 Detailed tasks: `implementation-phase-tasks/phase-5-terraform-infrastructure-tasks.md`
 Specification artifact: `ops/ephemeral-gke-cluster-lifecycle-requirements.md`
+Runtime selection artifact: `ops/api-runtime-paths-cloud-run-gke.md`
 
 - Create Terraform modules for:
   - network/VPC
-  - GKE Autopilot cluster
+  - Cloud Run API service baseline
+  - optional GKE Autopilot cluster
   - Google Artifact Registry repositories and IAM bindings
   - Cloud SQL for PostgreSQL instances, networking, backups, and IAM/database auth integration
-  - Google Secret Manager secrets, IAM policies, and workload identity bindings for ESO
+  - Google Secret Manager secrets and IAM policies (plus workload identity bindings for ESO on GKE path)
+  - Edge routing resources for single-domain `/api/*` mapping to Cloud Run baseline path
   - Cloud Run Jobs + Cloud Scheduler + IAM for AI task-to-code workers, including on-demand execution permissions for event-trigger workflows
   - observability dependencies (as needed)
 - Create env stacks (`rc`, `prod`) with separate project-level isolation for prod.
-- Apply cluster-count cost guardrail: one active GKE Autopilot cluster during baseline (RC), with prod cluster resources gated/deferred until explicit production cutover.
-- Implement lifecycle controls so prod cluster can be created/destroyed/recovered on demand via Terraform + Helm workflows.
+- Apply runtime guardrail: Cloud Run API path enabled by default for first iteration; GKE cluster resources remain disabled/gated until explicitly enabled.
+- Implement lifecycle controls so GKE cluster (when enabled) can be created/destroyed/recovered on demand via Terraform + Helm workflows.
 - Enforce one Terraform root per environment (`rc`, `prod`) with shared modules.
 - Do not use Terraform workspaces for environment isolation/switching.
 - Add remote state and locking.
@@ -28,6 +31,7 @@ Specification artifact: `ops/ephemeral-gke-cluster-lifecycle-requirements.md`
 
 Exit criteria:
 - `rc` infra provisioned reproducibly from clean state.
+- baseline `rc` API runtime is Cloud Run (no GKE cluster required).
 - prod infra is provisioned as a fully separate environment.
 - IaC plan/apply integrated with CI checks.
 

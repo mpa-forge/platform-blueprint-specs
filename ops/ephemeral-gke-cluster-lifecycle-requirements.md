@@ -4,7 +4,7 @@
 Define the requirements to create, deploy, destroy, and recover a separate production-grade GKE cluster on demand, minimizing cost while preserving repeatability and safety.
 
 ## Context
-- Baseline development operates with one active RC GKE Autopilot cluster.
+- Baseline development uses Cloud Run for API and does not require an always-on GKE cluster.
 - Prod cluster remains separate but is not kept running continuously until needed.
 - The same lifecycle model should support temporary environments for future projects.
 
@@ -93,4 +93,3 @@ Define the requirements to create, deploy, destroy, and recover a separate produ
 - Recovery to a healthy deployed state is reproducible without manual drift fixes.
 - Persistent data and secrets survive cluster teardown/recreation as designed.
 - Operational cost is controlled by keeping only required clusters active.
-
