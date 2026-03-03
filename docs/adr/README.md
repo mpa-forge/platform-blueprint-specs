@@ -8,7 +8,7 @@ ADRs store important technical and operational decisions with enough context to 
 - Store ADR files in `docs/adr/`.
 - Use sequential IDs with a short slug:
   - `0001-runtime-cloud-run-first.md`
-  - `0002-auth-managed-auth0.md`
+  - `0002-auth-managed-clerk.md`
 
 ## Lifecycle states
 
@@ -31,4 +31,3 @@ ADRs store important technical and operational decisions with enough context to 
 - Keep decision statements explicit and testable.
 - Document trade-offs, not only advantages.
 - When superseding, link both ADRs in each file.
-

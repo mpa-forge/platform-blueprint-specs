@@ -19,10 +19,10 @@ Observability package contract artifact: `ops/observability-telemetry-budget-pro
 - Implement Go API skeleton:
   - Native `net/http` server, health/readiness, config loading, structured logging, auth middleware scaffold.
   - Connect handlers mounted for proto-defined endpoints.
-- Configure Auth0 integration baseline:
+- Configure Clerk integration baseline:
   - OIDC/OAuth application setup for SPA + API.
   - Direct SPA bearer token model for baseline (no BFF token handling in this phase).
-  - JWT validation against Auth0 JWKS.
+  - JWT validation against Clerk JWKS.
   - B2C claims mapping to internal roles (no Organizations/SCIM assumptions).
 - Implement worker skeleton:
   - background process loop, graceful shutdown, and pluggable async adapter (queue can be added later).

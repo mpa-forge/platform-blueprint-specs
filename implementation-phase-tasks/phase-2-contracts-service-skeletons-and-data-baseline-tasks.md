@@ -37,20 +37,20 @@ Action: Add server bootstrapping, routing, health/readiness endpoints, structure
 Output: Runnable API service skeleton.  
 Done when: API starts and serves health endpoints.
 
-### P2-T05: Implement Auth0 JWT verification middleware
+### P2-T05: Implement Clerk JWT verification middleware
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T04  
-Action: Integrate Auth0 issuer/audience checks, JWKS retrieval, claim extraction, role mapping (`user`/`admin`).  
+Action: Integrate Clerk issuer/audience checks, JWKS retrieval, claim extraction, role mapping (`user`/`admin`).  
 Output: Auth middleware and tests.  
 Done when: Protected endpoint returns `401/403` correctly and passes auth tests.
 
-### P2-T06: Configure Auth0 tenant/apps for SPA and API
+### P2-T06: Configure Clerk app/instances for SPA and API
 Owner: Human  
 Type: Provider configuration  
 Dependencies: P2-T05  
 Action: Create SPA app, API audience, callback/logout URLs, test user roles, token lifetimes, and configure direct SPA bearer token usage (no BFF in baseline).  
-Output: Auth0 config values and environment mappings documented.  
+Output: Clerk config values and environment mappings documented.  
 Done when: Frontend can authenticate and obtain valid access token for API.
 
 ### P2-T07: Build worker skeleton with pluggable async adapter
@@ -120,7 +120,7 @@ Done when: API and worker initialize observability through the shared package an
 - generated Go and TS clients
 - TypeScript client package metadata and GitHub Packages publish conventions
 - API runtime skeleton and auth middleware
-- Auth0 tenant/application config docs
+- Clerk application/instance config docs
 - worker skeleton runtime
 - DB migration and seed scripts
 - typed query layer and API integration

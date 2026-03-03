@@ -9,7 +9,7 @@ Detailed tasks: `implementation-phase-tasks/phase-0-foundation-and-decisions-tas
 - Confirmed: Polyrepo strategy (frontend and backend separated, with additional backend repos as needed).
 - Confirmed: NGINX Ingress for GKE portability path.
 - Deferred: queue/broker choice until product requirements justify it.
-- Confirmed: Auth0 Free plan for external auth, B2C-first.
+- Confirmed: Clerk Free plan for external auth, B2C-first.
 - Confirmed: Grafana Cloud managed observability (metrics, logs, traces, alerting).
   - Tier locked: Grafana Cloud Free (baseline).
 - Confirmed: Observability runtime must support both Cloud Run direct OTLP export and GKE collector-gateway export through one shared configuration contract.

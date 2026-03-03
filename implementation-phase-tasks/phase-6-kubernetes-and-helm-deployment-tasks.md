@@ -123,7 +123,7 @@ Done when: Deployment update does not cause service downtime in smoke tests.
 Owner: Human  
 Type: Validation  
 Dependencies: P6-T01, P6-T06, P6-T12..P6-T16  
-Action: Validate full cloud path (Cloud Run baseline): frontend CDN -> Auth0 -> `/api/*` -> Cloud Run API -> DB read path.  
+Action: Validate full cloud path (Cloud Run baseline): frontend CDN -> Clerk -> `/api/*` -> Cloud Run API -> DB read path.  
 Output: Deployment validation report with defects/issues.  
 Done when: Phase 6 exit criteria are met and documented.
 

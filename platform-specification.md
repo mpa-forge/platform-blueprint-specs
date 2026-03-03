@@ -142,7 +142,7 @@
 - Repository strategy: Polyrepo.
 - GKE ingress choice (alternative path): NGINX Ingress Controller.
 - Queue/broker: Deferred until product requirements demand it.
-- External authentication: Auth0 Free plan.
+- External authentication: Clerk Free plan.
 - Auth scope: B2C-first (independent users, no Organizations or SCIM in initial phase).
 - Browser/API contract model: Proto-first with Connect-compatible endpoints.
 - Go HTTP stack: native `net/http` with `connect-go` handlers.
@@ -306,10 +306,10 @@
   - API maps claims (subject, groups, scopes) to internal roles/permissions.
   - API returns `401` for unauthenticated and `403` for unauthorized requests.
 - Selected provider:
-  - Auth0 Free plan for development and early production with limited users.
+  - Clerk Free plan for development and early production with limited users.
 - Initial auth feature scope:
   - B2C user model only.
-  - No Auth0 Organizations dependency in initial implementation.
+  - No Clerk Organizations dependency in initial implementation.
   - No SCIM provisioning in initial implementation.
 - Minimum auth baseline before business logic:
   - One protected endpoint in API.
@@ -505,7 +505,7 @@
 ## 18. Living Change Log
 - v0.1 (2026-02-17): Initial high-level draft.
 - v0.2 (2026-02-17): Locked GCP/GKE + polyrepo + NGINX ingress, deferred queue decision, added authentication architecture baseline.
-- v0.3 (2026-02-19): Locked Auth0 Free plan for B2C-first external auth, excluding Organizations and SCIM from initial scope.
+- v0.3 (2026-02-19): Locked Clerk Free plan for B2C-first external auth, excluding Organizations and SCIM from initial scope.
 - v0.4 (2026-02-19): Locked Loki + Grafana and added observability architecture baseline, including Prometheus operational implications.
 - v0.5 (2026-02-19): Locked self-managed Prometheus on GKE as the metrics runtime.
 - v0.6 (2026-02-19): Switched to Grafana Cloud managed observability and added automated alert-to-AI workflow architecture.

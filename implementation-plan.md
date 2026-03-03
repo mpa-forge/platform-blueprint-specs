@@ -35,7 +35,7 @@ Objective:
 
 Target repositories (polyrepo):
 - `platform-contracts`: protobuf APIs, Buf config, generated artifact policy, and versioned TypeScript client package publishing to GitHub Packages.
-- `backend-api`: Go API service (`net/http` + `connect-go`) with Auth0 validation and Cloud SQL connectivity.
+- `backend-api`: Go API service (`net/http` + `connect-go`) with Clerk token validation and Cloud SQL connectivity.
 - `backend-worker`: Go worker service with scheduled/no-op job loop and shared platform libraries.
 - `platform-ai-workers`: AI task-to-code worker runtime (Cloud Run Jobs with event-driven wake-ups and optional scheduler backstop) that converts GitHub tasks into draft PRs with human review gates.
 - `frontend-web`: authenticated React app using generated TypeScript client from protobuf contracts.
@@ -44,7 +44,7 @@ Target repositories (polyrepo):
 
 Minimum functional scope (no business logic):
 - Frontend:
-  - Authenticated shell app with login/logout flow through Auth0.
+  - Authenticated shell app with login/logout flow through Clerk.
   - One protected page that calls one protected API endpoint using generated client code.
 - API:
   - `GET /healthz` and `GET /readyz`.
@@ -74,7 +74,7 @@ Pipeline and deployment path (must be proven end-to-end):
   - Prod promotion gate: require passing baseline blockers (API health/readiness, authenticated protected API path, DB read path, worker heartbeat, deployed version match).
 
 Required platform integrations in MVP:
-- Auth: Auth0 (B2C, free plan) wired in frontend and API.
+- Auth: Clerk (B2C, free plan) wired in frontend and API.
 - Secrets:
   - Cloud Run baseline path: GSM secret integration for runtime envs.
   - GKE path: GSM + ESO for runtime secret sync.
@@ -161,7 +161,7 @@ For each decision capture:
   - Mitigation: immutable infra through Terraform + Helm values discipline.
 
 ## 7. Immediate Next Iteration
-- Define Auth0 tenant/app configuration for local, RC, and prod environments.
+- Define Clerk application/instance configuration for local, RC, and prod environments.
 - Define Grafana Cloud org/stack setup and telemetry credentials for local, RC, and prod.
 - Define a single observability ingestion control (`OBS_TELEMETRY_PROFILE`) and implement dual-mode mappings for traces/logs/metrics (`balanced`/`cost`/`debug`) across Cloud Run direct OTLP and GKE collector paths with one shared observability library contract.
 - Specification artifact for dual-mode observability budget control: `ops/observability-telemetry-budget-profile.md`.
@@ -207,7 +207,7 @@ For each decision capture:
 ## 8. Living Change Log
 - v0.1 (2026-02-17): Initial high-level phased implementation plan.
 - v0.2 (2026-02-17): Applied locked decisions (GCP/GKE, polyrepo, NGINX ingress), deferred queue decision, and added auth milestones.
-- v0.3 (2026-02-19): Locked Auth0 Free plan for B2C-first auth and updated implementation tasks accordingly.
+- v0.3 (2026-02-19): Locked Clerk Free plan for B2C-first auth and updated implementation tasks accordingly.
 - v0.4 (2026-02-19): Locked Loki + Grafana and expanded observability implementation tasks for Prometheus operations.
 - v0.5 (2026-02-19): Locked self-managed Prometheus and updated Phase 3 to Helm-based in-cluster deployment tasks.
 - v0.6 (2026-02-19): Switched observability implementation to Grafana Cloud managed stack and added alert-to-AI automation tasks.

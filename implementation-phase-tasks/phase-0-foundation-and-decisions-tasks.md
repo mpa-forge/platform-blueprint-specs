@@ -69,19 +69,19 @@ Execution checklist:
 - Enable required APIs in `rc` (and `prod` if pre-created).
 - Record projects, billing, and service status in provider account inventory.
 
-### P0-T03C: Create or confirm Auth0 tenant baseline
+### P0-T03C: Create or confirm Clerk auth baseline
 Owner: Human  
 Type: Account setup  
 Dependencies: None  
-Action: Create or confirm Auth0 tenant for B2C external authentication using Free plan constraints, including application/API placeholders and allowed callback/logout/web origin placeholders for `rc` and `prod`.  
-Output: `docs/governance/provider-account-inventory.md` updated with Auth0 tenant details and plan tier.  
-Done when: Auth0 tenant is accessible, Free tier is confirmed, and baseline app/API placeholders exist for later integration.
+Action: Create or confirm Clerk setup for B2C external authentication using Free plan constraints, including application/instance placeholders and allowed redirect/logout/web origin placeholders for `rc` and `prod`.  
+Output: `docs/governance/provider-account-inventory.md` updated with Clerk account/application details and plan tier.  
+Done when: Clerk dashboard is accessible, Free tier is confirmed, and baseline app/instance placeholders exist for later integration.
 Execution checklist:
-- Confirm tenant name and region.
+- Confirm Clerk account/team and primary application naming.
 - Confirm Free plan status.
-- Create baseline application and API placeholder entries.
-- Record expected callback/logout/origin domain placeholders.
-- Record tenant metadata in provider account inventory.
+- Create baseline application/instance placeholder entries for environment mapping.
+- Record expected redirect/logout/origin domain placeholders.
+- Record Clerk metadata in provider account inventory.
 
 ### P0-T03D: Create or confirm Grafana Cloud baseline
 Owner: Human  
