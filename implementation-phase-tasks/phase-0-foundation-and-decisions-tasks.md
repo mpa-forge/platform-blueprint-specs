@@ -57,6 +57,8 @@ Done when: Every existing repo has at least one human maintainer and documented 
 Owner: Human  
 Type: Account setup  
 Dependencies: None  
+Status: Completed (`2026-03-03`)  
+Evidence: `docs/governance/provider-account-inventory.md` (`P0-T03B` section)  
 Action: Create or confirm the GCP project model for `rc` and `prod` with separate projects, billing linkage, and baseline region `us-east4`. Confirm Cloud Run, Cloud SQL, Artifact Registry, Secret Manager, IAM, Logging, and Monitoring APIs are enabled in the active implementation project(s).  
 Output: `docs/governance/provider-account-inventory.md` updated with GCP project IDs, billing account mapping, and enabled services baseline.  
 Done when: Required GCP projects are accessible to maintainer, billing is active, and baseline services are enabled for platform rollout.
