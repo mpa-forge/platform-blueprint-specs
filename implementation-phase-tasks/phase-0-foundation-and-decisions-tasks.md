@@ -234,7 +234,7 @@ Done when: Sign-off completed with approver names and date.
 - `docs/adr/README.md`
 - `docs/adr/adr-template.md`
 - `docs/adr/decision-matrix.md`
-- repository bootstrap evidence (`P0-T00`)
+- `docs/governance/repository-bootstrap-evidence.md`
 - `docs/governance/provider-account-inventory.md`
 - `docs/governance/repo-ownership.md`
 - `docs/standards/environment-and-region.md`
