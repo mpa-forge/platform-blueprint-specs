@@ -3,6 +3,7 @@
 Detailed tasks: `implementation-phase-tasks/phase-5-terraform-infrastructure-tasks.md`
 Specification artifact: `ops/ephemeral-gke-cluster-lifecycle-requirements.md`
 Runtime selection artifact: `ops/api-runtime-paths-cloud-run-gke.md`
+Cost suspend/resume artifact: `ops/cost-suspend-resume-automation.md`
 
 - Create Terraform modules for:
   - network/VPC
@@ -22,6 +23,7 @@ Runtime selection artifact: `ops/api-runtime-paths-cloud-run-gke.md`
 - Add remote state and locking.
 - Enforce separate GCP projects for `rc` and `prod`.
 - Allow minimal infra subset pull-forward when needed to unblock early AI worker automation bootstrap (Cloud Run Job + Scheduler + GSM/IAM).
+- Build suspend/resume tooling to drop idle environment cost to near zero and restore deterministically (including Cloud SQL backup/restore, Cloud Storage sync/restore, and artifact metadata/archive handling).
 - Standardize Terraform remote state pattern on GCS backend:
   - Dedicated Terraform state project.
   - Separate state bucket per environment (`rc`, `prod`) with strict IAM isolation.

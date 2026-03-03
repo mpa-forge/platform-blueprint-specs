@@ -125,6 +125,14 @@ Action: Implement Terraform resources required to route single-domain `/api/*` t
 Output: Runtime-routing infrastructure definitions for Cloud Run API path.  
 Done when: RC environment can route `/api/*` requests to Cloud Run API through IaC-managed configuration.
 
+### P5-T16: Build environment suspend/resume cost-control tool
+Owner: Human + Agent  
+Type: IaC operations automation  
+Dependencies: P5-T04, P5-T05, P5-T06, P5-T08, P5-T09  
+Action: Implement a script/tooling package (in `platform-infra`) that can suspend an environment to near-zero run cost and later restore it with data integrity. The tool must support deterministic `suspend <env>` and `resume <env>` commands, and follow the contract in `ops/cost-suspend-resume-automation.md`. Suspend flow must include Cloud SQL backup/export, Cloud Storage backup/sync, artifact image metadata snapshot (and optional image copy/export policy), scale-to-zero where possible (Cloud Run), and deletion/disablement of always-costing resources where required (for example Cloud SQL instance, schedulers, optional GKE resources when enabled). Resume flow must recreate resources via Terraform and restore required datasets/artifacts before reopening traffic.  
+Output: Suspend/resume tooling, state snapshot manifest format, and operations runbook.  
+Done when: `rc` can be suspended and restored end-to-end with documented evidence, successful smoke validation after resume, and measured idle cost reduction consistent with near-zero objective (except retained backup/archive storage).
+
 ## Artifacts Checklist
 - Terraform module/stacks structure
 - remote state backend/locking configuration
@@ -135,7 +143,9 @@ Done when: RC environment can route `/api/*` requests to Cloud Run API through I
 - `ops/ai-worker-local-cloud-parity.md` runtime parity mapping reference
 - `ops/api-runtime-paths-cloud-run-gke.md` runtime selection reference
 - `ops/ephemeral-gke-cluster-lifecycle-requirements.md` conformance mapping
+- `ops/cost-suspend-resume-automation.md` suspend/resume contract
 - API runtime switch runbook
+- suspend/resume tooling and runbook
 - Cloud Run `/api/*` routing infrastructure definitions
 - environment variable files and outputs
 - IaC CI validation checks
