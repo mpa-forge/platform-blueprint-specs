@@ -20,6 +20,24 @@ The goal is to stay within Grafana Cloud free-tier limits while preserving consi
   - Alternative path for GKE workloads.
   - Services export to collector/alloy; collector forwards to Grafana Cloud.
 
+## Grafana OTLP Auth Contract
+Use one auth contract across both runtime modes:
+
+- `OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf`
+- `OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp-gateway-prod-us-east-3.grafana.net/otlp`
+- `GRAFANA_CLOUD_INSTANCE_ID=1546554`
+- `GRAFANA_OTLP_INGEST_TOKEN` loaded from GSM secret per environment
+- `OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic <base64(${GRAFANA_CLOUD_INSTANCE_ID}:${GRAFANA_OTLP_INGEST_TOKEN})>`
+
+Secret source of truth:
+- `rc`: `projects/mpa-forge-bp-rc/secrets/grafana-otlp-ingest-token-rc`
+- `prod`: `projects/mpa-forge-bp-prod/secrets/grafana-otlp-ingest-token-prod` (to be created)
+
+Security requirements:
+- No raw tokens in git, Helm values, Terraform variables, or CI logs.
+- Runtime injects secret material from GSM only.
+- Token rotation is done by creating a new Grafana token, writing a new GSM secret version, and rolling workloads.
+
 ## Shared Library Requirement
 Implement a reusable backend observability package consumed by API/worker services.
 
@@ -62,6 +80,7 @@ Non-goal:
     - traces: sampling and force-sample exceptions
     - logs: severity/category sampling/filtering
     - metrics: cardinality hygiene and optional drop/filter rules before export
+  - OTLP auth header is composed at runtime from `GRAFANA_CLOUD_INSTANCE_ID` and GSM-backed ingest token.
   - Changes are applied by Cloud Run config/env update and new revision rollout.
 
 - `collector_gateway` (GKE path):
@@ -70,6 +89,7 @@ Non-goal:
     - sampling processors
     - log filtering/sampling
     - metric relabel/drop filters
+  - Collector/alloy uses the same GSM-backed token model and instance-id-based Basic auth pattern for upstream export.
   - Changes are applied by collector config update.
 
 ## Source Instrumentation Requirements

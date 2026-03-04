@@ -218,3 +218,103 @@ Decision: `Option A` (single Clerk app with dev/prod instances).
 Done when: all pending items above are filled in this section.
 
 Deferral rationale: finalize URL, callback, and key reference mappings only after domain naming and secret-storage conventions are locked in later phases.
+
+## P0-T03D: Grafana Cloud baseline
+
+Status: Completed (`2026-03-04`) for `rc` baseline scope. `prod` token/secrets are deferred until prod activation.
+
+### Identity and stack evidence
+
+| Field | Value |
+| --- | --- |
+| Provider | `Grafana Cloud` |
+| Org name | `MPA Forge` |
+| Stack name | `miquelpizaairas` |
+| Stack URL | `https://miquelpizaairas.grafana.net` |
+| Plan | `Free` |
+| Desired instance name | `mpaforge.grafana.net` |
+
+### Baseline checks
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Grafana Cloud account accessible | PASS | User-confirmed |
+| Org name identified | PASS | User-provided |
+| Stack identified | PASS | User-provided |
+| Stack URL identified | PASS | User-provided |
+| Plan tier locked to Free | PASS | Prior Phase 0 decision |
+| Access policies/tokens baseline created | PASS | Policies `o11y-ingest-rc-write` and `o11y-read` confirmed; mapped to RC GSM secrets |
+| OTLP endpoint and auth details recorded | PASS | OTLP endpoint + instance ID + header contract documented |
+| Mandatory label partitioning locked | PASS | `env`, `project`, `service` required on all telemetry |
+
+### Notes
+
+- Instance rename attempt returned `An internal error occurred`; keep current stack URL as baseline until rename is successful.
+- If retrying rename, use the stack rename flow in Cloud Portal and verify uniqueness/permissions.
+
+### GSM secret references (recorded)
+
+Project: `mpa-forge-bp-rc`
+
+| Secret name | Intended scope | Labels |
+| --- | --- | --- |
+| `grafana-otlp-ingest-token-rc` | RC ingest token | `app=platform-blueprint`, `env=rc`, `managed_by=manual`, `provider=grafana-cloud`, `scope=ingest`, `secret_type=api-token`, `service=observability`, `tier=free` |
+| `grafana-otlp-read-token` | RC/read token for observability queries | `app=platform-blueprint`, `env=rc`, `managed_by=manual`, `provider=grafana-cloud`, `scope=read`, `secret_type=api-token`, `service=observability` |
+
+### Grafana access policy inventory (recorded)
+
+| Policy name | Intended scopes | Environment | Backing GSM secret |
+| --- | --- | --- | --- |
+| `o11y-ingest-rc-write` | `metrics:write`, `logs:write`, `traces:write` | `rc` | `grafana-otlp-ingest-token-rc` |
+| `o11y-read` | `metrics:read`, `logs:read`, `traces:read` | `rc` | `grafana-otlp-read-token` |
+| `o11y-ingest-prod-write` | `metrics:write`, `logs:write`, `traces:write` | `prod` | deferred until prod activation |
+
+### Ingestion details (recorded)
+
+| Field | Value |
+| --- | --- |
+| OTLP endpoint | `https://otlp-gateway-prod-us-east-3.grafana.net/otlp` |
+| Grafana Cloud instance ID | `1546554` |
+
+### OTLP auth usage contract (locked)
+
+Use the following runtime env configuration for services exporting telemetry to Grafana Cloud:
+
+- `OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf`
+- `OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp-gateway-prod-us-east-3.grafana.net/otlp`
+- `OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic <base64(1546554:<ingest_token>)>`
+
+Token handling rules:
+
+- Do not store raw OTLP tokens in git.
+- Read ingest tokens from Google Secret Manager (GSM) at runtime.
+- Build the Basic auth payload from `instance_id:token` where instance ID is `1546554`.
+- The token shown on Grafana's OpenTelemetry connection page is not a source-of-truth secret for this platform; managed policy tokens stored in GSM are the source of truth.
+
+### OTLP token source mapping (GSM)
+
+| Environment | GCP project | Secret name | Usage |
+| --- | --- | --- | --- |
+| `rc` | `mpa-forge-bp-rc` | `grafana-otlp-ingest-token-rc` | OTLP ingest auth token for traces/metrics/logs export |
+| `rc` | `mpa-forge-bp-rc` | `grafana-otlp-read-token` | Read/query token for observability automation tooling |
+| `prod` | `mpa-forge-bp-prod` | `grafana-otlp-ingest-token-prod` | OTLP ingest auth token for prod (pending creation) |
+
+### Remaining actions to close P0-T03D
+
+None for Phase 0 `rc` scope.
+
+Deferred follow-ups (pre-prod / later phases):
+
+1. Create `prod` ingest/read secrets in `mpa-forge-bp-prod` and map to prod policies.
+2. Validate runtime wiring in `rc` (`Cloud Run` and later `GKE`) so OTLP headers are composed from GSM token material using instance ID `1546554`. This is intentionally deferred until a deployable service exists (Phase 3+ implementation).
+3. Extend mandatory label contract with `cloud.provider` and `cloud.region` after runtime wiring and hardening review (post first running workload).
+
+Done when (Phase 0): `rc` policy/token inventory, OTLP metadata/auth contract, and label partitioning rules are recorded in this section.
+
+### Locked label partitioning baseline (current)
+
+Mandatory labels for all telemetry signals (metrics, logs, traces):
+
+- `env`
+- `project`
+- `service`

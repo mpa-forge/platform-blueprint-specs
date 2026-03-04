@@ -88,14 +88,17 @@ Execution checklist:
 Owner: Human  
 Type: Account setup  
 Dependencies: None  
+Status: Completed (`2026-03-04`) for `rc` scope; `prod` token/secret provisioning deferred until prod activation.  
+Evidence: `docs/governance/provider-account-inventory.md` (`P0-T03D` section)  
 Action: Create or confirm Grafana Cloud stack on Free tier for managed metrics, logs, and traces; confirm access model and token management path for ingestion/query operations required by later phases.  
 Output: `docs/governance/provider-account-inventory.md` updated with Grafana Cloud org/stack and plan tier.  
-Done when: Stack is accessible, Free tier is confirmed, and credentials/tokens can be provisioned for telemetry ingestion in later phases.
+Done when: Stack is accessible, Free tier is confirmed, and `rc` credentials/tokens are provisioned and documented for telemetry ingestion.
 Execution checklist:
 - Confirm Grafana Cloud org and stack name.
 - Confirm Free tier status.
 - Confirm who can create/manage access tokens.
-- Record stack URL and access model in provider account inventory.
+- Record stack URL, access policies, and `rc` token-to-GSM mapping in provider account inventory.
+- Defer runtime export validation to later phases once at least one API/worker service is deployed and running.
 
 ### P0-T03E: Create or confirm Sentry baseline
 Owner: Human  
