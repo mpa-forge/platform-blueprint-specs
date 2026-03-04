@@ -1,6 +1,6 @@
 # Provider Account Inventory
 
-Last updated: 2026-03-03
+Last updated: 2026-03-04
 
 ## Scope
 This file stores provider account baselines and evidence for Phase 0 tasks (`P0-T03*`).
@@ -165,3 +165,56 @@ None. `P0-T03A` baseline checks are complete.
 & "C:\Users\Miquel\AppData\Local\Google\Cloud SDK\google-cloud-sdk\bin\gcloud.cmd" billing budgets create --billing-account=0191F2-169FC2-7A8CFF --project=mpa-forge-bp-rc --display-name="Budget mpa-forge-bp-prod monthly 1" --budget-amount=1 --calendar-period=month --filter-projects=projects/mpa-forge-bp-prod --threshold-rule=percent=0.50 --threshold-rule=percent=0.90 --threshold-rule=percent=1.00,basis=forecasted-spend
 & "C:\Users\Miquel\AppData\Local\Google\Cloud SDK\google-cloud-sdk\bin\gcloud.cmd" billing budgets list --billing-account=0191F2-169FC2-7A8CFF --project=mpa-forge-bp-rc --format="table(name,displayName,amount.specifiedAmount.units,amount.specifiedAmount.currencyCode,budgetFilter.projects,thresholdRules.spendBasis,thresholdRules.thresholdPercent)"
 ```
+
+## P0-T03C: Clerk auth baseline
+
+Status: Deferred (`2026-03-04`) pending domain allocation and secret-management rollout.
+
+### Identity and ownership evidence
+
+| Field | Value |
+| --- | --- |
+| Provider | `Clerk` |
+| Plan | `Free` |
+| Clerk app | `MPA Forge Blueprint` |
+| Authenticated maintainer | `MiquelPiza` (human owner model) |
+| Account accessibility | `Confirmed` |
+
+### Environment mapping decision (locked)
+
+| Environment | Clerk mapping |
+| --- | --- |
+| `local` | Clerk app `Development` instance (same lane as `rc`) |
+| `rc` | Clerk app `Development` instance |
+| `prod` | Clerk app `Production` instance |
+
+Decision: `Option A` (single Clerk app with dev/prod instances).
+
+### Baseline checks
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Clerk account/dashboard accessible | PASS | User-confirmed |
+| Free plan confirmed | PASS | User-confirmed |
+| Env mapping (`rc`/`prod`) selected | PASS | Option A locked in planning |
+| Redirect/logout/origin placeholders recorded | PENDING | Needs app configuration values |
+| Key reference names recorded (no raw secrets in git) | PENDING | Needs key naming entries |
+
+### Remaining actions to close P0-T03C
+
+1. Record Clerk app name and instance identifiers used for `Development` and `Production`.
+2. Record URL placeholders:
+   - `local` redirect/logout/origin
+   - `rc` redirect/logout/origin
+   - `prod` redirect/logout/origin
+3. Record key reference names only (not values), for example:
+   - `CLERK_PUBLISHABLE_KEY_LOCAL`
+   - `CLERK_PUBLISHABLE_KEY_RC`
+   - `CLERK_PUBLISHABLE_KEY_PROD`
+   - `CLERK_SECRET_KEY_RC`
+   - `CLERK_SECRET_KEY_PROD`
+4. Record issuer/JWKS metadata references used by backend JWT verification.
+
+Done when: all pending items above are filled in this section.
+
+Deferral rationale: finalize URL, callback, and key reference mappings only after domain naming and secret-storage conventions are locked in later phases.

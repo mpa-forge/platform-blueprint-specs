@@ -73,6 +73,7 @@ Execution checklist:
 Owner: Human  
 Type: Account setup  
 Dependencies: None  
+Status: Deferred (`2026-03-04`) after baseline account/app selection; finalize once domain and secret-management baseline are available.  
 Action: Create or confirm Clerk setup for B2C external authentication using Free plan constraints, including application/instance placeholders and allowed redirect/logout/web origin placeholders for `rc` and `prod`.  
 Output: `docs/governance/provider-account-inventory.md` updated with Clerk account/application details and plan tier.  
 Done when: Clerk dashboard is accessible, Free tier is confirmed, and baseline app/instance placeholders exist for later integration.
