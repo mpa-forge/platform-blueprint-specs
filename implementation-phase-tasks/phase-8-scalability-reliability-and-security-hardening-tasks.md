@@ -90,7 +90,7 @@ Done when: Target baseline checklist is passed or deviations are accepted with o
 ### P8-T10: Final baseline certification as reusable template
 Owner: Human  
 Type: Phase gate  
-Dependencies: P8-T01..P8-T09  
+Dependencies: P8-T01..P8-T09, P8-T11..P8-T16  
 Action: Confirm all phase objectives and baseline MVP acceptance criteria are met; tag template release.  
 Output: Reusable platform blueprint release record.  
 Done when: Template release is tagged and handoff docs are complete.
@@ -127,6 +127,22 @@ Action: Evaluate internet edge strategy using observed traffic and threat signal
 Output: ADR with selected direction, migration plan (if any), and rollback criteria.  
 Done when: Decision is approved and reflected in platform spec, infra plan, and runbooks.
 
+### P8-T15: Create or confirm Sentry baseline and integrate frontend/backend error tracking
+Owner: Human + Agent  
+Type: Provider account setup + integration  
+Dependencies: Phase 6 deployed runtimes, Phase 3 baseline observability, P8-T09  
+Action: Create or confirm Sentry organization on Developer (Free), create/configure frontend/backend projects, wire SDKs and DSN secrets, enforce release/environment tagging, and define quota watchpoints plus issue triage workflow.  
+Output: Sentry integration implementation evidence and runbook.  
+Done when: Synthetic frontend and API errors are grouped correctly in Sentry with release/environment metadata and linked back to platform runbooks.
+
+### P8-T16: Create or confirm incident.io baseline and integrate incident routing/escalation
+Owner: Human + Agent  
+Type: Provider account setup + integration  
+Dependencies: P8-T15, P3-T07  
+Action: Create or confirm incident.io workspace on Basic (Free), configure service catalog and escalation routing, then connect alert/event pathways (Grafana alerts and AI diagnostic outputs) to incident creation workflows aligned with severity policy.  
+Output: incident.io workflow configuration docs and test evidence.  
+Done when: Synthetic `P1` and escalated `P2` events produce incident records with expected routing/assignment behavior.
+
 ## Artifacts Checklist
 - SLO/SLI baseline docs
 - autoscaling/resource tuning configs
@@ -142,3 +158,5 @@ Done when: Decision is approved and reflected in platform spec, infra plan, and 
 - alert-driven diagnostic worker implementation evidence
 - diagnostics-to-task generation validation evidence
 - edge-provider layering ADR and implementation plan
+- Sentry integration evidence and triage runbook
+- incident.io routing/escalation configuration evidence

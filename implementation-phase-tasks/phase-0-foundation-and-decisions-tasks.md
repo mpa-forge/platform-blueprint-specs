@@ -100,33 +100,6 @@ Execution checklist:
 - Record stack URL, access policies, and `rc` token-to-GSM mapping in provider account inventory.
 - Defer runtime export validation to later phases once at least one API/worker service is deployed and running.
 
-### P0-T03E: Create or confirm Sentry baseline
-Owner: Human  
-Type: Account setup  
-Dependencies: None  
-Action: Create or confirm Sentry organization and baseline projects for backend/frontend error tracking on Developer (Free) tier, including token and DSN management ownership.  
-Output: `docs/governance/provider-account-inventory.md` updated with Sentry org/projects and plan tier.  
-Done when: Sentry org is accessible, required projects exist or are planned, and Developer (Free) tier is confirmed.
-Execution checklist:
-- Confirm Sentry org name and owner.
-- Confirm Developer (Free) tier.
-- Create baseline project placeholders (API and frontend).
-- Confirm token/DSN management owner.
-- Record organization/project metadata in provider account inventory.
-
-### P0-T03F: Create or confirm incident.io baseline
-Owner: Human  
-Type: Account setup  
-Dependencies: None  
-Action: Create or confirm incident.io workspace on Basic (Free) tier and define baseline access owner for incident response workflows used in later phases.  
-Output: `docs/governance/provider-account-inventory.md` updated with incident.io workspace details and tier.  
-Done when: Workspace is accessible, tier is confirmed, and baseline operator ownership is documented.
-Execution checklist:
-- Confirm workspace URL/name.
-- Confirm Basic (Free) tier.
-- Confirm owner/admin account.
-- Record workspace details in provider account inventory.
-
 ### P0-T03G: Create or confirm SonarQube Cloud baseline
 Owner: Human  
 Type: Account setup  
@@ -167,7 +140,7 @@ Done when: Policy is approved and ready to enforce in GitHub settings.
 ### P0-T07: Define security ownership and access model baseline
 Owner: Human  
 Type: Security governance  
-Dependencies: P0-T03A, P0-T03B, P0-T03C, P0-T03D, P0-T03E, P0-T03F, P0-T03G  
+Dependencies: P0-T03A, P0-T03B, P0-T03C, P0-T03D, P0-T03G  
 Action: Set least-privilege groups for cloud/admin/developer access and on-call escalation ownership.  
 Output: `docs/security/access-model.md`.  
 Done when: IAM group model and emergency access flow are documented.
@@ -231,7 +204,7 @@ Done when: Rework trigger and PR update behavior are explicit, automatable, and 
 ### P0-T15: Sign-off phase gate
 Owner: Human  
 Type: Approval  
-Dependencies: P0-T00, P0-T01, P0-T02, P0-T03A, P0-T03B, P0-T03C, P0-T03D, P0-T03E, P0-T03F, P0-T03G, P0-T04, P0-T05, P0-T06, P0-T07, P0-T08, P0-T09, P0-T10, P0-T11, P0-T12, P0-T13, P0-T14  
+Dependencies: P0-T00, P0-T01, P0-T02, P0-T03A, P0-T03B, P0-T03C, P0-T03D, P0-T03G, P0-T04, P0-T05, P0-T06, P0-T07, P0-T08, P0-T09, P0-T10, P0-T11, P0-T12, P0-T13, P0-T14  
 Action: Review phase artifacts and approve transition to Phase 1.  
 Output: Phase 0 sign-off note in `docs/phase-gates/phase-0-signoff.md`.  
 Done when: Sign-off completed with approver names and date.

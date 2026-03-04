@@ -16,10 +16,10 @@ Detailed tasks: `implementation-phase-tasks/phase-0-foundation-and-decisions-tas
 - Confirmed: Proto-first contracts with Connect for browser compatibility.
 - Confirmed: Native Go `net/http` runtime with `connect-go` handlers.
 - Confirmed: `platform-contracts` publishes generated TypeScript API client packages to GitHub Packages for frontend consumption.
-- Confirmed: Sentry for error tracking.
-  - Tier locked: Sentry Developer (Free).
-- Confirmed: incident.io for incident response workflow.
-  - Tier locked: incident.io Basic (Free).
+- Deferred: Sentry integration for error tracking until Phase 8 hardening.
+  - Planned tier: Sentry Developer (Free).
+- Deferred: incident.io integration for incident response workflow until Phase 8 hardening.
+  - Planned tier: incident.io Basic (Free).
 - Confirmed: GitHub Actions for CI/CD.
 - Confirmed: GitHub Issues + GitHub Projects as task management platform.
 - Confirmed: Single cross-repo project board workflow with standardized issue types, labels, states, and automation.

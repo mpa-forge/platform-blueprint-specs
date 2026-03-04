@@ -31,6 +31,9 @@ Detailed tasks: `implementation-phase-tasks/phase-8-scalability-reliability-and-
   - Use MCP-integrated tool access to read metrics, logs, and traces.
   - Generate diagnosis summaries and open GitHub tasks for remediation.
   - Reuse the worker-lane deployment model used for task-to-code automation where applicable.
+- Integrate deferred provider workflows after baseline infrastructure is stable:
+  - Sentry Developer (Free) for frontend/backend error aggregation.
+  - incident.io Basic (Free) for incident escalation/workflow routing.
 - Enforce security controls:
   - RBAC
   - network policies

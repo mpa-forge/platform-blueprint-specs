@@ -63,7 +63,7 @@ Done when: Dashboards can be recreated from source-controlled definitions.
 Owner: Agent  
 Type: Observability config  
 Dependencies: P3-T06  
-Action: Implement at least 3 actionable alerts (availability, latency, error rate), route to incident channels, and apply severity policy (auto-open `P1`; notify-only `P2/P3/P4`; escalate unacknowledged `P2` to auto-open after 15 minutes).  
+Action: Implement at least 3 actionable alerts (availability, latency, error rate), route to webhook/Slack channels, and apply baseline severity policy (`P1` immediate page/webhook; `P2/P3/P4` notify-only; escalate unacknowledged `P2` after 15 minutes).  
 Output: Alert rules and routing policy docs.  
 Done when: Synthetic trigger tests demonstrate expected routing behavior.
 
@@ -71,17 +71,19 @@ Done when: Synthetic trigger tests demonstrate expected routing behavior.
 Owner: Human + Agent  
 Type: Provider config + coding  
 Dependencies: Phase 2 services  
-Action: Create Sentry Developer (Free) projects (frontend/backend), add DSNs, verify release/environment tagging, and document quota watchpoints.  
-Output: Sentry ingestion in both app tiers.  
-Done when: Test errors from frontend/API appear with release metadata.
+Status: Deferred to Phase 8 (`P8-T15`).  
+Action: Defer Sentry provider setup until late-phase hardening after baseline infrastructure/deploy stabilization.  
+Output: Deferral linkage to `P8-T15`.  
+Done when: Phase 3 does not depend on Sentry provisioning.
 
 ### P3-T09: Configure incident.io workflow integration
 Owner: Human + Agent  
 Type: Provider config + integration  
 Dependencies: P3-T07  
-Action: Set incident.io Basic (Free) escalation policies, service catalog mapping, and incident creation pathways aligned with severity policy (auto-open `P1`, deferred auto-open for unacknowledged `P2` after 15 minutes); document any tier-driven constraints.  
-Output: Incident response routing baseline.  
-Done when: Alert-generated incidents are created and assigned as expected.
+Status: Deferred to Phase 8 (`P8-T16`).  
+Action: Defer incident.io workspace and routing integration until late-phase hardening.  
+Output: Deferral linkage to `P8-T16`.  
+Done when: Phase 3 does not depend on incident.io provisioning.
 
 ### P3-T10: Implement alert -> AI automation service contract and endpoint
 Owner: Agent  
@@ -94,16 +96,16 @@ Done when: Synthetic alert generates a structured AI-ready incident summary payl
 ### P3-T11: Add enrichment integrations and evidence links
 Owner: Agent  
 Type: Coding  
-Dependencies: P3-T10, P3-T08  
-Action: Query metrics/logs/traces/Sentry APIs for correlated context and include links in result payload.  
+Dependencies: P3-T10  
+Action: Query metrics/logs/traces APIs for correlated context and include links in result payload.  
 Output: Enriched incident summary artifacts.  
 Done when: Output includes direct evidence links and bounded analysis window.
 
 ### P3-T12: Run synthetic observability E2E tests
 Owner: Human  
 Type: Validation  
-Dependencies: P3-T01..P3-T11  
-Action: Trigger synthetic load/errors and verify dashboard, alerts, incident routing, and AI workflow output.  
+Dependencies: P3-T01..P3-T07, P3-T10, P3-T11  
+Action: Trigger synthetic load/errors and verify dashboard, alerts, webhook/Slack routing, and AI workflow output.  
 Output: Test report and remediation list.  
 Done when: All phase 3 exit criteria are objectively validated.
 
@@ -133,7 +135,5 @@ Done when: Cloud Run API observability is fully operational with direct OTLP exp
 - `ops/observability-telemetry-budget-profile.md` conformance evidence
 - dashboard definitions as code
 - alert rules and routing policies
-- Sentry integration evidence
-- incident.io workflow configuration docs
 - alert->AI webhook spec and service implementation
 - synthetic observability validation report

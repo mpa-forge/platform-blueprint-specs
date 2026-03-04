@@ -79,7 +79,8 @@ Required platform integrations in MVP:
   - Cloud Run baseline path: GSM secret integration for runtime envs.
   - GKE path: GSM + ESO for runtime secret sync.
 - Data: Cloud SQL Postgres connectivity from Cloud Run baseline runtime (and from GKE when enabled).
-- Observability: Grafana Cloud Free (metrics/logs/traces + alert), Sentry Developer (Free), incident.io Basic (Free) routing.
+- Observability: Grafana Cloud Free (metrics/logs/traces + alert) in baseline MVP.
+- Deferred observability providers: Sentry Developer (Free) and incident.io Basic (Free) in Phase 8 hardening.
 - CD:
   - baseline path: GitHub Actions pipeline-driven deploy to Cloud Run.
   - optional path: GitHub Actions + Helm for GKE.
@@ -165,7 +166,7 @@ For each decision capture:
 - Define Grafana Cloud org/stack setup and telemetry credentials for local, RC, and prod.
 - Define a single observability ingestion control (`OBS_TELEMETRY_PROFILE`) and implement dual-mode mappings for traces/logs/metrics (`balanced`/`cost`/`debug`) across Cloud Run direct OTLP and GKE collector paths with one shared observability library contract.
 - Specification artifact for dual-mode observability budget control: `ops/observability-telemetry-budget-profile.md`.
-- Define Sentry Developer (Free) and incident.io Basic (Free) projects/workspaces and API credentials.
+- Keep Sentry and incident.io provider setup deferred until Phase 8 hardening.
 - Define GitHub Actions environments/secrets and GCP Workload Identity Federation for CI auth.
 - Define GitHub Issues/Projects task-management workflow baseline (issue templates, labels, board states, automation) across repos.
 - Define and codify CI code-quality/security tooling standards (`golangci-lint`, `eslint`, `tsc`, `sonar`/`SonarQube Cloud`, `trivy`, `gitleaks`, `semgrep/codeql`, IaC checks) with swap criteria.
@@ -261,3 +262,4 @@ For each decision capture:
 - v2.34 (2026-02-28): Locked AI worker shared poll-loop runtime model (local continuous polling, cloud bounded wake-up runs with optional scheduler backstop).
 - v2.35 (2026-03-01): Switched first-iteration API deployment baseline to Cloud Run and deferred initial GKE cluster creation to an optional later path.
 - v2.36 (2026-03-01): Added dual-runtime observability implementation model and shared observability library requirement for Cloud Run direct OTLP and GKE collector modes.
+- v2.37 (2026-03-04): Deferred Sentry and incident.io integration from early phases to Phase 8 hardening; Phase 0/3 now baseline on Grafana Cloud only.

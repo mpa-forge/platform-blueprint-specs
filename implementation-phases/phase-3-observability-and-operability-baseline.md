@@ -8,7 +8,7 @@ Specification artifact: `ops/observability-telemetry-budget-profile.md`
   - Cloud Run baseline path: direct OTLP/HTTP export to Grafana Cloud.
   - GKE alternative path: cluster-level collector gateway (Grafana Alloy / OTel Collector).
 - Configure telemetry export to Grafana Cloud (OTLP endpoints + API auth).
-- Use free-tier provider baselines in this phase: Grafana Cloud Free, Sentry Developer (Free), incident.io Basic (Free).
+- Use free-tier provider baseline in this phase: Grafana Cloud Free.
 - Apply initial trace sampling policy:
   - `rc`: 25% baseline trace sampling.
   - `prod`: 5% baseline trace sampling.
@@ -20,16 +20,16 @@ Specification artifact: `ops/observability-telemetry-budget-profile.md`
   - Alloy/collector shipping for GKE path
 - Define ingestion/cardinality guardrails and retention budgets per environment.
 - Add alert rules for critical platform signals.
-- Apply incident opening severity policy:
-  - Auto-open incidents for `P1` alerts.
-  - Notify-only for `P2`, `P3`, and `P4` alerts by default.
-  - Escalate unacknowledged `P2` alerts to auto-open incident after 15 minutes.
-- Configure Sentry projects and SDK ingestion for frontend and backend.
-- Configure incident.io escalation/workflow integration and alert routing.
+- Apply alert severity routing policy in baseline:
+  - `P1` routes to immediate pager/webhook path.
+  - `P2`, `P3`, and `P4` notify-only by default.
+  - Escalate unacknowledged `P2` after 15 minutes.
+- Reserve incident auto-open behavior for Phase 8 when incident.io integration is enabled.
 - Implement automated alert-to-AI workflow:
   - Grafana alert webhook -> automation service endpoint.
-  - Enrichment queries to Grafana Cloud APIs (metrics/logs/traces) and optional Sentry API.
-  - AI analysis output routed to incident.io/Slack with links to source evidence.
+  - Enrichment queries to Grafana Cloud APIs (metrics/logs/traces).
+  - AI analysis output routed to webhook/Slack with links to source evidence.
+- Defer Sentry and incident.io provider integrations to Phase 8 hardening after baseline infrastructure and deploy paths are stable.
 - Defer advanced AI Ops automation to later phases:
   - alert-triggered diagnostic worker lanes using MCP-integrated telemetry access.
   - automatic remediation task generation in GitHub from diagnostics.

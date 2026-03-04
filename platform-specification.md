@@ -151,10 +151,10 @@
 - Observability logs: Grafana Cloud Logs (Loki-managed).
 - Observability dashboards: Grafana Cloud.
 - Observability metrics runtime: Grafana Cloud Metrics (Prometheus-compatible managed backend).
-- Error tracking platform: Sentry (managed).
-- Error tracking provider tier baseline: Sentry Developer (Free).
-- Incident response platform: incident.io (managed).
-- Incident response provider tier baseline: incident.io Basic (Free).
+- Error tracking platform: Deferred to Phase 8 hardening (planned provider: Sentry managed).
+- Error tracking provider tier baseline (planned): Sentry Developer (Free).
+- Incident response platform: Deferred to Phase 8 hardening (planned provider: incident.io managed).
+- Incident response provider tier baseline (planned): incident.io Basic (Free).
 - CI/CD platform: GitHub Actions.
 - CI workflow model: Centralized reusable workflow templates across repositories.
 - Task management platform: GitHub Issues + GitHub Projects.
@@ -402,10 +402,11 @@
   - Profile changes are operational toggles (Cloud Run env/revision settings or Helm/collector values), not instrumentation code changes.
   - Source cardinality requirements and profile operations are defined in `ops/observability-telemetry-budget-profile.md`.
 - Errors:
-  - Sentry is used for frontend and backend exception/error aggregation.
+  - Baseline phase: rely on structured logs, traces, and alerting in Grafana Cloud.
+  - Phase 8 hardening: add Sentry for frontend/backend exception aggregation and release-aware issue triage.
 - Incident response:
-  - Grafana Cloud alerting and Sentry alerts route to incident.io and webhook consumers.
-  - Severity policy baseline: `P1` auto-open; `P2/P3/P4` notify-only; unacknowledged `P2` escalates to auto-open after 15 minutes.
+  - Baseline phase: alert routing to webhook/Slack channels.
+  - Phase 8 hardening: integrate incident.io workflows while preserving severity policy (`P1` auto-open; `P2/P3/P4` notify-only; unacknowledged `P2` escalates to auto-open after 15 minutes).
 - Managed platform implications:
   - Lower in-cluster operational burden (no self-hosted Prometheus/Loki/Tempo/Alertmanager lifecycle).
   - Cost controls depend on ingestion volume, retention, and cardinality discipline.
@@ -416,11 +417,12 @@
   - Grafana Cloud alerting sends webhook events to an internal automation service (for example Cloud Run).
 - Enrichment:
   - Automation service queries Grafana Cloud APIs for related metrics, logs, and traces in a bounded time window.
-  - Optional Sentry API enrichment for error-group context and release regressions.
+  - Optional Sentry API enrichment for error-group context and release regressions (Phase 8+).
 - Diagnosis:
   - AI pipeline performs triage classification, suspected root-cause ranking, and recommended runbook actions.
 - Response:
-  - Post enriched incident summary to incident.io/Slack and optionally create ticket artifacts.
+  - Post enriched incident summary to webhook/Slack and optionally create ticket artifacts.
+  - Phase 8+: route into incident.io workflows.
   - Keep human approval gates before any destructive remediation.
 - Governance:
   - Store alert payload + enrichment snapshots + AI output for auditability and postmortems.
@@ -455,7 +457,7 @@
 - Dashboards and alerts:
   - Import/create baseline dashboards for API, worker, edge/runtime path, and Postgres.
   - Create SLO-adjacent alerts (availability, latency, error-rate, saturation).
-  - Configure contact points and routing policies (Slack/email/incident.io/webhook).
+  - Configure contact points and routing policies (Slack/email/webhook in baseline; incident.io in Phase 8+).
 - Alert -> AI workflow wiring:
   - Register webhook endpoint in Grafana Cloud alerting.
   - Define payload contract versioning and signature verification in automation service.
@@ -556,5 +558,6 @@
 - v1.41 (2026-02-28): Locked AI worker control-loop model to shared poll logic across local/cloud, with local continuous polling and cloud bounded wake-up executions.
 - v1.42 (2026-03-01): Switched API runtime baseline to Cloud Run (scale-to-zero), preserved GKE+Helm as alternative path, and deferred initial cluster creation until required.
 - v1.43 (2026-03-01): Expanded observability architecture to dual runtime modes (`direct_otlp` for Cloud Run baseline, `collector_gateway` for GKE path) and locked shared observability library requirement with profile parity.
+- v1.44 (2026-03-04): Deferred Sentry and incident.io integrations to Phase 8 hardening; baseline observability/incident flow remains Grafana Cloud + webhook/Slack.
 
 
