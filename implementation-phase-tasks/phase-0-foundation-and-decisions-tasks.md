@@ -114,6 +114,8 @@ Done when: Names/regions are fixed and reused consistently in infra and CI.
 Owner: Agent  
 Type: Documentation  
 Dependencies: P0-T04  
+Status: Completed (`2026-03-05`)  
+Evidence: `docs/standards/naming-and-labeling.md`  
 Action: Document naming conventions for repos, GAR images, Terraform resources, Cloud Run services/revisions, optional k8s namespaces, labels, and tags.  
 Output: `docs/standards/naming-and-labeling.md`.  
 Done when: Convention includes examples and required tags per environment.
