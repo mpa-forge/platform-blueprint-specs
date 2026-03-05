@@ -43,7 +43,8 @@ Detailed tasks: `implementation-phase-tasks/phase-0-foundation-and-decisions-tas
 - Confirmed: Queue/broker decision remains deferred until after the first end-to-end baseline implementation is complete.
 - Confirmed: External edge-provider layering decision (GCP-native edge only vs Cloudflare-like overlay) is deferred to hardening phase review; baseline remains GCP-native edge stack.
 - Define naming conventions, branch strategy, semantic versioning.
-- Confirmed: SonarQube Cloud Free as baseline repository quality tier.
+- Deferred: SonarQube Cloud account/project setup to Phase 4 after CI foundations are in place.
+  - Planned tier: SonarQube Cloud Free.
 
 Exit criteria:
 - Architecture decisions log created and approved.

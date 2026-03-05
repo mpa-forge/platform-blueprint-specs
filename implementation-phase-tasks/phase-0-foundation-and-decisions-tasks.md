@@ -100,19 +100,6 @@ Execution checklist:
 - Record stack URL, access policies, and `rc` token-to-GSM mapping in provider account inventory.
 - Defer runtime export validation to later phases once at least one API/worker service is deployed and running.
 
-### P0-T03G: Create or confirm SonarQube Cloud baseline
-Owner: Human  
-Type: Account setup  
-Dependencies: P0-T03A  
-Action: Create or confirm SonarQube Cloud organization bound to GitHub and lock Free tier usage for baseline code quality checks.  
-Output: `docs/governance/provider-account-inventory.md` updated with SonarQube Cloud org and tier.  
-Done when: SonarQube Cloud org is linked to GitHub and Free tier is confirmed for initial repositories.
-Execution checklist:
-- Confirm SonarQube Cloud org.
-- Confirm VCS binding to GitHub org.
-- Confirm Free tier and repository eligibility assumptions.
-- Record org and integration status in provider account inventory.
-
 ### P0-T04: Define environment naming and region baseline
 Owner: Human  
 Type: Decision  
@@ -140,7 +127,7 @@ Done when: Policy is approved and ready to enforce in GitHub settings.
 ### P0-T07: Define security ownership and access model baseline
 Owner: Human  
 Type: Security governance  
-Dependencies: P0-T03A, P0-T03B, P0-T03C, P0-T03D, P0-T03G  
+Dependencies: P0-T03A, P0-T03B, P0-T03C, P0-T03D  
 Action: Set least-privilege groups for cloud/admin/developer access and on-call escalation ownership.  
 Output: `docs/security/access-model.md`.  
 Done when: IAM group model and emergency access flow are documented.
@@ -204,7 +191,7 @@ Done when: Rework trigger and PR update behavior are explicit, automatable, and 
 ### P0-T15: Sign-off phase gate
 Owner: Human  
 Type: Approval  
-Dependencies: P0-T00, P0-T01, P0-T02, P0-T03A, P0-T03B, P0-T03C, P0-T03D, P0-T03G, P0-T04, P0-T05, P0-T06, P0-T07, P0-T08, P0-T09, P0-T10, P0-T11, P0-T12, P0-T13, P0-T14  
+Dependencies: P0-T00, P0-T01, P0-T02, P0-T03A, P0-T03B, P0-T03C, P0-T03D, P0-T04, P0-T05, P0-T06, P0-T07, P0-T08, P0-T09, P0-T10, P0-T11, P0-T12, P0-T13, P0-T14  
 Action: Review phase artifacts and approve transition to Phase 1.  
 Output: Phase 0 sign-off note in `docs/phase-gates/phase-0-signoff.md`.  
 Done when: Sign-off completed with approver names and date.

@@ -19,10 +19,17 @@ Type: CI coding
 Dependencies: P4-T01  
 Action: Add jobs for Go/TS linting and unit tests with caching and deterministic tooling versions; baseline tools:
 - Go: `golangci-lint`, `go test`, `go vet`
-- Frontend: `eslint`, `tsc --noEmit` (plus optional `prettier --check`)
-- Repository quality gate: `sonar` (`SonarQube Cloud` Free tier baseline)  
+- Frontend: `eslint`, `tsc --noEmit` (plus optional `prettier --check`)  
 Output: CI quality gates on every PR.  
 Done when: PRs fail on lint/test errors.
+
+### P4-T02A: Create or confirm SonarQube Cloud baseline and integrate repository quality gate
+Owner: Human + Agent  
+Type: Provider setup + CI integration  
+Dependencies: P4-T01, P4-T02  
+Action: Create or confirm SonarQube Cloud organization bound to GitHub, lock Free tier assumptions, configure projects for active repos, and wire PR analysis/check reporting into CI.  
+Output: SonarQube Cloud org/project inventory + CI integration evidence.  
+Done when: Sonar analysis runs on PRs for target repos and reports status checks that can be used by branch protection.
 
 ### P4-T03: Add protobuf quality gates
 Owner: Agent  
@@ -64,7 +71,6 @@ Action: Integrate scanners (language dependencies + container images), and enfor
 - `trivy` for dependency + image vulnerability scanning
 - `gitleaks` for secret scanning
 - `semgrep` for SAST (or `codeql` as alternative)
-- `sonar` (`SonarQube Cloud` Free tier baseline) for code quality and maintainability gates
 - `tflint` + `terraform fmt/validate` for IaC quality (with optional `tfsec`/`checkov`)  
 Output: Vulnerability reports and gate policy.  
 Done when: CI enforces the defined gate policy and accepted exceptions are traceable via time-boxed waiver records.
@@ -80,7 +86,7 @@ Done when: Failed jobs include downloadable diagnostics.
 ### P4-T09: Enforce branch protection required checks
 Owner: Human  
 Type: Governance  
-Dependencies: P4-T02..P4-T08  
+Dependencies: P4-T02..P4-T08, P4-T02A  
 Action: Configure protected branch required statuses and review rules in GitHub.  
 Output: Enforcement settings active.  
 Done when: Merge is blocked unless required CI checks pass.
@@ -127,6 +133,7 @@ Done when: Creating a release tag publishes a versioned TypeScript client packag
 
 ## Artifacts Checklist
 - Workflow templates and repo CI YAMLs
+- SonarQube Cloud org/project integration evidence
 - Contract check jobs
 - image build/tag policy docs
 - WIF/OIDC integration docs
