@@ -154,6 +154,8 @@ Done when: Every major domain (auth, observability, infra, CI/CD, data, runtime)
 Owner: Human  
 Type: Decision  
 Dependencies: P0-T08  
+Status: Completed (`2026-03-05`)  
+Evidence: `docs/standards/deferred-queue-policy.md`  
 Action: Define exactly what conditions trigger queue re-evaluation (throughput, retry semantics, async workflow count).  
 Output: `docs/standards/deferred-queue-policy.md`.  
 Done when: Trigger criteria are objective and measurable.
