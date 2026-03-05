@@ -164,6 +164,8 @@ Done when: Trigger criteria are objective and measurable.
 Owner: Human + Agent  
 Type: Governance  
 Dependencies: P0-T02, P0-T06  
+Status: Completed (`2026-03-05`)  
+Evidence: `docs/governance/task-management-workflow.md`, `https://github.com/orgs/mpa-forge/projects/1`  
 Action: Standardize task management on GitHub Issues + GitHub Projects with one cross-repo project board, issue templates (`feature`, `bug`, `chore`, `spike`), label taxonomy (`area/*`, `priority/*`, `type/*`, `env/*`), status flow (`Backlog` -> `Ready` -> `In Progress` -> `In Review` -> `Blocked` -> `Done`), and automation rules (auto-add issues/PRs, auto-status transitions, close-on-merge link rules).  
 Output: `docs/governance/task-management-workflow.md` and project board configuration checklist.  
 Done when: Board is live, templates/labels are applied across repos, and at least one end-to-end issue flow is demonstrated.
