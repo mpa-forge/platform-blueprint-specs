@@ -104,6 +104,8 @@ Execution checklist:
 Owner: Human  
 Type: Decision  
 Dependencies: P0-T03B  
+Status: Completed (`2026-03-05`)  
+Evidence: `docs/standards/environment-and-region.md`, `ops/api-runtime-paths-cloud-run-gke.md`  
 Action: Confirm environment model (`local`, `rc`, `prod`), lock primary region to `us-east4` for `rc` and `prod`, document prod full separation plus RC isolation boundaries (DB boundary, secret scope, domain; namespace boundary when GKE path is enabled), lock API runtime baseline to Cloud Run for first iteration, and defer initial GKE cluster provisioning until explicitly needed; capture runtime selection contract in `ops/api-runtime-paths-cloud-run-gke.md`.  
 Output: `docs/standards/environment-and-region.md`.  
 Done when: Names/regions are fixed and reused consistently in infra and CI.
