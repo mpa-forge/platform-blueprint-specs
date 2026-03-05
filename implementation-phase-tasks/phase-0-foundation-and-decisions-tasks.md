@@ -124,6 +124,8 @@ Done when: Convention includes examples and required tags per environment.
 Owner: Human  
 Type: Governance  
 Dependencies: P0-T02  
+Status: Completed (`2026-03-05`)  
+Evidence: `docs/standards/git-and-release-policy.md`  
 Action: Finalize trunk-based branch policy, protected branches, semantic versioning scope per repo.  
 Output: `docs/standards/git-and-release-policy.md`.  
 Done when: Policy is approved and ready to enforce in GitHub settings.
