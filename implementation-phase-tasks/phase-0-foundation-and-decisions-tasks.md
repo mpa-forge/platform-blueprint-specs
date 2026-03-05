@@ -144,6 +144,8 @@ Done when: IAM group model and emergency access flow are documented.
 Owner: Agent  
 Type: Documentation  
 Dependencies: P0-T01  
+Status: Completed (`2026-03-05`)  
+Evidence: `docs/adr/decision-matrix.md`  
 Action: Build a decision matrix cross-linking `platform-specification.md` and phase files to current locked choices and deferred items.  
 Output: `docs/adr/decision-matrix.md`.  
 Done when: Every major domain (auth, observability, infra, CI/CD, data, runtime) has explicit status.
