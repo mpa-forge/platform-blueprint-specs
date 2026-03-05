@@ -134,6 +134,8 @@ Done when: Policy is approved and ready to enforce in GitHub settings.
 Owner: Human  
 Type: Security governance  
 Dependencies: P0-T03A, P0-T03B, P0-T03C, P0-T03D  
+Status: Completed (`2026-03-05`)  
+Evidence: `docs/security/access-model.md`  
 Action: Set least-privilege groups for cloud/admin/developer access and on-call escalation ownership.  
 Output: `docs/security/access-model.md`.  
 Done when: IAM group model and emergency access flow are documented.
