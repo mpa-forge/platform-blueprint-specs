@@ -174,6 +174,8 @@ Done when: Board is live, templates/labels are applied across repos, and at leas
 Owner: Human + Agent  
 Type: Governance + architecture  
 Dependencies: P0-T10  
+Status: Completed (`2026-03-06`)  
+Evidence: `docs/automation/ai-task-to-code-architecture.md`, `ops/ai-worker-local-cloud-parity.md`  
 Action: Document the baseline automation architecture: dedicated `platform-ai-workers` repo with one shared GitHub poll-loop logic for local and cloud runtimes, Cloud Run Jobs used as bounded wake-up executions, one worker-job deployment per target repo, environment-driven worker configuration (`WORKER_RUNTIME_MODE`, `WORKER_ID`, `TARGET_REPO`, credential refs, limits), local/cloud runtime parity requirement (same worker image and runtime entrypoint in both contexts), and mandatory human review controls (draft PR + required checks/review). Reference `ops/ai-worker-local-cloud-parity.md` for runtime parity contract.  
 Output: `docs/automation/ai-task-to-code-architecture.md`.  
 Done when: Architecture and control boundaries are approved and referenced by Phase 1/4/5 tasks.
@@ -182,15 +184,19 @@ Done when: Architecture and control boundaries are approved and referenced by Ph
 Owner: Human + Agent  
 Type: Workflow design  
 Dependencies: P0-T11  
+Status: Completed (`2026-03-06`)  
+Evidence: `docs/automation/ai-task-automation-workflow.md`  
 Action: Define GitHub issue/PR labels and states for AI execution (`ai:ready`, `ai:in-progress`, `ai:ready-for-review`, `ai:rework-requested`, `ai:failed`, `worker:<id>`), claim rules, retry/resume behavior, review-comment-driven rework transitions, and pending-review cap policy.  
-Output: `docs/automation/ai-task-state-machine.md`.  
+Output: `docs/automation/ai-task-automation-workflow.md`.  
 Done when: State transitions are deterministic and testable with one worker lane.
 
 ### P0-T13: Define AI worker credential and secret model
 Owner: Human + Agent  
 Type: Security design  
 Dependencies: P0-T11  
-Action: Define GitHub credential strategy (GitHub App preferred), least-privilege scopes, GSM secret layout, runtime injection model for Cloud Run Jobs, and authorization model for on-demand job execution from GitHub Actions (WIF principal + minimal run permissions).  
+Status: Completed (`2026-03-06`)  
+Evidence: `docs/security/ai-worker-credentials.md`  
+Action: Define GitHub credential strategy (fine-grained PAT baseline, GitHub App later), least-privilege scopes, GSM secret layout, runtime injection model for Cloud Run Jobs, and authorization model for on-demand job execution from GitHub Actions (WIF principal + minimal run permissions).  
 Output: `docs/security/ai-worker-credentials.md`.  
 Done when: Credential model supports per-target-repo worker deployments without static keys in git.
 
@@ -198,8 +204,10 @@ Done when: Credential model supports per-target-repo worker deployments without 
 Owner: Human + Agent  
 Type: Workflow design  
 Dependencies: P0-T11, P0-T12  
+Status: Completed (`2026-03-06`)  
+Evidence: `docs/automation/ai-task-automation-workflow.md`, `ops/ai-comment-trigger-cloud-run-jobs.md`  
 Action: Define the event trigger contract for rework (for example PR review `changes requested`, or maintainer command comment like `/ai rework`), dedup/idempotency key strategy (review/comment id), and rules for updating the same draft PR branch instead of opening a new PR. Use `ops/ai-comment-trigger-cloud-run-jobs.md` as the baseline implementation reference in this planning repo.  
-Output: `docs/automation/ai-rework-trigger-protocol.md` and `ops/ai-comment-trigger-cloud-run-jobs.md`.  
+Output: `docs/automation/ai-task-automation-workflow.md` and `ops/ai-comment-trigger-cloud-run-jobs.md`.  
 Done when: Rework trigger and PR update behavior are explicit, automatable, and auditable.
 
 ### P0-T15: Sign-off phase gate
@@ -224,8 +232,7 @@ Done when: Sign-off completed with approver names and date.
 - `docs/standards/deferred-queue-policy.md`
 - `docs/governance/task-management-workflow.md`
 - `docs/automation/ai-task-to-code-architecture.md`
-- `docs/automation/ai-task-state-machine.md`
-- `docs/automation/ai-rework-trigger-protocol.md`
+- `docs/automation/ai-task-automation-workflow.md`
 - `ops/ai-comment-trigger-cloud-run-jobs.md`
 - `ops/ai-worker-local-cloud-parity.md`
 - `ops/api-runtime-paths-cloud-run-gke.md`
