@@ -19,6 +19,8 @@ Done when: All repos exist as finalized working repos, are accessible, and prote
 Owner: Agent  
 Type: Coding  
 Dependencies: P1-T01  
+Status: Completed (`2026-03-06`)  
+Evidence: `docs/governance/repository-skeleton-evidence.md`  
 Action: Create standard folders (`cmd/`, `internal/`, `pkg/`, `deploy/`, `docs/` for Go repos; `src/`, `public/`, `scripts/` for frontend).  
 Output: Initial skeleton committed in each repo.  
 Done when: Every repo includes setup, run, and test instructions.
@@ -27,6 +29,8 @@ Done when: Every repo includes setup, run, and test instructions.
 Owner: Agent  
 Type: Config  
 Dependencies: P1-T02  
+Status: Completed (`2026-03-06`)  
+Evidence: `docs/governance/toolchain-bootstrap-evidence.md`  
 Action: Add `.tool-versions` or equivalent, Go version pinning, Node version pinning, `npm` as the standardized frontend package manager, and bootstrap scripts.  
 Output: `make bootstrap` or equivalent task works on a clean machine.  
 Done when: A new developer can install dependencies with one command.
