@@ -29,8 +29,9 @@ Bootstrap behavior:
 
 - require a `make` implementation compatible with GNU Make
 - use `mise install` when `mise` is available
-- use `asdf install` when `asdf` is available
-- otherwise validate locally installed tools against the pinned versions
+- otherwise use `asdf install` when `asdf` is available
+- otherwise validate locally installed tools against the pinned versions and fail with the
+  exact missing or mismatched tool version
 - run `npm ci` in npm-based repos
 - run `go mod download` in Go repos
 
