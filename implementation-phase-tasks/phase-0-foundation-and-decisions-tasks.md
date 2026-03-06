@@ -214,6 +214,8 @@ Done when: Rework trigger and PR update behavior are explicit, automatable, and 
 Owner: Human  
 Type: Approval  
 Dependencies: P0-T00, P0-T01, P0-T02, P0-T03A, P0-T03B, P0-T03C, P0-T03D, P0-T04, P0-T05, P0-T06, P0-T07, P0-T08, P0-T09, P0-T10, P0-T11, P0-T12, P0-T13, P0-T14  
+Status: Completed (`2026-03-06`)  
+Evidence: `docs/phase-gates/phase-0-signoff.md`  
 Action: Review phase artifacts and approve transition to Phase 1.  
 Output: Phase 0 sign-off note in `docs/phase-gates/phase-0-signoff.md`.  
 Done when: Sign-off completed with approver names and date.
