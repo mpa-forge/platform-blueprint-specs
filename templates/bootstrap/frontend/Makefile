@@ -3,16 +3,22 @@ SHELL := bash
 NODE_VERSION := 24.13.1
 NPM_VERSION := 11.8.0
 
-.PHONY: help bootstrap install-tools check-tools print-toolchain
+.PHONY: help bootstrap install-tools check-tools print-toolchain install-dev-tools precommit-install precommit-run lint format format-check repo-lint repo-format repo-format-check
 
 help:
 	@echo "Targets:"
-	@echo "  bootstrap       Install toolchain when possible and run baseline setup"
-	@echo "  install-tools    Install pinned tools with mise/asdf if available"
-	@echo "  check-tools      Validate pinned tool versions"
-	@echo "  print-toolchain  Print pinned tool versions"
+	@echo "  bootstrap         Install toolchain when possible and run baseline setup"
+	@echo "  install-tools     Install pinned tools with mise/asdf if available"
+	@echo "  check-tools       Validate pinned tool versions"
+	@echo "  print-toolchain   Print pinned tool versions"
+	@echo "  install-dev-tools Install Python and npm development tooling"
+	@echo "  precommit-install Install git pre-commit hooks"
+	@echo "  precommit-run     Run the configured pre-commit checks on all files"
+	@echo "  lint              Run repo lint checks"
+	@echo "  format            Apply repo formatting"
+	@echo "  format-check      Check repo formatting without writing changes"
 
-bootstrap: install-tools check-tools
+bootstrap: install-tools check-tools install-dev-tools
 	npm ci
 
 install-tools:
@@ -49,3 +55,28 @@ check-tools:
 print-toolchain:
 	@echo "Node.js $(NODE_VERSION)"
 	@echo "npm $(NPM_VERSION)"
+
+install-dev-tools:
+	python -m pip install --user -r requirements-dev.txt
+	npm install
+
+precommit-install: install-dev-tools
+	python -m pre_commit install
+
+precommit-run:
+	python -m pre_commit run --all-files --show-diff-on-failure
+
+lint: repo-lint
+
+format: repo-format
+
+format-check: repo-format-check
+
+repo-lint:
+	npm run lint
+
+repo-format:
+	npm run format
+
+repo-format-check:
+	npm run format:check

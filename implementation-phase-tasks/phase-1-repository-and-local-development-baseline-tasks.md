@@ -39,6 +39,8 @@ Done when: A new developer can install dependencies with one command.
 Owner: Agent  
 Type: Config  
 Dependencies: P1-T03  
+Status: Completed (`2026-03-06`)  
+Evidence: `docs/governance/lint-and-precommit-evidence.md`  
 Action: Configure Go lint/format, TS lint/format, markdown/yaml lint, and pre-commit hook wiring.  
 Output: Standardized lint commands in all repos.  
 Done when: Pre-commit checks run locally and fail on known violations.
