@@ -69,6 +69,8 @@ Done when: `docker build` succeeds for `frontend-web` and `backend-api`.
 Owner: Agent  
 Type: Coding  
 Dependencies: P1-T05, P1-T06  
+Status: Completed (`2026-03-07`)  
+Evidence: `docs/governance/local-compose-stack-evidence.md`  
 Action: Create the canonical local Compose orchestration in `platform-infra` for the shared development dependencies and supporting app services. The baseline model is hybrid:
 - when developing frontend, run `frontend-web` natively and Compose runs `backend-api` + `postgres`
 - when developing API, run `backend-api` natively and Compose runs `frontend-web` + `postgres`
@@ -136,7 +138,7 @@ Done when: One end-to-end task-to-draft-PR flow plus one rework loop succeeds un
 - `platform-ai-workers` bootstrap code and container
 - `ops/ai-comment-trigger-cloud-run-jobs.md` conformance notes
 - `ops/ai-worker-local-cloud-parity.md` conformance notes
-- `docker-compose.yml`
+- `platform-infra/local/compose.yml`
 - local smoke test scripts
 - AI worker dry-run report
 - onboarding runbook updates
