@@ -59,6 +59,8 @@ Done when: Each relevant repo has a clear `.env.example` baseline and documented
 Owner: Agent  
 Type: Coding  
 Dependencies: P1-T02  
+Status: Completed (`2026-03-07`)  
+Evidence: `docs/governance/dockerfile-baseline-evidence.md`  
 Action: Build multi-stage Dockerfiles for `frontend-web` and `backend-api` with minimal runtime images and healthcheck-compatible startup commands. Defer `backend-worker` and `platform-ai-workers` containerization until they are brought into the local stack or later worker-focused tasks.  
 Output: Buildable local container images.  
 Done when: `docker build` succeeds for `frontend-web` and `backend-api`.
