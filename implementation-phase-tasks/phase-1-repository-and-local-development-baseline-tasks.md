@@ -94,6 +94,8 @@ Done when: Smoke script validates the frontend/API/Postgres development path, an
 Owner: Agent  
 Type: Coding  
 Dependencies: P1-T07  
+Status: Completed (`2026-03-07`)  
+Evidence: `docs/governance/local-data-bootstrap-evidence.md`  
 Action: Add init scripts for Postgres schema seed placeholders used by Phase 2.  
 Output: Deterministic local DB startup data.  
 Done when: Local stack starts with queryable baseline rows.
