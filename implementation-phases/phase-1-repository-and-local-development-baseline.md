@@ -16,7 +16,7 @@ Detailed tasks: `implementation-phase-tasks/phase-1-repository-and-local-develop
   - pre-commit hooks.
   - lint/format configs for JS/TS and Go.
   - frontend package manager standardized to `npm`.
-- Add Dockerfiles for `backend-api` and `backend-worker`.
+- Add Dockerfiles for `frontend-web` and `backend-api`.
 - Centralize local Compose orchestration in `platform-infra`.
 - Use a hybrid local-dev model by default:
   - when developing frontend, run `frontend-web` natively and Compose runs `backend-api` + `postgres`

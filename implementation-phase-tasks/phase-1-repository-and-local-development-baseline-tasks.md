@@ -55,13 +55,13 @@ Action: Add `.env.example` files, environment naming conventions, and documented
 Output: Environment contract docs and examples.  
 Done when: Each relevant repo has a clear `.env.example` baseline and documented env contract suitable for later startup validation in Phase 2.
 
-### P1-T06: Add Dockerfiles for API and backend worker
+### P1-T06: Add Dockerfiles for frontend and API
 Owner: Agent  
 Type: Coding  
 Dependencies: P1-T02  
-Action: Build multi-stage Dockerfiles for `backend-api` and `backend-worker` with minimal runtime images and healthcheck-compatible startup commands. Defer `platform-ai-workers` containerization to `P1-T11`, and keep frontend containerization optional until the local stack orchestration is implemented.  
+Action: Build multi-stage Dockerfiles for `frontend-web` and `backend-api` with minimal runtime images and healthcheck-compatible startup commands. Defer `backend-worker` and `platform-ai-workers` containerization until they are brought into the local stack or later worker-focused tasks.  
 Output: Buildable local container images.  
-Done when: `docker build` succeeds for `backend-api` and `backend-worker`.
+Done when: `docker build` succeeds for `frontend-web` and `backend-api`.
 
 ### P1-T07: Create centralized local Compose stack in `platform-infra`
 Owner: Agent  
@@ -130,7 +130,7 @@ Done when: One end-to-end task-to-draft-PR flow plus one rework loop succeeds un
 - Toolchain/bootstrap scripts
 - Lint/pre-commit configs
 - `.env.example` contracts
-- Dockerfiles for frontend/API/worker
+- Dockerfiles for frontend/API
 - `platform-ai-workers` bootstrap code and container
 - `ops/ai-comment-trigger-cloud-run-jobs.md` conformance notes
 - `ops/ai-worker-local-cloud-parity.md` conformance notes
