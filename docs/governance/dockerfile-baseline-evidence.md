@@ -30,9 +30,12 @@ Additional placeholder runtime assets were added to support image builds:
 - `backend-api` uses a multi-stage Go build and packages a minimal placeholder HTTP server binary.
 - `backend-worker` is intentionally deferred from `P1-T06` because it is not part of the default hybrid frontend/API local stack.
 
-## Validation limit
+## Validation performed
 
-Docker is not installed on the current workstation, so `docker build` could not be executed locally in this session.
+Validated successfully on this workstation:
+
+- `docker build -t frontend-web:p1-t06 .` in `frontend-web`
+- `docker build -t backend-api:p1-t06 .` in `backend-api`
 
 ## Merge evidence
 
