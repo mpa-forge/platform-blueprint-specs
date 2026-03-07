@@ -25,6 +25,12 @@ useful.
 - Fallback: if no version manager is installed, developers must install the pinned tool
   versions manually before running `make bootstrap`
 
+Windows note:
+
+- use a POSIX-friendly GNU Make such as `ezwinports.make` or MSYS2 `make`
+- ensure Git for Windows `bash.exe` is on `PATH`
+- do not use `GnuWin32` make with these templates
+
 ## Baseline contract
 
 Each template provides:
