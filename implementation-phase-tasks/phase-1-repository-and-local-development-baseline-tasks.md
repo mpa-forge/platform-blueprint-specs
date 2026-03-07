@@ -49,9 +49,9 @@ Done when: Pre-commit checks run locally and fail on known violations.
 Owner: Agent  
 Type: Config  
 Dependencies: P1-T02  
-Action: Add `.env.example` files and config loading patterns per service with validation for required variables.  
+Action: Add `.env.example` files, environment naming conventions, and documented configuration contracts per service repo; define required vs optional variables and local placeholder/default expectations. Defer actual startup enforcement until Phase 2 when runnable service entrypoints exist.  
 Output: Environment contract docs and examples.  
-Done when: Services fail fast with clear messages when env is missing.
+Done when: Each relevant repo has a clear `.env.example` baseline and documented env contract suitable for later startup validation in Phase 2.
 
 ### P1-T06: Add Dockerfiles for frontend/API/worker
 Owner: Agent  

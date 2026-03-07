@@ -18,6 +18,7 @@ Observability package contract artifact: `ops/observability-telemetry-budget-pro
   - Commit generated artifacts to git as part of normal development flow.
 - Implement Go API skeleton:
   - Native `net/http` server, health/readiness, config loading, structured logging, auth middleware scaffold.
+  - Enforce startup validation of the environment contract defined in Phase 1 and fail fast on missing or malformed required config.
   - Connect handlers mounted for proto-defined endpoints.
 - Configure Clerk integration baseline:
   - OIDC/OAuth application setup for SPA + API.
@@ -25,7 +26,7 @@ Observability package contract artifact: `ops/observability-telemetry-budget-pro
   - JWT validation against Clerk JWKS.
   - B2C claims mapping to internal roles (no Organizations/SCIM assumptions).
 - Implement worker skeleton:
-  - background process loop, graceful shutdown, and pluggable async adapter (queue can be added later).
+  - background process loop, graceful shutdown, pluggable async adapter (queue can be added later), and startup validation of the environment contract defined in Phase 1.
 - Create shared backend observability library package skeleton:
   - runtime mode config (`direct_otlp` for Cloud Run, `collector_gateway` for GKE path)
   - common resource attributes and telemetry initialization API
