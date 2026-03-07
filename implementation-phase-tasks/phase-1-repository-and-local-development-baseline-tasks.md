@@ -84,6 +84,8 @@ Done when: A developer can start the frontend-focused or API-focused local stack
 Owner: Agent  
 Type: Coding  
 Dependencies: P1-T07  
+Status: Completed (`2026-03-07`)  
+Evidence: `docs/governance/local-smoke-test-evidence.md`  
 Action: Implement or stub `healthz` checks and add `scripts/local-smoke-test.sh`/`.ps1`.  
 Output: Automated local sanity check script.  
 Done when: Smoke script validates the frontend/API/Postgres development path, and worker health can remain deferred until worker runtime work is introduced.
