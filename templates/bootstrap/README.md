@@ -6,6 +6,7 @@ Canonical bootstrap `Makefile` templates for the baseline repository types.
 
 - `frontend/Makefile`
 - `go-service/Makefile`
+- `go-service/.golangci.yml`
 - `contracts/Makefile`
 - `infra/Makefile`
 

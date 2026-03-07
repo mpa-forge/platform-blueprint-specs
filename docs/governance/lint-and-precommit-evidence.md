@@ -41,6 +41,10 @@ The canonical templates in `templates/bootstrap/` now provide these shared targe
 - `make format`
 - `make format-check`
 
+For Go repositories, the lint baseline is defined separately in:
+
+- [docs/standards/go-lint-baseline.md](c:/Users/Miquel/dev/platform-blueprint-specs/docs/standards/go-lint-baseline.md)
+
 The pre-commit baseline is intentionally split this way:
 
 - repo-local checks live behind `make repo-lint` and `make repo-format-check`
