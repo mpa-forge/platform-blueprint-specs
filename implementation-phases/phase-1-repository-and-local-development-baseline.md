@@ -16,15 +16,21 @@ Detailed tasks: `implementation-phase-tasks/phase-1-repository-and-local-develop
   - pre-commit hooks.
   - lint/format configs for JS/TS and Go.
   - frontend package manager standardized to `npm`.
-- Add Dockerfiles and `docker-compose.yml` for full local stack.
-- Local stack scope is minimal by default: frontend, API, worker, and Postgres only (no local observability components required).
+- Add Dockerfiles for `backend-api` and `backend-worker`.
+- Centralize local Compose orchestration in `platform-infra`.
+- Use a hybrid local-dev model by default:
+  - when developing frontend, run `frontend-web` natively and Compose runs `backend-api` + `postgres`
+  - when developing API, run `backend-api` natively and Compose runs `frontend-web` + `postgres`
+  - keep workers out of the default frontend/API stack until later phase work requires them
+- Expose repo-local `make` targets that invoke the centralized Compose setup rather than duplicating stack definitions in each repo.
+- Local observability components remain out of scope by default.
 - Ensure AI worker baseline supports poll-loop processing for both ready tasks and rework tasks, with event-triggered cloud wake-ups for review rework loops.
 - Ensure AI worker uses one poll-loop logic across runtimes: local runs continuously (sleep + re-poll), cloud runs bounded and exits on idle/limits waiting for next wake-up trigger.
 - Ensure AI worker local/cloud parity: same container image and runtime entrypoint must run locally and in Cloud Run Jobs (config/adapters only differ).
 
 Exit criteria:
-- `docker compose up` runs all core services.
-- Basic health checks reachable for API and worker.
+- Developers can bring up the frontend-focused or API-focused local stack from the relevant repo using shared Compose definitions in `platform-infra`.
+- Basic health checks are reachable for the frontend/API/Postgres local flow.
 
 ## Open Questions / Choices To Clarify Later
 - None currently.

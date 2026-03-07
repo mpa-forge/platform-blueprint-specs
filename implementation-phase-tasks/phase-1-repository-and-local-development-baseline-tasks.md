@@ -55,21 +55,26 @@ Action: Add `.env.example` files, environment naming conventions, and documented
 Output: Environment contract docs and examples.  
 Done when: Each relevant repo has a clear `.env.example` baseline and documented env contract suitable for later startup validation in Phase 2.
 
-### P1-T06: Add Dockerfiles for frontend/API/worker
+### P1-T06: Add Dockerfiles for API and backend worker
 Owner: Agent  
 Type: Coding  
 Dependencies: P1-T02  
-Action: Build multi-stage Dockerfiles with minimal runtime images and healthcheck-compatible startup commands.  
+Action: Build multi-stage Dockerfiles for `backend-api` and `backend-worker` with minimal runtime images and healthcheck-compatible startup commands. Defer `platform-ai-workers` containerization to `P1-T11`, and keep frontend containerization optional until the local stack orchestration is implemented.  
 Output: Buildable local container images.  
-Done when: `docker build` succeeds for all services.
+Done when: `docker build` succeeds for `backend-api` and `backend-worker`.
 
-### P1-T07: Create root/local `docker-compose.yml`
+### P1-T07: Create centralized local Compose stack in `platform-infra`
 Owner: Agent  
 Type: Coding  
 Dependencies: P1-T05, P1-T06  
-Action: Compose file runs minimal local stack (frontend, API, worker, and Postgres) with stable networking and startup order; exclude local observability components by default.  
-Output: Local stack orchestration.  
-Done when: `docker compose up` brings all components to healthy state.
+Action: Create the canonical local Compose orchestration in `platform-infra` for the shared development dependencies and supporting app services. The baseline model is hybrid:
+- when developing frontend, run `frontend-web` natively and Compose runs `backend-api` + `postgres`
+- when developing API, run `backend-api` natively and Compose runs `frontend-web` + `postgres`
+- exclude `backend-worker` and `platform-ai-workers` from the default frontend/API flow for now
+- expose repo-local `make` wrappers in app repos that invoke the centralized Compose definitions rather than duplicating stack files per repo
+- keep local observability components out of scope by default  
+Output: Centralized local stack orchestration plus repo-local developer entrypoints.  
+Done when: A developer can start the frontend-focused or API-focused local stack from the relevant repo, with supporting services provided by Compose and the actively developed service running natively.
 
 ### P1-T08: Add health endpoints and smoke script
 Owner: Agent  
@@ -77,7 +82,7 @@ Type: Coding
 Dependencies: P1-T07  
 Action: Implement or stub `healthz` checks and add `scripts/local-smoke-test.sh`/`.ps1`.  
 Output: Automated local sanity check script.  
-Done when: Smoke script validates API and worker health.
+Done when: Smoke script validates the frontend/API/Postgres development path, and worker health can remain deferred until worker runtime work is introduced.
 
 ### P1-T09: Define local data bootstrap
 Owner: Agent  

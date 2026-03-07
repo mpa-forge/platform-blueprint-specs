@@ -87,7 +87,10 @@ Required platform integrations in MVP:
 
 Acceptance checklist (Definition of Done for baseline):
 - Local:
-  - `docker compose up` runs frontend, API, worker, Postgres.
+- The local development stack uses centralized Compose definitions in `platform-infra` with a hybrid model:
+  - frontend development runs frontend natively and Compose-provisions API + Postgres
+  - API development runs API natively and Compose-provisions frontend + Postgres
+  - workers stay out of the default frontend/API development path initially
   - Local authenticated flow reaches protected API endpoint.
 - Cloud RC:
   - Terraform provisions/updates required infrastructure from clean state.
@@ -263,3 +266,4 @@ For each decision capture:
 - v2.35 (2026-03-01): Switched first-iteration API deployment baseline to Cloud Run and deferred initial GKE cluster creation to an optional later path.
 - v2.36 (2026-03-01): Added dual-runtime observability implementation model and shared observability library requirement for Cloud Run direct OTLP and GKE collector modes.
 - v2.37 (2026-03-04): Deferred Sentry and incident.io integration from early phases to Phase 8 hardening; Phase 0/3 now baseline on Grafana Cloud only.
+- v2.38 (2026-03-07): Locked Phase 1 local development to a hybrid stack model with centralized Compose in `platform-infra`, native active-service development, and workers excluded from the default frontend/API local flow.
