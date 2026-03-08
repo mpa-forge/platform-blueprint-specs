@@ -23,6 +23,24 @@ This file is shared by all working repositories in the platform blueprint worksp
 - When working in a code repository, update documentation in the same change when behavior, contracts, runtime flow, public interfaces, or operational usage change.
 - Do not leave stale comments, README steps, or runtime notes behind after changing the code.
 - If the change is too small to justify documentation, that should be because the behavior is already obvious and unchanged, not because documentation was skipped.
+- If the change affects other repositories or the platform contract between repositories, also update `platform-blueprint-specs` in the same task.
+
+Cross-repo examples:
+
+- API contract, protobuf, auth, or runtime changes that affect frontend, workers, infra, or AI automation
+- generated client/package usage changes
+- deployment, observability, or environment model changes that affect more than one repo
+- workflow or operational changes that alter how another repo must be built, validated, deployed, or integrated
+
+When cross-repo impact exists, update the smallest durable planning artifact that matches the change:
+
+- standards in `docs/standards/`
+- architecture or automation docs in `docs/` or `ops/`
+- phase/task files when scope, sequencing, or acceptance criteria change
+- `platform-specification.md` when a locked stack or architecture decision changes
+- ADRs when the change is a platform-level decision or tradeoff
+
+Do not keep cross-repo behavioral knowledge only in a code repo if other repos depend on it.
 
 ## Documentation Summary
 
