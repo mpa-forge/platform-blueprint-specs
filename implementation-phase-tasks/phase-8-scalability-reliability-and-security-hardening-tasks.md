@@ -90,7 +90,7 @@ Done when: Target baseline checklist is passed or deviations are accepted with o
 ### P8-T10: Final baseline certification as reusable template
 Owner: Human  
 Type: Phase gate  
-Dependencies: P8-T01..P8-T09, P8-T11..P8-T16  
+Dependencies: P8-T01..P8-T09, P8-T11..P8-T17
 Action: Confirm all phase objectives and baseline MVP acceptance criteria are met; tag template release.  
 Output: Reusable platform blueprint release record.  
 Done when: Template release is tagged and handoff docs are complete.
@@ -143,6 +143,20 @@ Action: Create or confirm incident.io workspace on Basic (Free), configure servi
 Output: incident.io workflow configuration docs and test evidence.  
 Done when: Synthetic `P1` and escalated `P2` events produce incident records with expected routing/assignment behavior.
 
+### P8-T17: Plan and implement optional single-VM deployment path
+Owner: Human + Agent
+Type: Architecture + infra + CI/CD coding
+Dependencies: Phase 7 complete, P8-T03
+Action: Define and implement an additional deployment path that runs `frontend-web`, `backend-api`, and PostgreSQL on a single virtual machine for low-usage or cost-sensitive projects. The task must:
+- document when this path is appropriate versus Cloud Run or GKE (traffic, ops burden, cost, recovery expectations)
+- define the VM runtime model (for example Docker Compose or equivalent process supervision on one host)
+- add Terraform support for provisioning the VM path and its required networking/storage/security baseline
+- add GitHub Actions support for building and deploying to the VM path
+- document operational tradeoffs, backup/recovery expectations, and migration path back to Cloud Run/GKE when scale or reliability needs increase
+- prove the path with one end-to-end RC deployment and smoke test of frontend -> API -> DB
+Output: VM-path architecture doc, infrastructure implementation, deployment workflow, and validation evidence.
+Done when: The single-VM path is documented, provisionable, deployable from CI, and validated as an optional runtime for projects where its tradeoffs are acceptable.
+
 ## Artifacts Checklist
 - SLO/SLI baseline docs
 - autoscaling/resource tuning configs
@@ -160,3 +174,4 @@ Done when: Synthetic `P1` and escalated `P2` events produce incident records wit
 - edge-provider layering ADR and implementation plan
 - Sentry integration evidence and triage runbook
 - incident.io routing/escalation configuration evidence
+- single-VM deployment path architecture, infra, CI workflow, and validation evidence

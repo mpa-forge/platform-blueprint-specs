@@ -27,10 +27,11 @@
 - Platform runtime paths:
   - Path A (baseline): API on Google Cloud Run (scale-to-zero capable).
   - Path B (alternative): API on GKE Autopilot with Helm-managed workloads.
+  - Path C (late optional alternative): single virtual machine running `frontend-web` + `backend-api` + PostgreSQL for low-scale or cost-sensitive projects after the primary runtime path is proven.
 - Packaging:
   - Cloud Run path: container image deploys through Cloud Run service revisions.
   - GKE path: Helm charts per environment.
-- Infra: Terraform modules for networking, Cloud Run, optional GKE cluster, data services, and secrets integration.
+- Infra: Terraform modules for networking, Cloud Run, optional GKE cluster, optional single-VM path, data services, and secrets integration.
 - Observability: OpenTelemetry -> Grafana Cloud (managed metrics/logs/traces/alerting) + automation workflows.
 
 ## 4. Proposed Stack (Initial)
@@ -64,6 +65,7 @@
 - CD operating model:
   - baseline: pipeline-driven deployment with GitHub Actions -> Cloud Run for API
   - alternative path: GitHub Actions + Helm for GKE workloads
+  - late optional alternative: GitHub Actions pipeline-driven deploy to a single VM runtime
 - AI task-to-code automation: Custom worker runtime in dedicated `platform-ai-workers` repository, executed as event-woken/bounded Cloud Run Jobs (optional low-frequency scheduler backstop).
 - Secrets management:
   - baseline Cloud Run path: Google Secret Manager direct injection/retrieval
@@ -136,6 +138,7 @@
 - Cloud provider: GCP.
 - API runtime baseline: Cloud Run (scale-to-zero).
 - API runtime alternative path: GKE Autopilot + Helm (kept fully supported in IaC/deployment design).
+- API runtime late optional path: single VM for low-scale or cost-sensitive projects, implemented only after the primary runtime path is operational and validated.
 - API runtime path reference: `ops/api-runtime-paths-cloud-run-gke.md`.
 - GKE baseline policy: do not create a cluster for the initial iteration; provision GKE only when product requirements justify it.
 - Ephemeral cluster lifecycle baseline (when GKE path is enabled): prod cluster must be create/destroy/recover capable through Terraform + Helm workflows for cost control and reusable project templates.

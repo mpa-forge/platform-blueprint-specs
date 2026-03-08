@@ -40,6 +40,7 @@ Target repositories (polyrepo):
 - `platform-ai-workers`: AI task-to-code worker runtime (Cloud Run Jobs with event-driven wake-ups and optional scheduler backstop) that converts GitHub tasks into PRs with human review gates.
 - `frontend-web`: authenticated React app using generated TypeScript client from protobuf contracts.
 - `platform-infra`: Terraform + GitHub Actions deployment workflows for Cloud Run baseline, plus Helm workflows for optional GKE path.
+- optional later deployment path: single virtual machine running `frontend-web` + `backend-api` + PostgreSQL for low-scale or cost-sensitive projects once the main runtime path is proven.
 - dedicated docs repository: ADRs, platform standards, runbooks, and cross-repo operational documentation.
 - code documentation standard: `docs/standards/code-documentation.md` defines comment/doc expectations for repos as code-bearing phases start.
 
@@ -268,3 +269,4 @@ For each decision capture:
 - v2.36 (2026-03-01): Added dual-runtime observability implementation model and shared observability library requirement for Cloud Run direct OTLP and GKE collector modes.
 - v2.37 (2026-03-04): Deferred Sentry and incident.io integration from early phases to Phase 8 hardening; Phase 0/3 now baseline on Grafana Cloud only.
 - v2.38 (2026-03-07): Locked Phase 1 local development to a hybrid stack model with centralized Compose in `platform-infra`, native active-service development, and workers excluded from the default frontend/API local flow.
+- v2.39 (2026-03-08): Added a late-phase optional single-VM deployment path task for cost-sensitive or low-scale projects, to be implemented only after the primary runtime path is running and tested.

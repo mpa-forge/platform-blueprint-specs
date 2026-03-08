@@ -42,6 +42,10 @@ Detailed tasks: `implementation-phase-tasks/phase-8-scalability-reliability-and-
   - deployment-time signature verification deferred to a later phase
 - Resolve deferred edge-provider layering decision:
   - Evaluate whether to keep GCP-native edge only, or add external provider capabilities (for example advanced WAF/bot controls) based on real traffic/threat/cost signals.
+- Add an optional low-scale deployment alternative after the primary path is proven:
+  - define and implement a single-VM deployment path for `frontend-web` + `backend-api` + PostgreSQL
+  - keep it as an additional runtime option for low-usage or cost-sensitive projects, not as the baseline replacement
+  - document selection criteria, migration boundaries, and CI/infrastructure differences from the Cloud Run/GKE paths
 
 Exit criteria:
 - Performance SLO baseline documented.
