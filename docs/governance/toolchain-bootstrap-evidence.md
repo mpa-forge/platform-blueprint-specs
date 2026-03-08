@@ -1,6 +1,6 @@
 # Toolchain Bootstrap Evidence (`P1-T03`)
 
-Last updated: 2026-03-06
+Last updated: 2026-03-08
 
 ## Scope
 
@@ -11,9 +11,9 @@ This document records the toolchain version pins and bootstrap baseline delivere
 | Repo | Version pin files | Pinned toolchain |
 | --- | --- | --- |
 | `frontend-web` | `.tool-versions`, `package.json`, `package-lock.json` | Node.js `24.13.1`, npm `11.8.0` |
-| `backend-api` | `.tool-versions`, `go.mod` | Go `1.24.12` |
-| `backend-worker` | `.tool-versions`, `go.mod` | Go `1.24.12` |
-| `platform-ai-workers` | `.tool-versions`, `go.mod` | Go `1.24.12` |
+| `backend-api` | `.tool-versions`, `go.mod` | Go `1.25.1` |
+| `backend-worker` | `.tool-versions`, `go.mod` | Go `1.25.1` |
+| `platform-ai-workers` | `.tool-versions`, `go.mod` | Go `1.25.1` |
 | `platform-contracts` | `.tool-versions`, `package.json`, `package-lock.json` | Node.js `24.13.1`, npm `11.8.0`, Buf `1.65.0` |
 | `platform-infra` | `.tool-versions`, `versions.tf` | Terraform `1.14.5` |
 
@@ -72,3 +72,5 @@ Template mapping:
 
 - `P1-T10` should include a fresh-machine validation that covers all pinned toolchains end to end.
 - `P1-T04` and later tasks will add actual lint/test commands on top of this baseline.
+
+

@@ -1,4 +1,4 @@
-﻿# Product & Platform Specification
+# Product & Platform Specification
 
 ## 1. Goals
 - Build a web product with a React frontend, Go backend APIs, background processing, and a scalable cloud-native platform.
@@ -35,7 +35,7 @@
 
 ## 4. Proposed Stack (Initial)
 - Frontend: React + Vite + TypeScript + TanStack Query + React Router.
-- API/Workers: Go 1.24+ with:
+- API/Workers: Go 1.25+ with:
   - HTTP runtime: `chi` on top of `net/http`
   - RPC/contracts: protobuf + Connect (`connect-go`) + grpc-go compatibility
   - Config: viper/envconfig + explicit env schema
@@ -559,5 +559,6 @@
 - v1.42 (2026-03-01): Switched API runtime baseline to Cloud Run (scale-to-zero), preserved GKE+Helm as alternative path, and deferred initial cluster creation until required.
 - v1.43 (2026-03-01): Expanded observability architecture to dual runtime modes (`direct_otlp` for Cloud Run baseline, `collector_gateway` for GKE path) and locked shared observability library requirement with profile parity.
 - v1.44 (2026-03-04): Deferred Sentry and incident.io integrations to Phase 8 hardening; baseline observability/incident flow remains Grafana Cloud + webhook/Slack.
+
 
 
