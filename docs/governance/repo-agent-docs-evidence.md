@@ -46,7 +46,7 @@ Fixed context in `AGENTS.md`:
 - prefer repo-local entrypoints
 - run repo validation commands
 - use short-lived branches
-- use `gh` for draft PR creation/update
+- use `gh` for PR creation/update
 - keep the worktree clean
 
 Automated worker skill:

@@ -175,7 +175,7 @@
   - Outstanding-review cap behavior is mode-specific:
     - local mode waits and polls again when cap is reached
     - cloud mode exits and waits for next wake-up
-  - Worker output path: branch + draft PR; review feedback can trigger rework on the same PR branch; merge requires standard human review and required CI checks.
+- Worker output path: branch + PR; review feedback can trigger rework on the same PR branch; merge requires standard human review and required CI checks.
   - Runtime parity reference: `ops/ai-worker-local-cloud-parity.md`.
 - CD operating model:
   - baseline path: Pipeline-driven GitHub Actions deployment to Cloud Run for API.
@@ -491,11 +491,11 @@
 - Task state machine baseline:
   - Select tasks by labels: `ai:ready` + `worker:<id>`.
   - Claim task by moving to `ai:in-progress` before code execution.
-  - On success move to `ai:ready-for-review` and open/update draft PR.
+- On success move to `ai:ready-for-review` and open/update the PR.
   - On human review feedback (`changes requested` or explicit rework command), mark `ai:rework-requested` and re-enter `ai:in-progress` on the next triggered run.
   - On failure mark `ai:failed` (with retry/resume policy retaining deterministic ownership by worker id).
 - Control and governance:
-  - Worker-generated PRs are draft-first and carry machine-readable metadata (`ai-generated`, run id).
+- Worker-generated PRs carry machine-readable metadata (`ai-generated`, `ai-run-id`) and require human review before merge.
   - Branch protection/CODEOWNERS/required checks remain mandatory before merge.
   - Rework runs must update the existing PR branch unless an explicit override is approved.
   - No direct writes to protected branches.

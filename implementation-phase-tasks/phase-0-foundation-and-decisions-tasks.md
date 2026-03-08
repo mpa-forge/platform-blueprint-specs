@@ -176,7 +176,7 @@ Type: Governance + architecture
 Dependencies: P0-T10  
 Status: Completed (`2026-03-06`)  
 Evidence: `docs/automation/ai-task-to-code-architecture.md`, `ops/ai-worker-local-cloud-parity.md`  
-Action: Document the baseline automation architecture: dedicated `platform-ai-workers` repo with one shared GitHub poll-loop logic for local and cloud runtimes, Cloud Run Jobs used as bounded wake-up executions, one worker-job deployment per target repo, environment-driven worker configuration (`WORKER_RUNTIME_MODE`, `WORKER_ID`, `TARGET_REPO`, credential refs, limits), local/cloud runtime parity requirement (same worker image and runtime entrypoint in both contexts), and mandatory human review controls (draft PR + required checks/review). Reference `ops/ai-worker-local-cloud-parity.md` for runtime parity contract.  
+Action: Document the baseline automation architecture: dedicated `platform-ai-workers` repo with one shared GitHub poll-loop logic for local and cloud runtimes, Cloud Run Jobs used as bounded wake-up executions, one worker-job deployment per target repo, environment-driven worker configuration (`WORKER_RUNTIME_MODE`, `WORKER_ID`, `TARGET_REPO`, credential refs, limits), local/cloud runtime parity requirement (same worker image and runtime entrypoint in both contexts), and mandatory human review controls (PR + required checks/review). Reference `ops/ai-worker-local-cloud-parity.md` for runtime parity contract.
 Output: `docs/automation/ai-task-to-code-architecture.md`.  
 Done when: Architecture and control boundaries are approved and referenced by Phase 1/4/5 tasks.
 
@@ -206,7 +206,7 @@ Type: Workflow design
 Dependencies: P0-T11, P0-T12  
 Status: Completed (`2026-03-06`)  
 Evidence: `docs/automation/ai-task-automation-workflow.md`, `ops/ai-comment-trigger-cloud-run-jobs.md`  
-Action: Define the event trigger contract for rework (for example PR review `changes requested`, or maintainer command comment like `/ai rework`), dedup/idempotency key strategy (review/comment id), and rules for updating the same draft PR branch instead of opening a new PR. Use `ops/ai-comment-trigger-cloud-run-jobs.md` as the baseline implementation reference in this planning repo.  
+Action: Define the event trigger contract for rework (for example PR review `changes requested`, or maintainer command comment like `/ai rework`), dedup/idempotency key strategy (review/comment id), and rules for updating the same PR branch instead of opening a new PR. Use `ops/ai-comment-trigger-cloud-run-jobs.md` as the baseline implementation reference in this planning repo.
 Output: `docs/automation/ai-task-automation-workflow.md` and `ops/ai-comment-trigger-cloud-run-jobs.md`.  
 Done when: Rework trigger and PR update behavior are explicit, automatable, and auditable.
 

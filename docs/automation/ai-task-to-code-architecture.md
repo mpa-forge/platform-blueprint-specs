@@ -27,7 +27,7 @@ Convert selected GitHub tasks into implementation PRs while preserving:
 - One dedicated repository: `platform-ai-workers`
 - One shared poll-loop logic path across local and cloud
 - One worker lane per target repository
-- One worker output model: branch + draft PR
+- One worker output model: branch + PR
 - Human review is always required before merge
 - Cloud execution is event-woken first, scheduler-backed second
 - Worker runtime implementation: Go application orchestrator
@@ -56,7 +56,7 @@ Lane ownership rule:
 4. Worker selects next eligible work item from GitHub.
 5. Worker claims the item and moves it to in-progress state.
 6. Worker runs the coding agent subprocess CLI against the checked-out repository workspace and applies repository changes.
-7. Worker pushes a branch and opens or updates a draft PR.
+7. Worker pushes a branch and opens or updates a PR.
 8. Worker moves task state to review-ready on success, or failed on error.
 
 ## Agent Execution Model
@@ -115,7 +115,7 @@ Detailed rework trigger contract:
 - `ops/ai-comment-trigger-cloud-run-jobs.md`
 
 ## Governance and Control Boundaries
-- AI workers may push commits and update draft PRs.
+- AI workers may push commits and update PRs.
 - AI workers may not merge PRs.
 - AI workers may not bypass required checks.
 - AI workers may not write directly to protected branches.

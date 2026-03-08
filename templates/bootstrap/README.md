@@ -30,6 +30,11 @@ Windows note:
 - use a POSIX-friendly GNU Make such as `ezwinports.make` or MSYS2 `make`
 - ensure Git for Windows `bash.exe` is on `PATH`
 - do not use `GnuWin32` make with these templates
+- use `scripts/windows-tooling-doctor.ps1` from `platform-blueprint-specs` to verify the workstation baseline
+
+Reference:
+
+- `docs/standards/windows-developer-tooling.md`
 
 ## Baseline contract
 

@@ -28,7 +28,7 @@ Detailed tasks: `implementation-phase-tasks/phase-0-foundation-and-decisions-tas
 - Confirmed: Cloud runtime uses bounded Cloud Run Job executions and is primarily event-woken from GitHub task/review changes (optional scheduler backstop), one worker-job deployment per target repository.
 - Confirmed: Worker-job configuration is environment-driven (target repo, worker id, credentials refs, and automation limits).
 - Confirmed: AI workers must keep local/cloud runtime parity (same worker image and runtime entrypoint in local runs and Cloud Run Jobs).
-- Confirmed: Human review remains mandatory through draft PR + branch protection before merge.
+- Confirmed: Human review remains mandatory through PR + branch protection before merge.
 - Confirmed: Google Artifact Registry for container images/artifacts.
 - Confirmed: Cloud SQL for PostgreSQL hosting.
 - Confirmed: Google Secret Manager for secrets (direct integration on Cloud Run baseline; ESO on GKE path).

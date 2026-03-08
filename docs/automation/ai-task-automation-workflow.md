@@ -44,7 +44,7 @@ Concurrency rule:
 4. The worker moves the task to `ai:in-progress`.
 5. The worker performs the coding work.
 6. If work fails, the task moves to `ai:failed`.
-7. If work succeeds, the worker commits and pushes changes, opens or updates the draft PR, and moves the task to `ai:ready-for-review`.
+7. If work succeeds, the worker commits and pushes changes, opens or updates the PR, and moves the task to `ai:ready-for-review`.
 8. A human reviewer reviews the PR.
 9. If changes are required, the reviewer comments on the PR and moves the task to `ai:rework-requested`.
 10. The worker picks that rework first, moves the task back to `ai:in-progress`, updates the same PR branch, and the cycle repeats.
@@ -77,7 +77,7 @@ Failure rule:
 During push, the worker:
 - commits changes
 - pushes branch updates
-- opens or updates the draft PR
+- opens or updates the PR
 
 Success transition:
 - move task from `ai:in-progress` to `ai:ready-for-review`
@@ -86,7 +86,7 @@ Success transition:
 Rework starts only after:
 - the worker has pushed changes
 - the task state is `ai:ready-for-review`
-- a human reviewer reviews the draft PR and requests changes
+- a human reviewer reviews the PR and requests changes
 
 When changes are needed, the reviewer:
 - adds comments to the PR

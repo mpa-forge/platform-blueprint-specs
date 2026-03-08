@@ -17,6 +17,9 @@ This file is shared by all working repositories in the platform blueprint worksp
   - `make format-check`
 - If formatting is required and the repo exposes a formatter, run it and rerun validation.
 - If the repo does not expose one of the commands above, fall back to the documented equivalent in `README.md`.
+- If the repo has `.pre-commit-config.yaml` and the change is being made by scripted or autonomous workflow, run pre-commit before committing:
+  - prefer `make precommit-run` when available
+  - otherwise use `python -m pre_commit run --all-files`
 
 ## Documentation Update Rule
 
@@ -78,8 +81,17 @@ Language-specific baseline:
 - Create or use a short-lived task branch.
 - Commit only after validation passes.
 - Push with `git push`.
-- Use `gh` to create or update a draft PR.
+- Use `gh` to create or update a normal PR unless a draft PR is explicitly required by the task.
 - Do not merge the PR.
+
+## Post-Merge Cleanup
+
+After squash-merged work:
+
+- switch to `main`
+- pull latest `origin/main`
+- delete the local feature branch if it still exists
+- verify the worktree is clean
 
 ## Clean Tree Rule
 

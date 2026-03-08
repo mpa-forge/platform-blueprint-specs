@@ -24,5 +24,5 @@ This file gives agents the minimum shared workspace map needed across repositori
 - API contract model: protobuf + Connect-compatible endpoints.
 - Go API HTTP stack baseline: `chi` with `connect-go` handlers.
 - Local delivery model: hybrid local stack orchestrated from `platform-infra`.
-- GitHub flow: branch + draft PR + human review.
+- GitHub flow: branch + normal PR + human review unless the task explicitly requires draft mode.
 - Clean worktree is required at the end of autonomous work.

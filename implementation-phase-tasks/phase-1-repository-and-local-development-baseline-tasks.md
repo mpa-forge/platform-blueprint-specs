@@ -116,9 +116,9 @@ Type: Coding
 Dependencies: P1-T01, Phase 0 AI automation decisions, `ops/ai-comment-trigger-cloud-run-jobs.md`, `ops/ai-worker-local-cloud-parity.md`  
 Status: Completed (`2026-03-08`)  
 Evidence: `docs/governance/ai-worker-baseline-evidence.md`  
-Action: Scaffold worker job codebase and container with configurable env vars (`WORKER_RUNTIME_MODE`, `WORKER_ID`, `TARGET_REPO`, `MAX_PENDING_REVIEW`, `POLL_INTERVAL`, credential secret refs), support for trigger context (`TRIGGER_SOURCE`, optional `TARGET_ISSUE`/`TARGET_PR`/`EVENT_ID`), shared GitHub poll-loop task selection logic (ready + rework candidates), task state transitions (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`), and draft PR creation/update path aligned to `ops/ai-comment-trigger-cloud-run-jobs.md`. Implement the worker runtime as a Go application that invokes the coding agent as a subprocess CLI against the checked-out workspace. Implement one runtime entrypoint used by both local and Cloud Run executions, with environment-specific behavior only through lifecycle/config/adapters as defined in `ops/ai-worker-local-cloud-parity.md`.  
+Action: Scaffold worker job codebase and container with configurable env vars (`WORKER_RUNTIME_MODE`, `WORKER_ID`, `TARGET_REPO`, `MAX_PENDING_REVIEW`, `POLL_INTERVAL`, credential secret refs), support for trigger context (`TRIGGER_SOURCE`, optional `TARGET_ISSUE`/`TARGET_PR`/`EVENT_ID`), shared GitHub poll-loop task selection logic (ready + rework candidates), task state transitions (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`), and PR creation/update path aligned to `ops/ai-comment-trigger-cloud-run-jobs.md`. Implement the worker runtime as a Go application that invokes the coding agent as a subprocess CLI against the checked-out workspace. Implement one runtime entrypoint used by both local and Cloud Run executions, with environment-specific behavior only through lifecycle/config/adapters as defined in `ops/ai-worker-local-cloud-parity.md`.
 Output: Runnable automation worker baseline in dedicated repo.  
-Done when: Worker can process one synthetic issue and produce a draft PR in a target sandbox repo, the agent is invoked through the documented subprocess CLI contract, and the same image/entrypoint can be invoked locally and in Cloud Run mode.
+Done when: Worker can process one synthetic issue and produce a PR in a target sandbox repo, the agent is invoked through the documented subprocess CLI contract, and the same image/entrypoint can be invoked locally and in Cloud Run mode.
 
 ### P1-T12: Add worker lane safety and resume behavior
 Owner: Agent  
@@ -136,7 +136,7 @@ Type: Coding
 Dependencies: P1-T01, P1-T03, P1-T04  
 Status: Completed (`2026-03-08`)  
 Evidence: `docs/governance/repo-agent-docs-evidence.md`  
-Action: Add a fixed-context `AGENTS.md` file plus a repo-local automated-worker skill file to each working repository (`frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`). The baseline content can be identical across repos for now and must document the minimum autonomous task workflow: inspect README/Makefile first, run repo validation commands, fix reported issues, use `gh` for branch/commit/push/draft PR flow, and leave a clean git tree. Keep canonical copies in the planning repo for reuse in future repo bootstrap work.  
+Action: Add a fixed-context `AGENTS.md` file plus a repo-local automated-worker skill file to each working repository (`frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`). The baseline content can be identical across repos for now and must document the minimum autonomous task workflow: inspect README/Makefile first, run repo validation commands, fix reported issues, use `gh` for branch/commit/push/PR flow, and leave a clean git tree. Keep canonical copies in the planning repo for reuse in future repo bootstrap work.
 Output: Common agent context and worker-skill baseline across all working repos.  
 Done when: Every working repo contains `AGENTS.md` plus the agreed worker skill file, and the guidance matches the existing repo entrypoints.
 
@@ -144,7 +144,7 @@ Done when: Every working repo contains `AGENTS.md` plus the agreed worker skill 
 Owner: Human + Agent  
 Type: Validation  
 Dependencies: P1-T11, P1-T12, P1-T12B  
-Action: Execute controlled dry-run against a sandbox repository and verify end-to-end path (issue selection, branch changes, draft PR creation, state updates, reviewer handoff, and comment/review-triggered rework updating the same PR) according to `ops/ai-comment-trigger-cloud-run-jobs.md`; include local/cloud parity checks per `ops/ai-worker-local-cloud-parity.md` by running equivalent inputs locally and via Cloud Run execution, including idle and outstanding-review-cap behavior.  
+Action: Execute controlled dry-run against a sandbox repository and verify end-to-end path (issue selection, branch changes, PR creation, state updates, reviewer handoff, and comment/review-triggered rework updating the same PR) according to `ops/ai-comment-trigger-cloud-run-jobs.md`; include local/cloud parity checks per `ops/ai-worker-local-cloud-parity.md` by running equivalent inputs locally and via Cloud Run execution, including idle and outstanding-review-cap behavior.
 Output: `docs/automation/ai-worker-dry-run.md` with findings and fixes.  
 Done when: One end-to-end task-to-draft-PR flow plus one rework loop succeeds under manual observation, and parity evidence confirms equivalent behavior for local and Cloud Run runs.
 

@@ -103,7 +103,7 @@ Done when: PR pipeline runtime meets SLO baseline (`p50 <= 10 min`, `p95 <= 15 m
 Owner: Human + Agent  
 Type: CI governance  
 Dependencies: P4-T09, Phase 1 AI worker bootstrap  
-Action: Configure required checks and review policy for AI-generated PRs (draft-first, mandatory human reviewer, CODEOWNERS enforcement, required metadata labels such as `ai-generated` and `ai-run-id`, and explicit rework trigger controls for `changes requested` or `/ai rework` command usage) aligned to `ops/ai-comment-trigger-cloud-run-jobs.md`.  
+Action: Configure required checks and review policy for AI-generated PRs (normal PRs, mandatory human reviewer, CODEOWNERS enforcement, required metadata labels such as `ai-generated` and `ai-run-id`, and explicit rework trigger controls for `changes requested` or `/ai rework` command usage) aligned to `ops/ai-comment-trigger-cloud-run-jobs.md`.
 Output: Enforced governance policy for automation-created PRs.  
 Done when: AI-created PRs cannot merge without the same required review/check gates as human-authored PRs.
 

@@ -10,7 +10,7 @@ Phase 1 repository finalization work completed in `P1-T01`.
 
 | Repo | URL | Repo ID | Visibility | Maintainer | Status |
 | --- | --- | --- | --- | --- | --- |
-| `platform-blueprint-specs` | `https://github.com/mpa-forge/platform-blueprint-specs` | `R_kgDORdrAUg` | `private` | `MiquelPiza` | `finalized` |
+| `platform-blueprint-specs` | `https://github.com/mpa-forge/platform-blueprint-specs` | `R_kgDORdrAUg` | `public` | `MiquelPiza` | `finalized` |
 | `frontend-web` | `https://github.com/mpa-forge/frontend-web` | `R_kgDORdrAZg` | `public` | `MiquelPiza` | `finalized` |
 | `backend-api` | `https://github.com/mpa-forge/backend-api` | `R_kgDORdrAgQ` | `public` | `MiquelPiza` | `finalized` |
 | `backend-worker` | `https://github.com/mpa-forge/backend-worker` | `R_kgDORdrAlQ` | `public` | `MiquelPiza` | `finalized` |
