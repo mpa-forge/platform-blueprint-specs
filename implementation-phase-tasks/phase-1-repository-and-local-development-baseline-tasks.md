@@ -114,6 +114,8 @@ Done when: New developer setup completes within targeted time window.
 Owner: Agent  
 Type: Coding  
 Dependencies: P1-T01, Phase 0 AI automation decisions, `ops/ai-comment-trigger-cloud-run-jobs.md`, `ops/ai-worker-local-cloud-parity.md`  
+Status: Completed (`2026-03-08`)  
+Evidence: `docs/governance/ai-worker-baseline-evidence.md`  
 Action: Scaffold worker job codebase and container with configurable env vars (`WORKER_RUNTIME_MODE`, `WORKER_ID`, `TARGET_REPO`, `MAX_PENDING_REVIEW`, `POLL_INTERVAL`, credential secret refs), support for trigger context (`TRIGGER_SOURCE`, optional `TARGET_ISSUE`/`TARGET_PR`/`EVENT_ID`), shared GitHub poll-loop task selection logic (ready + rework candidates), task state transitions (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`), and draft PR creation/update path aligned to `ops/ai-comment-trigger-cloud-run-jobs.md`. Implement the worker runtime as a Go application that invokes the coding agent as a subprocess CLI against the checked-out workspace. Implement one runtime entrypoint used by both local and Cloud Run executions, with environment-specific behavior only through lifecycle/config/adapters as defined in `ops/ai-worker-local-cloud-parity.md`.  
 Output: Runnable automation worker baseline in dedicated repo.  
 Done when: Worker can process one synthetic issue and produce a draft PR in a target sandbox repo, the agent is invoked through the documented subprocess CLI contract, and the same image/entrypoint can be invoked locally and in Cloud Run mode.
