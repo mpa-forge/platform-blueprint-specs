@@ -17,7 +17,7 @@ Observability package contract artifact: `ops/observability-telemetry-budget-pro
   - Package generated TypeScript client with npm metadata for GitHub Packages publishing.
   - Commit generated artifacts to git as part of normal development flow.
 - Implement Go API skeleton:
-  - Native `net/http` server, health/readiness, config loading, structured logging, auth middleware scaffold.
+  - `chi`-based HTTP server, health/readiness, config loading, structured logging, auth middleware scaffold.
   - Enforce startup validation of the environment contract defined in Phase 1 and fail fast on missing or malformed required config.
   - Connect handlers mounted for proto-defined endpoints.
 - Configure Clerk integration baseline:

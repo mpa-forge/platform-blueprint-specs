@@ -36,7 +36,7 @@
 ## 4. Proposed Stack (Initial)
 - Frontend: React + Vite + TypeScript + TanStack Query + React Router.
 - API/Workers: Go 1.24+ with:
-  - HTTP runtime: native `net/http` (Go stdlib)
+  - HTTP runtime: `chi` on top of `net/http`
   - RPC/contracts: protobuf + Connect (`connect-go`) + grpc-go compatibility
   - Config: viper/envconfig + explicit env schema
   - Persistence: pgx + sqlc (typed queries)
@@ -145,7 +145,7 @@
 - External authentication: Clerk Free plan.
 - Auth scope: B2C-first (independent users, no Organizations or SCIM in initial phase).
 - Browser/API contract model: Proto-first with Connect-compatible endpoints.
-- Go HTTP stack: native `net/http` with `connect-go` handlers.
+- Go HTTP stack: `chi` with `connect-go` handlers.
 - Observability platform: Grafana Cloud (managed metrics, logs, traces, alerting).
 - Observability provider tier baseline: Grafana Cloud Free.
 - Observability logs: Grafana Cloud Logs (Loki-managed).

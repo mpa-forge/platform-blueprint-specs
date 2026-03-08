@@ -29,11 +29,11 @@ Action: Generate `connect-go` and Connect ES clients/types; add reproducible gen
 Output: Generated code artifacts, package metadata, and generation command docs.  
 Done when: Regeneration produces zero drift after clean checkout and package metadata is version-ready.
 
-### P2-T04: Implement API runtime skeleton (`net/http` + `connect-go`)
+### P2-T04: Implement API runtime skeleton (`chi` + `connect-go`)
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T03  
-Action: Add server bootstrapping, routing, health/readiness endpoints, structured logging, config loading, and startup validation of required environment variables defined in `P1-T05`, with fail-fast errors for missing or malformed config.  
+Action: Add server bootstrapping, `chi` routing, health/readiness endpoints, structured logging, config loading, and startup validation of required environment variables defined in `P1-T05`, with fail-fast errors for missing or malformed config.
 Output: Runnable API service skeleton.  
 Done when: API starts and serves health endpoints with valid config, and exits early with clear messages when required env is missing or invalid.
 
