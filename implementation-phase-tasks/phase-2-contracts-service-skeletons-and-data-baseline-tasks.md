@@ -33,7 +33,7 @@ Done when: Regeneration produces zero drift after clean checkout and package met
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T03  
-Action: Add server bootstrapping, `chi` routing, health/readiness endpoints, structured logging, config loading, and startup validation of required environment variables defined in `P1-T05`, with fail-fast errors for missing or malformed config.
+Action: Add server bootstrapping, `chi` routing, health/readiness endpoints, structured logging, config loading, and startup validation of required environment variables defined in `P1-T05`, with fail-fast errors for missing or malformed config. Follow `docs/standards/code-documentation.md` for package docs, exported symbol comments, and non-obvious runtime behavior.
 Output: Runnable API service skeleton.  
 Done when: API starts and serves health endpoints with valid config, and exits early with clear messages when required env is missing or invalid.
 
@@ -57,7 +57,7 @@ Done when: Frontend can authenticate and obtain valid access token for API.
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T04  
-Action: Add worker startup loop, graceful shutdown, periodic no-op job, health endpoint, structured logs, and startup validation of required environment variables defined in `P1-T05`, with fail-fast errors for missing or malformed config.  
+Action: Add worker startup loop, graceful shutdown, periodic no-op job, health endpoint, structured logs, and startup validation of required environment variables defined in `P1-T05`, with fail-fast errors for missing or malformed config. Follow `docs/standards/code-documentation.md` for package docs, exported symbol comments, and non-obvious runtime behavior.
 Output: Runnable worker service baseline.  
 Done when: Worker executes periodic task and exposes health with valid config, and exits early with clear messages when required env is missing or invalid.
 

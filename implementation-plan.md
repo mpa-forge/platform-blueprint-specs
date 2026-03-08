@@ -41,6 +41,7 @@ Target repositories (polyrepo):
 - `frontend-web`: authenticated React app using generated TypeScript client from protobuf contracts.
 - `platform-infra`: Terraform + GitHub Actions deployment workflows for Cloud Run baseline, plus Helm workflows for optional GKE path.
 - dedicated docs repository: ADRs, platform standards, runbooks, and cross-repo operational documentation.
+- code documentation standard: `docs/standards/code-documentation.md` defines comment/doc expectations for repos as code-bearing phases start.
 
 Minimum functional scope (no business logic):
 - Frontend:
