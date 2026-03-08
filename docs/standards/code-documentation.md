@@ -202,6 +202,39 @@ A change is incomplete if it:
 - document variables and outputs when behavior, ownership, or environment coupling is not obvious
 - keep operational behavior in repo docs and runbooks, not buried only in HCL comments
 
+## Documentation Tooling
+
+Use the language-native documentation style first. Generate browsable documentation only when the repo has enough public surface to justify it.
+
+### Go
+
+- use native Go doc comments for packages and exported identifiers
+- keep source comments as the primary documentation source
+- optional later exposure:
+  - `pkgsite` / `godoc` style generated API docs when a Go module has enough reusable public API to browse
+- do not introduce a separate generated Go docs site in baseline phases unless there is a clear consumer need
+
+### TypeScript
+
+- use JSDoc/TSDoc selectively for exported modules, hooks, utilities, and non-obvious public contracts
+- keep source comments as the primary documentation source
+- optional later exposure:
+  - TypeDoc for packages that become large enough or public enough to justify generated API docs
+- do not require JSDoc on every function or component
+
+### Protobuf
+
+- document services, RPCs, messages, enums, and fields directly in `.proto` comments
+- treat schema comments as part of the contract
+- optional later exposure:
+  - generated protobuf reference docs if the contract surface grows enough to justify a browsable schema reference
+
+### Human-Facing Docs
+
+- use `README.md` and repo-local `docs/` for setup, runtime, architecture, and operational guidance
+- use `platform-blueprint-specs` for cross-repo standards, ADRs, and shared platform documentation
+- add a separate docs site generator only when the amount of human-facing documentation becomes hard to navigate in-repo
+
 ## Review Rule
 
 During review, documentation should be evaluated as part of code quality.
