@@ -37,7 +37,7 @@ Target repositories (polyrepo):
 - `platform-contracts`: protobuf APIs, Buf config, generated artifact policy, and versioned TypeScript client package publishing to GitHub Packages.
 - `backend-api`: Go API service (`net/http` + `connect-go`) with Clerk token validation and Cloud SQL connectivity.
 - `backend-worker`: Go worker service with scheduled/no-op job loop and shared platform libraries.
-- `platform-ai-workers`: AI task-to-code worker runtime (Cloud Run Jobs with event-driven wake-ups and optional scheduler backstop) that converts GitHub tasks into draft PRs with human review gates.
+- `platform-ai-workers`: AI task-to-code worker runtime (Cloud Run Jobs with event-driven wake-ups and optional scheduler backstop) that converts GitHub tasks into PRs with human review gates.
 - `frontend-web`: authenticated React app using generated TypeScript client from protobuf contracts.
 - `platform-infra`: Terraform + GitHub Actions deployment workflows for Cloud Run baseline, plus Helm workflows for optional GKE path.
 - dedicated docs repository: ADRs, platform standards, runbooks, and cross-repo operational documentation.
@@ -120,13 +120,13 @@ Out of scope until baseline completion:
   - Implement minimal AI task-to-code automation as early as possible to accelerate execution of later phase tasks while preserving merge control.
 - Delivery order:
   - Phase 0: lock automation architecture, task state machine, and credential model.
-  - Phase 1: bootstrap `platform-ai-workers` repo and validate one end-to-end task -> draft PR flow in a sandbox repo.
+- Phase 1: bootstrap `platform-ai-workers` repo and validate one end-to-end task -> PR flow in a sandbox repo.
   - Phase 5 (minimal subset pulled earlier as needed): provision Cloud Run Job + GSM/IAM bindings plus on-demand execute permissions for worker runtime (optional low-frequency scheduler backstop).
   - Phase 4: enforce governance checks for AI-generated PRs (required review/checks/metadata) and event-trigger workflows for immediate rework runs.
 - Guardrails:
-  - Draft PR only, no direct protected-branch writes.
+- PR only, no direct protected-branch writes.
   - Required human review and existing CI checks remain mandatory.
-  - Human review feedback should trigger rework on the same draft PR branch by default.
+- Human review feedback should trigger rework on the same PR branch by default.
   - Worker lanes are configured per target repo using environment variables and least-privilege credentials.
 
 ### 3.2 Later-Phase AI Ops Automation
@@ -175,7 +175,7 @@ For each decision capture:
 - Define GitHub Issues/Projects task-management workflow baseline (issue templates, labels, board states, automation) across repos.
 - Define and codify CI code-quality/security tooling standards (`golangci-lint`, `eslint`, `tsc`, `sonar`/`SonarQube Cloud`, `trivy`, `gitleaks`, `semgrep/codeql`, IaC checks) with swap criteria.
   - Lock SonarQube Cloud Free as baseline tier.
-- Define and bootstrap `platform-ai-workers` repo with task-state machine and draft-PR flow (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`).
+- Define and bootstrap `platform-ai-workers` repo with task-state machine and PR flow (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`).
 - Build shared backend observability library package supporting `direct_otlp` (Cloud Run) and `collector_gateway` (GKE) modes with one `OBS_TELEMETRY_PROFILE` contract.
 - Provision minimal AI worker runtime prerequisites early (Cloud Run Job + GSM/IAM + on-demand execute permissions; optional scheduler backstop) to enable task-to-code automation before full platform completion.
 - Define per-target-repo worker deployment config model (`WORKER_RUNTIME_MODE`, `WORKER_ID`, `TARGET_REPO`, limits, credential refs).
