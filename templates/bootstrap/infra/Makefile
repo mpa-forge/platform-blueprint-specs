@@ -2,11 +2,12 @@ SHELL := bash
 
 TERRAFORM_VERSION := 1.14.5
 
-.PHONY: help bootstrap install-tools check-tools print-toolchain install-dev-tools precommit-install precommit-run lint format format-check repo-lint repo-format repo-format-check
+.PHONY: help bootstrap doctor install-tools check-tools print-toolchain install-dev-tools precommit-install precommit-run lint format format-check repo-lint repo-format repo-format-check
 
 help:
 	@echo "Targets:"
 	@echo "  bootstrap         Install toolchain when possible and run baseline setup"
+	@echo "  doctor            Run shared workstation checks from sibling platform-blueprint-specs"
 	@echo "  install-tools     Install pinned tools with mise/asdf if available"
 	@echo "  check-tools       Validate pinned tool versions"
 	@echo "  print-toolchain   Print pinned tool versions"
@@ -19,6 +20,15 @@ help:
 
 bootstrap: install-tools check-tools install-dev-tools
 	@echo "Bootstrap completed."
+
+doctor:
+	@if [[ -f ../platform-blueprint-specs/scripts/windows-tooling-doctor.ps1 ]]; then \
+		powershell -ExecutionPolicy Bypass -File ../platform-blueprint-specs/scripts/windows-tooling-doctor.ps1; \
+	else \
+		echo "Shared doctor script not found at ../platform-blueprint-specs/scripts/windows-tooling-doctor.ps1" >&2; \
+		echo "Keep platform-blueprint-specs as a sibling checkout to use make doctor in this workspace." >&2; \
+		exit 1; \
+	fi
 
 install-tools:
 	@if command -v mise >/dev/null 2>&1; then \

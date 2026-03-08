@@ -18,6 +18,10 @@ The copied file then becomes the repo-specific bootstrap entrypoint and may dive
 repository grows. Common improvements can be backported manually to these templates when
 useful.
 
+In the current shared workspace model, `make doctor` expects `platform-blueprint-specs` to
+exist as a sibling checkout of the working repository so it can call the shared doctor
+script.
+
 ## Developer prerequisites
 
 - Required: a `make` implementation compatible with GNU Make and a bash-compatible shell
@@ -41,6 +45,7 @@ Reference:
 Each template provides:
 
 - `make bootstrap`
+- `make doctor`
 - `make check-tools`
 - `make print-toolchain`
 - `make precommit-install`
