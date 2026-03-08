@@ -7,6 +7,7 @@ This file is shared by all working repositories in the platform blueprint worksp
 - Use the checked-out repository as the source of truth for code, commands, and validation.
 - Keep changes scoped to the assigned task.
 - Prefer repo-local entrypoints over ad hoc commands.
+- If the task changes shared templates, tool or version pins, repo bootstrap behavior, or any behavior that affects multiple repositories, also load `../platform-blueprint-specs/docs/governance/shared-change-checklist.md`.
 
 ## Validation
 

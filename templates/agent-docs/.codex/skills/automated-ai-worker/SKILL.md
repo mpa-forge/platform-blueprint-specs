@@ -8,6 +8,7 @@ Use this skill when the repository is being changed by an automated AI worker or
    - `AGENTS.md`
    - `README.md`
    - `Makefile`
+   - `../platform-blueprint-specs/docs/governance/shared-change-checklist.md` only when the task changes shared templates, tool or version pins, repo bootstrap behavior, or any behavior that affects multiple repositories
 2. Understand the task before editing files.
 3. Make the smallest change that satisfies the task.
 4. Run repo validation:
