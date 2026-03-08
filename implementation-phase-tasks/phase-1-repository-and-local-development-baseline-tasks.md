@@ -104,6 +104,8 @@ Done when: Local stack starts with queryable baseline rows.
 Owner: Human  
 Type: Validation  
 Dependencies: P1-T01..P1-T09  
+Status: Completed (`2026-03-08`)  
+Evidence: `docs/governance/onboarding-dry-run-evidence.md`  
 Action: Have one fresh machine run bootstrap from docs without verbal help; capture friction points.  
 Output: Updated onboarding docs and resolved blockers.  
 Done when: New developer setup completes within targeted time window.
