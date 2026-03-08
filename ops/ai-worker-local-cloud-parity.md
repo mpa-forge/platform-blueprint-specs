@@ -11,6 +11,9 @@ Define how `platform-ai-workers` runs locally and in Cloud Run Jobs using the sa
 ## Execution Model
 - Build one worker container image.
 - Use the same command/entrypoint for local and Cloud Run execution.
+- Implement the worker runtime as a Go application.
+- Package the coding agent as a CLI available inside the worker runtime environment.
+- Invoke the coding agent from Go as a subprocess CLI against the checked-out repository workspace.
 - Shared loop behavior (both local and cloud):
   1. Read current lane state and count outstanding tasks/PRs in `ai:ready-for-review`.
   2. If outstanding count is `>= MAX_PENDING_REVIEW`:
@@ -20,7 +23,7 @@ Define how `platform-ai-workers` runs locally and in Cloud Run Jobs using the sa
      - ready tasks (`ai:ready` + `worker:<id>`),
      - rework tasks (`ai:rework-requested` and/or PRs with unresolved review comments/changes-requested state mapped to this label).
   4. Claim and move to `ai:in-progress` (idempotent).
-  5. Run agent, apply changes, push branch updates, open/update draft PR.
+  5. Run agent subprocess CLI, apply changes, push branch updates, open/update draft PR.
   6. Move to `ai:ready-for-review` on success, or `ai:failed` on failure.
   7. If no candidate exists:
      - local mode: sleep `POLL_INTERVAL` and continue.
@@ -59,6 +62,14 @@ Define how `platform-ai-workers` runs locally and in Cloud Run Jobs using the sa
   - Local: developer-scoped credentials (GitHub App token/PAT and agent key), never committed to git.
 - Observability adapter:
   - Keep the same structured logs and run-id fields locally for debugging parity.
+
+## Agent Boundary
+- The agent execution path must be identical in local and cloud modes:
+  - same worker image
+  - same Go runtime entrypoint
+  - same subprocess CLI invocation contract
+- The worker is responsible for subprocess timeout, exit-code handling, log capture, and post-run diff inspection.
+- The agent CLI is responsible for repository file edits only; it does not own task state transitions or merge policy.
 
 ## Local Run Commands (Baseline)
 - Continuous local loop:

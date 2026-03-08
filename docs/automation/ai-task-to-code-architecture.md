@@ -30,6 +30,8 @@ Convert selected GitHub tasks into implementation PRs while preserving:
 - One worker output model: branch + draft PR
 - Human review is always required before merge
 - Cloud execution is event-woken first, scheduler-backed second
+- Worker runtime implementation: Go application orchestrator
+- Coding agent integration mode: subprocess CLI invocation from the Go worker
 
 ## Worker Lane Model
 Each deployed worker lane is bound to one target repository.
@@ -53,9 +55,35 @@ Lane ownership rule:
    - cloud mode exits
 4. Worker selects next eligible work item from GitHub.
 5. Worker claims the item and moves it to in-progress state.
-6. Worker runs the coding agent and applies repository changes.
+6. Worker runs the coding agent subprocess CLI against the checked-out repository workspace and applies repository changes.
 7. Worker pushes a branch and opens or updates a draft PR.
 8. Worker moves task state to review-ready on success, or failed on error.
+
+## Agent Execution Model
+- The worker runtime is a Go application.
+- The Go worker is the control plane:
+  - clone repository
+  - prepare task/rework context
+  - invoke the coding agent
+  - inspect results
+  - run validation commands
+  - commit, push, and update GitHub state
+- The coding agent is not embedded as custom model orchestration inside the Go code for the baseline.
+- The coding agent is invoked as a subprocess CLI from the Go worker process.
+
+Baseline execution contract:
+- the Go worker prepares a task instruction bundle in the workspace
+- the Go worker invokes the agent CLI with `os/exec` or equivalent subprocess control
+- the agent CLI reads and edits files in the checked-out repository workspace
+- the Go worker captures exit code, stdout/stderr, and resulting git diff
+- the Go worker decides success/failure and performs git/PR/state transitions
+
+Deferred alternatives:
+- direct model API integration in Go
+- long-running sidecar agent service
+- custom in-process SDK orchestration
+
+These alternatives are explicitly deferred unless a later ADR replaces the subprocess CLI baseline.
 
 ## Runtime Modes
 - `local`
