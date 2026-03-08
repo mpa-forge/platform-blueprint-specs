@@ -124,6 +124,8 @@ Done when: Worker can process one synthetic issue and produce a draft PR in a ta
 Owner: Agent  
 Type: Coding  
 Dependencies: P1-T11  
+Status: Completed (`2026-03-08`)  
+Evidence: `docs/governance/ai-worker-safety-evidence.md`  
 Action: Implement single-lane processing guard per worker id, deterministic claim-before-work behavior, retry/resume handling for `ai:in-progress` tasks, idempotent rework handling keyed by review/comment event id, and pending-review cap control with mode-specific lifecycle (`local`: wait and continue polling; `cloud`: exit and wait for next wake-up).  
 Output: Safe worker execution loop with deterministic state transitions.  
 Done when: Repeated runs do not duplicate claims and can resume interrupted tasks for the same worker lane.
