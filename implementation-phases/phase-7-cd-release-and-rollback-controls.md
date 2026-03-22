@@ -11,7 +11,6 @@ Detailed tasks: `implementation-phase-tasks/phase-7-cd-release-and-rollback-cont
   - API liveness/readiness checks (`/healthz`, `/readyz`) pass for new release.
   - Authenticated user journey check passes (frontend token flow -> protected API endpoint).
   - DB path check passes through API (deterministic read query succeeds).
-  - Worker heartbeat/scheduled no-op execution is observed for the deployed version when worker deployment path is enabled.
   - Release version check confirms expected image tag/digest is running in target runtime (Cloud Run revision baseline, GKE workload when enabled).
 
 Exit criteria:

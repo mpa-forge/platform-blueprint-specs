@@ -7,7 +7,7 @@ Runtime selection artifact: `ops/api-runtime-paths-cloud-run-gke.md`
   - configure service revisions, probes/timeouts/concurrency/scaling parameters
   - configure GSM-based secret injection and Cloud SQL connectivity
   - route `/api/*` to Cloud Run backend through single-domain edge routing
-- Alternative path (when enabled): deploy API/worker on GKE via Helm.
+- Alternative path (when enabled): deploy API on GKE via Helm in the baseline phases; backend-worker deployment is deferred to Phase 9.
   - configure probes, resources, autoscaling
   - configmaps/secrets wiring
   - deploy External Secrets Operator and define SecretStore/ExternalSecret mappings

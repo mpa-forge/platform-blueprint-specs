@@ -3,7 +3,7 @@
 Detailed tasks: `implementation-phase-tasks/phase-3-observability-and-operability-baseline-tasks.md`
 Specification artifact: `ops/observability-telemetry-budget-profile.md`
 
-- Instrument API and worker with OpenTelemetry.
+- Instrument API with OpenTelemetry and keep backend-worker instrumentation deferred to Phase 9.
 - Implement dual observability runtime modes with one shared configuration contract:
   - Cloud Run baseline path: direct OTLP/HTTP export to Grafana Cloud.
   - GKE alternative path: cluster-level collector gateway (Grafana Alloy / OTel Collector).
@@ -43,7 +43,7 @@ Exit criteria:
 Phase 3 checklist:
 - Provision Grafana Cloud org/stack and service accounts.
 - Create and store telemetry/API tokens in secret manager.
-- Configure OTEL env vars in API/worker deployments.
+- Configure OTEL env vars in API deployments.
 - Configure shared observability library mode (`direct_otlp` vs `collector_gateway`) and verify profile parity.
 - Deploy collector/alloy config only for GKE mode and verify ingest for logs/metrics/traces.
 - Verify `OBS_TELEMETRY_PROFILE` toggle path and ingestion impact without application redeploy.

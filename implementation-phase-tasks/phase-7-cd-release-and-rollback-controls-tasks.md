@@ -45,7 +45,6 @@ Action: Run mandatory baseline smoke tests after each deployment and gate promot
 - API health and readiness (`/healthz`, `/readyz`).
 - Authenticated frontend -> protected API happy-path check.
 - API -> DB deterministic read check.
-- Worker heartbeat/no-op scheduled execution check (when worker deployment path is enabled).
 - Release version check (expected image tag/digest running in selected runtime target).  
 Output: Automated post-deploy verification.  
 Done when: Failed smoke tests block subsequent promotion stages.

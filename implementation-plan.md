@@ -16,6 +16,7 @@
 - Phase 6: `implementation-phases/phase-6-kubernetes-and-helm-deployment.md`
 - Phase 7: `implementation-phases/phase-7-cd-release-and-rollback-controls.md`
 - Phase 8: `implementation-phases/phase-8-scalability-reliability-and-security-hardening.md`
+- Phase 9: `implementation-phases/phase-9-backend-worker-and-async-extensions.md`
 
 ### 2.1 Phase Task Packs
 - Phase 0 tasks: `implementation-phase-tasks/phase-0-foundation-and-decisions-tasks.md`
@@ -27,6 +28,7 @@
 - Phase 6 tasks: `implementation-phase-tasks/phase-6-kubernetes-and-helm-deployment-tasks.md`
 - Phase 7 tasks: `implementation-phase-tasks/phase-7-cd-release-and-rollback-controls-tasks.md`
 - Phase 8 tasks: `implementation-phase-tasks/phase-8-scalability-reliability-and-security-hardening-tasks.md`
+- Phase 9 tasks: `implementation-phase-tasks/phase-9-backend-worker-and-async-extensions-tasks.md`
 
 ## 3. Baseline MVP Definition (Template Build)
 
@@ -36,7 +38,7 @@ Objective:
 Target repositories (polyrepo):
 - `platform-contracts`: protobuf APIs, Buf config, generated artifact policy, and versioned TypeScript client package publishing to GitHub Packages.
 - `backend-api`: Go API service (`net/http` + `connect-go`) with Clerk token validation and Cloud SQL connectivity.
-- `backend-worker`: Go worker service with scheduled/no-op job loop and shared platform libraries.
+- `backend-worker`: Go worker service reserved for deferred async/background additions after the frontend + API baseline is proven end to end.
 - `platform-ai-workers`: AI task-to-code worker runtime (Cloud Run Jobs with event-driven wake-ups and optional scheduler backstop) that converts GitHub tasks into PRs with human review gates.
 - `frontend-web`: authenticated React app using generated TypeScript client from protobuf contracts.
 - `platform-infra`: Terraform + GitHub Actions deployment workflows for Cloud Run baseline, plus Helm workflows for optional GKE path.
@@ -52,8 +54,6 @@ Minimum functional scope (no business logic):
   - `GET /healthz` and `GET /readyz`.
   - One protected Connect/proto endpoint that returns deterministic placeholder data from Postgres.
   - JWT verification middleware with role check (`user` and `admin` baseline claim mapping).
-- Worker:
-  - Health endpoint and periodic no-op task with structured logs and trace spans.
 - Database:
   - One migration creating a minimal table.
   - One seed script inserting deterministic sample records.
@@ -71,9 +71,8 @@ Pipeline and deployment path (must be proven end-to-end):
   - Invalidate CDN cache for changed frontend assets.
 - Post-deploy:
   - Smoke test: authenticated frontend -> protected API -> DB read.
-  - Smoke test: worker heartbeat + scheduled no-op execution (when worker deployment path is enabled).
   - Smoke test: trace/log/metric visibility in Grafana Cloud.
-  - Prod promotion gate: require passing baseline blockers (API health/readiness, authenticated protected API path, DB read path, worker heartbeat, deployed version match).
+  - Prod promotion gate: require passing baseline blockers (API health/readiness, authenticated protected API path, DB read path, deployed version match).
 
 Required platform integrations in MVP:
 - Auth: Clerk (B2C, free plan) wired in frontend and API.
@@ -100,7 +99,7 @@ Acceptance checklist (Definition of Done for baseline):
   - Frontend is served through CDN and can call RC API through single-domain `/api/*` routing.
   - RC isolation boundaries are enforced: separate databases (or DB names), secrets, and domains; namespace boundaries apply when GKE path is enabled.
 - Operability:
-  - Dashboard exists with API latency and error rate (plus worker health when worker deployment path is enabled).
+  - Dashboard exists with API latency and error rate.
   - At least 3 actionable alerts configured and tested.
   - One synthetic alert triggers the alert -> AI workflow and produces an incident summary artifact.
 - Security/governance:
@@ -143,7 +142,7 @@ Out of scope until baseline completion:
   - Keep human approval for high-impact actions; task creation is automated, code changes still follow PR review controls.
 
 ## 4. Workstreams (Parallel)
-- App Platform: frontend/api/worker skeletons.
+- App Platform: frontend/api skeletons first; backend-worker deferred to Phase 9.
 - Infrastructure: Terraform foundations (Cloud Run baseline, optional GKE path).
 - Quality & Security: CI, scans, policies.
 - Operations: observability, runbooks, alerts.
@@ -270,3 +269,4 @@ For each decision capture:
 - v2.37 (2026-03-04): Deferred Sentry and incident.io integration from early phases to Phase 8 hardening; Phase 0/3 now baseline on Grafana Cloud only.
 - v2.38 (2026-03-07): Locked Phase 1 local development to a hybrid stack model with centralized Compose in `platform-infra`, native active-service development, and workers excluded from the default frontend/API local flow.
 - v2.39 (2026-03-08): Added a late-phase optional single-VM deployment path task for cost-sensitive or low-scale projects, to be implemented only after the primary runtime path is running and tested.
+- v2.40 (2026-03-22): Deferred `backend-worker` implementation and worker-specific deploy/observability/hardening work to new Phase 9 so the blueprint proves the frontend + backend API path end to end first.

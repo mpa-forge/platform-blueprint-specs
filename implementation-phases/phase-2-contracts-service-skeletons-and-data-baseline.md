@@ -26,8 +26,6 @@ Observability package contract artifact: `ops/observability-telemetry-budget-pro
   - Direct SPA bearer token model for baseline (no BFF token handling in this phase).
   - JWT validation against Clerk JWKS.
   - B2C claims mapping to the baseline profile (`sub`, optional `email`/`display_name`/`given_name`/`family_name`) and internal `user`/`admin` roles (no Organizations/SCIM assumptions).
-- Implement worker skeleton:
-  - background process loop, graceful shutdown, pluggable async adapter (queue can be added later), and startup validation of the environment contract defined in Phase 1.
 - Create shared backend observability library package skeleton:
   - runtime mode config (`direct_otlp` for Cloud Run, `collector_gateway` for GKE path)
   - common resource attributes and telemetry initialization API
@@ -37,12 +35,11 @@ Observability package contract artifact: `ops/observability-telemetry-budget-pro
 
 Exit criteria:
 - API can query DB and return health/meta endpoint.
-- Worker process runs scheduled or triggered no-op jobs with health/readiness.
 - At least one protected API endpoint validates JWT and enforces one role-based policy.
 - Frontend consumes at least one generated TypeScript client from protobuf definitions (no manual DTO drift).
 - Contract repo includes TypeScript package metadata and release conventions for GitHub Packages distribution.
 - Contract repo includes documented versioning policy and release tags consumed by app repos.
-- Shared observability library package compiles and is consumed by API/worker startup in baseline mode.
+- Shared observability library package compiles and is consumed by API startup in baseline mode; backend-worker integration is deferred to Phase 9.
 
 ## Open Questions / Choices To Clarify Later
 - None currently.

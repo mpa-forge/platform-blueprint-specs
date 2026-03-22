@@ -18,8 +18,8 @@ Owner: Agent
 Type: Infra/config  
 Dependencies: P3-T01, Phase 5 baseline GSM availability (plus ESO when GKE path is enabled) or temporary local secret strategy  
 Action: Create secret definitions for Grafana Cloud OTLP/auth credentials and wire runtime-specific delivery:
-- Cloud Run baseline path: direct GSM-based secret injection for API/worker runtime envs.
-- GKE path: ESO sync manifests for API/worker/collector components.  
+- Cloud Run baseline path: direct GSM-based secret injection for API runtime envs.
+- GKE path: ESO sync manifests for API/collector components. Backend-worker secret delivery is deferred to Phase 9.  
 Output: Secrets wired into workloads without plaintext in repo.  
 Done when: Services read credentials through their selected runtime path without plaintext credentials in repo.
 
@@ -34,7 +34,8 @@ Done when: API requests produce correlated traces and metrics in Grafana Cloud.
 ### P3-T04: Instrument worker with OpenTelemetry
 Owner: Agent  
 Type: Coding  
-Dependencies: Phase 2 worker ready, P2-T13  
+Dependencies: P9-T01, P9-T02  
+Status: Moved to Phase 9 (`P9-T03`).  
 Action: Use the shared observability library in worker runtime to emit traces/metrics/logs for scheduled tasks, retries, and failures; include consistent service/resource labels and runtime-mode compatibility.  
 Output: Worker telemetry instrumentation.  
 Done when: Worker loop activity is visible in traces and dashboard metrics.
@@ -55,7 +56,7 @@ Done when: Logs/metrics/traces arrive in Grafana Cloud with expected labels in C
 Owner: Agent  
 Type: Observability config  
 Dependencies: P3-T03..P3-T05  
-Action: Define dashboards for API golden signals, worker health, edge/runtime path status, and DB connectivity symptoms.  
+Action: Define dashboards for API golden signals, edge/runtime path status, and DB connectivity symptoms. Backend-worker dashboards are deferred to Phase 9.  
 Output: Dashboard JSON/Terraform definitions.  
 Done when: Dashboards can be recreated from source-controlled definitions.
 
@@ -127,7 +128,7 @@ Done when: Cloud Run API observability is fully operational with direct OTLP exp
 
 ## Artifacts Checklist
 - Grafana Cloud stack/token inventory
-- OTel instrumentation PRs for API and worker
+- OTel instrumentation PRs for API
 - shared observability library configuration and usage evidence
 - Cloud Run direct OTLP configuration evidence
 - collector/alloy configs (GKE path)

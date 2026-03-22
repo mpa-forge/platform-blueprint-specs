@@ -66,7 +66,8 @@ Done when: Chart deploys API successfully in `rc`.
 ### P6-T03: Build Helm chart for worker service
 Owner: Agent  
 Type: Coding  
-Dependencies: P6-T01, Phase 2 worker  
+Dependencies: P6-T01, Phase 9 worker  
+Status: Moved to Phase 9 (`P9-T04`)  
 Action: GKE alternative path: create worker deployment chart templates with resources, probes, and config/secret injection.  
 Output: Worker chart with env-specific values files.  
 Done when: Worker deploys and reports healthy status in `rc`.
@@ -75,7 +76,7 @@ Done when: Worker deploys and reports healthy status in `rc`.
 Owner: Agent  
 Type: Deployment/config  
 Dependencies: Phase 5 GSM/IAM setup  
-Action: GKE alternative path: install ESO chart, define `SecretStore`/`ExternalSecret` objects for API/worker and related tokens.  
+Action: GKE alternative path: install ESO chart, define `SecretStore`/`ExternalSecret` objects for API and related tokens. Backend-worker secret wiring is deferred to Phase 9.  
 Output: Secrets sync runtime path operational.  
 Done when: Kubernetes secrets are materialized from GSM and consumed by workloads.
 
@@ -99,7 +100,7 @@ Done when: Authenticated frontend static assets are served via Cloud CDN in `rc`
 Owner: Agent  
 Type: CI/CD coding  
 Dependencies: P6-T02, P6-T03, Phase 4 CI  
-Action: GKE alternative path: add GitHub Actions jobs that deploy API/worker charts on merge with environment protections.  
+Action: GKE alternative path: add GitHub Actions jobs that deploy API charts on merge with environment protections. Backend-worker deployment jobs are deferred to Phase 9.  
 Output: Automated Helm-based deployment pipeline.  
 Done when: Merge to `main` updates running workloads in `rc`.
 
@@ -115,7 +116,7 @@ Done when: Frontend changes are visible after pipeline run without manual publis
 Owner: Agent  
 Type: Deployment config  
 Dependencies: P6-T02, P6-T03  
-Action: GKE alternative path: add rolling strategy controls, min ready seconds, pod disruption constraints, and basic HPA placeholders.  
+Action: GKE alternative path: add rolling strategy controls, min ready seconds, pod disruption constraints, and basic HPA placeholders for the API path. Backend-worker rollout controls are deferred to Phase 9.  
 Output: Safer baseline rollout behavior.  
 Done when: Deployment update does not cause service downtime in smoke tests.
 
@@ -137,7 +138,7 @@ Done when: Team can recover workloads on a newly created cluster with documented
 
 ## Artifacts Checklist
 - Cloud Run API service configuration and deployment evidence
-- Helm charts for API and worker
+- Helm charts for API
 - ESO manifests and secret mappings
 - ingress and TLS configs
 - frontend CDN configuration docs

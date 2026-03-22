@@ -1,7 +1,7 @@
 # Phase 2 Tasks: Contracts, Service Skeletons, and Data Baseline
 
 ## Goal
-Implement the contract-first service baseline with authenticated API access, worker runtime, and persistent data foundations.
+Implement the contract-first frontend/API baseline with authenticated API access and persistent data foundations.
 
 ## Tasks
 
@@ -67,6 +67,7 @@ Done when: Frontend can authenticate and obtain valid access token for API.
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T04  
+Status: Moved to Phase 9 (`P9-T01`)  
 Action: Add worker startup loop, graceful shutdown, periodic no-op job, health endpoint, structured logs, and startup validation of required environment variables defined in `P1-T05`, with fail-fast errors for missing or malformed config. Follow `docs/standards/code-documentation.md` for package docs, exported symbol comments, and non-obvious runtime behavior.
 Output: Runnable worker service baseline.  
 Done when: Worker executes periodic task and exposes health with valid config, and exits early with clear messages when required env is missing or invalid.
@@ -114,15 +115,15 @@ Done when: Baseline protected request works end-to-end locally.
 ### P2-T13: Scaffold shared backend observability library package
 Owner: Agent  
 Type: Coding  
-Dependencies: P2-T04, P2-T07  
+Dependencies: P2-T04  
 Action: Create a reusable observability package for backend services with:
 - runtime mode switch (`direct_otlp` for Cloud Run baseline, `collector_gateway` for GKE path),
 - common resource/service labeling contract,
 - initialization API for traces/metrics/logs exporters,
 - `OBS_TELEMETRY_PROFILE` config hook points for later Phase 3 policy mapping,
-- usage wiring in API and worker startup paths (without final provider credentials hardcoding), aligned with `ops/observability-telemetry-budget-profile.md`.  
-Output: Shared observability library package and API/worker integration stubs.  
-Done when: API and worker initialize observability through the shared package and runtime mode can be selected by config.
+- usage wiring in API startup (without final provider credentials hardcoding), aligned with `ops/observability-telemetry-budget-profile.md`. Backend-worker integration is deferred to Phase 9.  
+Output: Shared observability library package and API integration stubs.  
+Done when: API initializes observability through the shared package and runtime mode can be selected by config.
 
 ## Artifacts Checklist
 - `buf.yaml`, `buf.gen.yaml`, generation scripts
@@ -131,9 +132,8 @@ Done when: API and worker initialize observability through the shared package an
 - TypeScript client package metadata and GitHub Packages publish conventions
 - API runtime skeleton and auth middleware
 - Clerk application/instance config docs
-- worker skeleton runtime
 - DB migration and seed scripts
 - typed query layer and API integration
 - frontend protected page using generated client
 - local end-to-end validation notes
-- shared observability library package skeleton and integration stubs
+- shared observability library package skeleton and API integration stubs

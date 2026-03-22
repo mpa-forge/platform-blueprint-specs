@@ -9,7 +9,7 @@ Harden the baseline platform for sustained load, failure tolerance, and security
 Owner: Human + Agent  
 Type: Reliability design  
 Dependencies: Phase 3 observability baseline  
-Action: Set measurable SLOs and SLIs for API availability, latency, and worker processing health. Initial baseline targets are provisional:
+Action: Set measurable SLOs and SLIs for API availability and latency. Backend-worker processing SLOs are deferred to Phase 9. Initial baseline targets are provisional:
 - API availability: `rc >= 99.0%` monthly, `prod >= 99.5%` monthly.
 - API latency (p95): `rc <= 1000 ms`, `prod <= 750 ms`.
 - Include a review checkpoint after first 30 days of prod traffic to tighten/adjust based on product SLAs.  
@@ -20,7 +20,7 @@ Done when: SLOs are approved, tied to dashboards/alerts, and tracked as tunable 
 Owner: Agent  
 Type: Deployment config  
 Dependencies: Phase 6 workloads deployed  
-Action: Tune CPU/memory requests and autoscaling thresholds for API and worker workloads.  
+Action: Tune CPU/memory requests and autoscaling thresholds for API workloads. Backend-worker scaling is deferred to Phase 9.  
 Output: Updated Helm values and scaling configuration.  
 Done when: Controlled load tests trigger expected scaling behavior.
 
@@ -28,7 +28,7 @@ Done when: Controlled load tests trigger expected scaling behavior.
 Owner: Human + Agent  
 Type: Validation  
 Dependencies: P8-T02  
-Action: Run load tests for authenticated frontend/API flows and worker loop to identify bottlenecks.  
+Action: Run load tests for authenticated frontend/API flows to identify bottlenecks. Backend-worker load testing is deferred to Phase 9.  
 Output: Capacity report with thresholds and recommendations.  
 Done when: Performance baseline is documented with reproducible scripts.
 

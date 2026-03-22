@@ -43,9 +43,9 @@ Done when: Breaking changes are blocked unless versioning policy is followed.
 Owner: Agent  
 Type: CI coding  
 Dependencies: P4-T02  
-Action: Build API/worker images with immutable tags (commit SHA + semver tag support).  
+Action: Build API images with immutable tags (commit SHA + semver tag support). Backend-worker image build is deferred to Phase 9.  
 Output: Reproducible container artifacts.  
-Done when: CI publishes deterministic image tags for every merge.
+Done when: CI publishes deterministic API image tags for every merge.
 
 ### P4-T05: Configure GAR repositories and CI push permissions
 Owner: Human + Agent  

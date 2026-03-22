@@ -3,6 +3,7 @@
 Detailed tasks: `implementation-phase-tasks/phase-8-scalability-reliability-and-security-hardening-tasks.md`
 
 - Add HPA policies and load tests.
+- Backend-worker scaling/load/hardening is deferred to Phase 9 after the frontend + API path is proven.
 - Tune DB indexes/connections and capacity baselines.
 - Add pod disruption budgets and multi-AZ considerations.
 - Baseline provisional SLO targets (to be tightened once product requirements are defined):
