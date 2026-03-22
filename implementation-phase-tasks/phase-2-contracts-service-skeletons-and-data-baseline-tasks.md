@@ -76,6 +76,8 @@ Done when: Worker executes periodic task and exposes health with valid config, a
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T04  
+Status: Completed (`2026-03-22`)  
+Evidence: `docs/governance/backend-api-migrations-evidence.md`  
 Action: Add migration tooling, one baseline table, and deterministic seed dataset.  
 Output: Migration + seed scripts committed.  
 Done when: Fresh DB can be migrated and seeded automatically.
