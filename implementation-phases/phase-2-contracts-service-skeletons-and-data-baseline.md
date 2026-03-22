@@ -26,6 +26,7 @@ Observability package contract artifact: `ops/observability-telemetry-budget-pro
   - Direct SPA bearer token model for baseline (no BFF token handling in this phase).
   - JWT validation against Clerk JWKS.
   - B2C claims mapping to the baseline profile (`sub`, optional `email`/`display_name`/`given_name`/`family_name`) and internal `user`/`admin` roles (no Organizations/SCIM assumptions).
+  - Persisted user lookups use the verified Clerk `sub` directly as the local external identity key.
 - Create shared backend observability library package skeleton:
   - runtime mode config (`direct_otlp` for Cloud Run, `collector_gateway` for GKE path)
   - common resource attributes and telemetry initialization API
