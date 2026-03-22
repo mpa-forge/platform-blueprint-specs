@@ -334,9 +334,10 @@
 - Buf module:
   - Module name format: `buf.build/<org>/<repo>` (example: `buf.build/dynamic-playlists/platform-contracts`).
   - Enforce `STANDARD` lint and `FILE` breaking-change policies in CI.
+  - Before the first contract release tag (`contracts-vX.Y.Z`), pre-release package shaping is allowed; after the first release tag, breaking checks must be enforced against the comparison branch.
 - Package naming:
-  - Package format: `dynamicplaylists.<domain>.v<major>`.
-  - Example: `dynamicplaylists.playlists.v1`.
+  - Package format: `blueprint.<domain>.v<major>`.
+  - Example: `blueprint.playlists.v1`.
   - Language options:
     - `go_package` mirrors package path and includes version segment.
     - Generated TypeScript follows package namespace from proto definitions.

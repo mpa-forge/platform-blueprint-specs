@@ -22,7 +22,7 @@ Added or updated:
 - `Makefile`
 - `package.json`
 - `README.md`
-- `proto/dynamicplaylists/platform/v1/platform.proto`
+- `proto/blueprint/platform/v1/platform.proto`
 
 ## Baseline Policy
 
@@ -51,9 +51,9 @@ Notes:
 - The initial bootstrap branch cannot compare breaking changes against a target branch that does not yet contain a Buf baseline.
 - `scripts/buf-breaking.sh` handles that bootstrap case cleanly and performs normal breaking checks once the baseline exists on `main`.
 - After merge to `main`, `bash scripts/buf-breaking.sh main` and `make contracts-check` run without the bootstrap skip condition.
+- Before the first `contracts-vX.Y.Z` release tag exists, the helper treats the contract surface as pre-release and skips strict breaking enforcement. After the first release tag, normal breaking enforcement applies.
 
 ## Outcome
 
 - `P2-T01`: Completed (`2026-03-22`)
 - `platform-contracts` now has a reproducible local and CI-friendly Buf validation baseline ready for `P2-T02` and `P2-T03`.
-

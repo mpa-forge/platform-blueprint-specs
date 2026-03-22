@@ -7,9 +7,10 @@ Observability package contract artifact: `ops/observability-telemetry-budget-pro
 - Configure Buf workspace/module and generation templates.
 - Keep Buf usage CLI-only in local/CI for baseline (no paid BSR dependency).
 - Implement proto convention baseline:
-  - package format `dynamicplaylists.<domain>.v<major>`
+  - package format `blueprint.<domain>.v<major>`
   - domain/version folder layout
   - `buf.yaml` lint and breaking policy (`STANDARD` + `FILE`)
+  - pre-release shaping allowed until the first `contracts-vX.Y.Z` tag exists; strict breaking enforcement applies after the first contract release
   - deprecation/removal policy (one release-cycle grace, then next-major removal)
 - Generate:
   - Go service stubs/handlers and message types.
