@@ -39,6 +39,8 @@ Done when: Regeneration produces zero drift after clean checkout and package met
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T03  
+Status: Completed (`2026-03-22`)  
+Evidence: `docs/governance/backend-api-runtime-skeleton-evidence.md`  
 Action: Add server bootstrapping, `chi` routing, health/readiness endpoints, structured logging, config loading, and startup validation of required environment variables defined in `P1-T05`, with fail-fast errors for missing or malformed config. Follow `docs/standards/code-documentation.md` for package docs, exported symbol comments, and non-obvious runtime behavior.
 Output: Runnable API service skeleton.  
 Done when: API starts and serves health endpoints with valid config, and exits early with clear messages when required env is missing or invalid.
