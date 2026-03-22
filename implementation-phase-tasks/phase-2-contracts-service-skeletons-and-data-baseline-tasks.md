@@ -19,6 +19,8 @@ Done when: `buf lint` and `buf breaking` pass locally and in CI with no dependen
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T01  
+Status: Completed (`2026-03-22`)  
+Evidence: `docs/governance/contracts-v1-user-service-evidence.md`  
 Action: Create one `v1` service, unary RPC, and request/response models for placeholder data retrieval.  
 Output: Initial protobuf contract committed.  
 Done when: Contract represents one protected endpoint used by frontend and API.
