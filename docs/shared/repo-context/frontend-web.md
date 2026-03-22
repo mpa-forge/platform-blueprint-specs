@@ -14,6 +14,8 @@ Load this file when working in `frontend-web`.
 - `../platform-blueprint-specs/docs/shared/agent-platform-workspace-map.md`
 - `../platform-blueprint-specs/implementation-phases/phase-1-repository-and-local-development-baseline.md`
 - `../platform-blueprint-specs/implementation-phases/phase-2-contracts-service-skeletons-and-data-baseline.md`
+- `../platform-contracts/docs/typescript-client-usage.md`
+- `../platform-contracts/docs/consumer-auth-usage.md`
 
 ## Relevant Shared Constraints
 
