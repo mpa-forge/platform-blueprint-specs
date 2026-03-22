@@ -84,7 +84,7 @@ Done when: Fresh DB can be migrated and seeded automatically.
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T08  
-Action: Define handwritten SQL queries, generate typed accessors with `sqlc`, and wire one API handler to DB read through `pgx`, using the verified Clerk `sub` directly as `user_profiles.external_user_id`.  
+Action: Define handwritten SQL queries, generate typed accessors with `sqlc`, and wire one API handler to DB read through `pgx`, using the verified Clerk `sub` directly as `user_profiles.clerk_user_id`.  
 Output: Typed persistence layer used by protected endpoint.  
 Done when: Endpoint returns placeholder data from Postgres, not static in-memory data.
 
