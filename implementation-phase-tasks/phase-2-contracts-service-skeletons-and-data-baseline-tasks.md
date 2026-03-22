@@ -86,9 +86,9 @@ Done when: Fresh DB can be migrated and seeded automatically.
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T08  
-Action: Define handwritten SQL queries, generate typed accessors with `sqlc`, and wire one API handler to DB read through `pgx`, using the verified Clerk `sub` directly as `user_profiles.clerk_user_id`.  
-Output: Typed persistence layer used by protected endpoint.  
-Done when: Endpoint returns placeholder data from Postgres, not static in-memory data.
+Action: Define handwritten SQL queries, generate typed accessors with `sqlc`, and wire one API handler to DB read through `pgx`, using the verified Clerk `sub` directly as `user_profiles.clerk_user_id`. Add explicit profile provisioning so the first authenticated user flow creates the local `user_profiles` row before `GetCurrentUser` performs its read path.  
+Output: Typed persistence layer plus explicit profile bootstrap flow used by protected endpoint.  
+Done when: An authenticated user without a local row can be provisioned explicitly, and the endpoint then returns placeholder data from Postgres rather than static in-memory data.
 
 ### P2-T10: Integrate generated TypeScript client in frontend
 Owner: Agent  

@@ -33,6 +33,9 @@ Observability package contract artifact: `ops/observability-telemetry-budget-pro
   - centralized `OBS_TELEMETRY_PROFILE` config contract hooks
 - Add PostgreSQL migrations and seed script.
 - Implement persistence layer scaffolding using `sqlc` with handwritten SQL and `pgx` runtime.
+- Add explicit local profile provisioning after authentication so the first
+  authenticated frontend flow can create a `user_profiles` row keyed by Clerk
+  `sub` before the standard read path is used.
 
 Exit criteria:
 - API can query DB and return health/meta endpoint.
