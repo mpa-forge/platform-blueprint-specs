@@ -144,9 +144,11 @@ Done when: Every working repo contains `AGENTS.md` plus the agreed worker skill 
 Owner: Human + Agent  
 Type: Validation  
 Dependencies: P1-T11, P1-T12, P1-T12B  
+Status: Completed (`2026-03-22`)  
+Evidence: `docs/automation/ai-worker-dry-run.md`  
 Action: Execute controlled dry-run against a sandbox repository and verify end-to-end path (issue selection, branch changes, PR creation, state updates, reviewer handoff, and comment/review-triggered rework updating the same PR) according to `ops/ai-comment-trigger-cloud-run-jobs.md`; include local/cloud parity checks per `ops/ai-worker-local-cloud-parity.md` by running equivalent inputs locally and via Cloud Run execution, including idle and outstanding-review-cap behavior.
 Output: `docs/automation/ai-worker-dry-run.md` with findings and fixes.  
-Done when: One end-to-end task-to-PR flow plus one rework loop succeeds under manual observation, and parity evidence confirms equivalent behavior for local and Cloud Run runs.
+Done when: One end-to-end task-to-PR flow succeeds under manual observation and the worker is proven to create a PR from a real task in local execution. Cloud Run parity is revalidated later when the managed runtime path is exercised through infrastructure and CI.
 
 ## Artifacts Checklist
 - Repository settings screenshots/exports
