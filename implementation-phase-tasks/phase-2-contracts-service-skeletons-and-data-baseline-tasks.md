@@ -29,6 +29,8 @@ Done when: Contract represents one protected endpoint used by frontend and API.
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T02  
+Status: Completed (`2026-03-22`)  
+Evidence: `docs/governance/contracts-codegen-evidence.md`  
 Action: Generate `connect-go` and Connect ES clients/types; add reproducible generation scripts and commit generated artifacts to git; add npm package metadata in `platform-contracts` for the generated TypeScript client intended for GitHub Packages publishing.  
 Output: Generated code artifacts, package metadata, and generation command docs.  
 Done when: Regeneration produces zero drift after clean checkout and package metadata is version-ready.
