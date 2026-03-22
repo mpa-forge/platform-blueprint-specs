@@ -9,6 +9,8 @@ Implement the contract-first service baseline with authenticated API access, wor
 Owner: Agent  
 Type: Coding  
 Dependencies: Phase 1 complete  
+Status: Completed (`2026-03-22`)  
+Evidence: `docs/governance/contracts-buf-baseline-evidence.md`  
 Action: Add `buf.yaml`, `buf.gen.yaml`, lint/breaking rules, module naming, and README; standardize on Buf CLI execution in local/CI and avoid paid BSR dependencies in baseline.  
 Output: Contract repo with enforceable policy.  
 Done when: `buf lint` and `buf breaking` pass locally and in CI with no dependency on paid Buf features.
