@@ -49,6 +49,8 @@ Done when: API starts and serves health endpoints with valid config, and exits e
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T04  
+Status: Completed (`2026-03-22`)  
+Evidence: `docs/governance/backend-api-auth-middleware-evidence.md`  
 Action: Integrate Clerk issuer/audience checks, JWKS retrieval, claim extraction, role mapping (`user`/`admin`).  
 Output: Auth middleware and tests.  
 Done when: Protected endpoint returns `401/403` correctly and passes auth tests.
