@@ -73,9 +73,19 @@ The baseline expects at least:
 - one normal user
 - one admin user
 
-Recommended user metadata:
+Current setup:
 
-Normal user:
+- one admin user with public metadata:
+
+```json
+{
+  "role": "admin"
+}
+```
+
+- one normal user with no explicit `role` metadata
+
+Recommended explicit normal-user metadata for future setups:
 
 ```json
 {
@@ -83,7 +93,7 @@ Normal user:
 }
 ```
 
-Admin user:
+Admin user reference:
 
 ```json
 {

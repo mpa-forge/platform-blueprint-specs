@@ -91,9 +91,9 @@ Done when: Endpoint returns placeholder data from Postgres, not static in-memory
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T03, P2-T06  
-Action: Use generated client in authenticated page call to API with bearer token flow; structure consumption so it can switch from local/workspace source to versioned GitHub Packages dependency without code changes.  
+Action: Use generated client in authenticated page call to API with bearer token flow; structure consumption so it can switch from local/workspace source to versioned GitHub Packages dependency without code changes. This task also provides the final frontend token-acquisition proof needed to close `P2-T06`.  
 Output: Frontend-to-API typed integration.  
-Done when: Frontend protected page renders data from protected API call.
+Done when: Frontend protected page renders data from protected API call and the resulting sign-in/token flow is sufficient to mark `P2-T06` complete.
 
 ### P2-T11: Contract versioning and release workflow setup
 Owner: Agent  
