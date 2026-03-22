@@ -25,7 +25,7 @@ Observability package contract artifact: `ops/observability-telemetry-budget-pro
   - OIDC/OAuth application setup for SPA + API.
   - Direct SPA bearer token model for baseline (no BFF token handling in this phase).
   - JWT validation against Clerk JWKS.
-  - B2C claims mapping to internal roles (no Organizations/SCIM assumptions).
+  - B2C claims mapping to the baseline profile (`sub`, optional `email`/`display_name`/`given_name`/`family_name`) and internal `user`/`admin` roles (no Organizations/SCIM assumptions).
 - Implement worker skeleton:
   - background process loop, graceful shutdown, pluggable async adapter (queue can be added later), and startup validation of the environment contract defined in Phase 1.
 - Create shared backend observability library package skeleton:

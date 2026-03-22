@@ -57,7 +57,7 @@ Done when: Protected endpoint returns `401/403` correctly and passes auth tests.
 Owner: Human  
 Type: Provider configuration  
 Dependencies: P2-T05  
-Action: Create SPA app, API audience, callback/logout URLs, test user roles, token lifetimes, and configure direct SPA bearer token usage (no BFF in baseline).  
+Action: Create SPA app, API audience, callback/logout URLs, test user roles, token lifetimes, configure direct SPA bearer token usage (no BFF in baseline), and ensure session token claims expose the baseline profile/role fields expected by the API (`sub`, optional `email`/`display_name`/`given_name`/`family_name`, and optional `role` or `roles`).  
 Output: Clerk config values and environment mappings documented.  
 Done when: Frontend can authenticate and obtain valid access token for API.
 

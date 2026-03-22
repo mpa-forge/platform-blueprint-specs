@@ -306,7 +306,7 @@
   - IdP returns tokens after login (ID token + access token; refresh token as applicable).
   - Frontend stores tokens securely (prefer httpOnly cookie via backend-for-frontend when possible).
   - API validates issuer, audience, expiry, and signature via JWKS.
-  - API maps claims (subject, groups, scopes) to internal roles/permissions.
+  - API maps claims (`sub`, optional `email`/`display_name`/`given_name`/`family_name`, and optional `role` or `roles`) to the baseline internal profile and `user`/`admin` roles.
   - API returns `401` for unauthenticated and `403` for unauthorized requests.
 - Selected provider:
   - Clerk Free plan for development and early production with limited users.
