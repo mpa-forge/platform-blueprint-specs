@@ -168,7 +168,9 @@ None. `P0-T03A` baseline checks are complete.
 
 ## P0-T03C: Clerk auth baseline
 
-Status: Deferred (`2026-03-04`) pending domain allocation and secret-management rollout.
+Status: Partially documented (`2026-03-22`); development-instance domain and
+Phase 2 auth mappings are now recorded, while final secret-reference and
+production-domain details remain pending.
 
 ### Identity and ownership evidence
 
@@ -197,14 +199,14 @@ Decision: `Option A` (single Clerk app with dev/prod instances).
 | Clerk account/dashboard accessible | PASS | User-confirmed |
 | Free plan confirmed | PASS | User-confirmed |
 | Env mapping (`rc`/`prod`) selected | PASS | Option A locked in planning |
-| Redirect/logout/origin placeholders recorded | PENDING | Needs app configuration values |
+| Redirect/logout/origin placeholders recorded | PARTIAL | Local frontend redirect env mappings recorded in `docs/governance/clerk-app-configuration-evidence.md` |
 | Key reference names recorded (no raw secrets in git) | PENDING | Needs key naming entries |
+| Issuer/JWKS metadata references recorded | PASS | `docs/governance/clerk-app-configuration-evidence.md` |
 
 ### Remaining actions to close P0-T03C
 
 1. Record Clerk app name and instance identifiers used for `Development` and `Production`.
-2. Record URL placeholders:
-   - `local` redirect/logout/origin
+2. Record remaining non-local URL placeholders:
    - `rc` redirect/logout/origin
    - `prod` redirect/logout/origin
 3. Record key reference names only (not values), for example:
@@ -213,11 +215,13 @@ Decision: `Option A` (single Clerk app with dev/prod instances).
    - `CLERK_PUBLISHABLE_KEY_PROD`
    - `CLERK_SECRET_KEY_RC`
    - `CLERK_SECRET_KEY_PROD`
-4. Record issuer/JWKS metadata references used by backend JWT verification.
+4. Keep `docs/governance/clerk-app-configuration-evidence.md` aligned with any
+   future claim or audience changes.
 
 Done when: all pending items above are filled in this section.
 
-Deferral rationale: finalize URL, callback, and key reference mappings only after domain naming and secret-storage conventions are locked in later phases.
+Deferral rationale: finalize secret-reference and production-domain mappings
+after frontend runtime integration and later environment rollout tasks.
 
 ## P0-T03D: Grafana Cloud baseline
 
