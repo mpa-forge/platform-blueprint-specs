@@ -204,7 +204,7 @@ For each decision capture:
 - Define webhook payload contract and auth scheme for alert-to-AI service.
   - Specification artifact: `../platform-ai-workers/docs/automation/alert-ai-webhook-spec.md`.
 - Establish dedicated docs/ADR repository and migrate shared architecture decision records there.
-- Standardize frontend tooling on `npm` across repo templates and CI.
+- Standardize frontend tooling on `Bun` across repo templates and CI.
 - Apply single-domain path-based `/api/*` routing and managed TLS certificate defaults in deployment design (Cloud Run backend baseline, ingress backend for GKE path).
 - Scaffold repo folders and minimal service skeletons.
 - Stand up local end-to-end via Docker Compose.
@@ -270,3 +270,4 @@ For each decision capture:
 - v2.38 (2026-03-07): Locked Phase 1 local development to a hybrid stack model with centralized Compose in `platform-infra`, native active-service development, and workers excluded from the default frontend/API local flow.
 - v2.39 (2026-03-08): Added a late-phase optional single-VM deployment path task for cost-sensitive or low-scale projects, to be implemented only after the primary runtime path is running and tested.
 - v2.40 (2026-03-22): Deferred `backend-worker` implementation and worker-specific deploy/observability/hardening work to new Phase 9 so the blueprint proves the frontend + backend API path end to end first.
+- v2.41 (2026-03-29): Switched the frontend tooling baseline from npm to Bun and added Vitest, Playwright, and Zustand to the frontend stack baseline.

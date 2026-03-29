@@ -35,7 +35,7 @@
 - Observability: OpenTelemetry -> Grafana Cloud (managed metrics/logs/traces/alerting) + automation workflows.
 
 ## 4. Proposed Stack (Initial)
-- Frontend: React + Vite + TypeScript + TanStack Query + React Router.
+- Frontend: React + Bun + Vite + TypeScript + Zustand + TanStack Query + React Router, with Vitest for unit/component tests and Playwright for browser end-to-end tests.
 - API/Workers: Go 1.25+ with:
   - HTTP runtime: `chi` on top of `net/http`
   - RPC/contracts: protobuf + Connect (`connect-go`) + grpc-go compatibility
@@ -74,7 +74,7 @@
 - Worker repository model: Dedicated `backend-worker` repository from the start.
 - Shared docs/ADR repository: Dedicated docs repository.
 - Provider/account ownership model: Single owner.
-- Frontend package manager baseline: `npm`.
+- Frontend package manager baseline: `Bun`.
 - Observability:
   - Metrics: Grafana Cloud Metrics (Prometheus-compatible)
   - Dashboards: Grafana Cloud (locked)
@@ -563,6 +563,6 @@
 - v1.42 (2026-03-01): Switched API runtime baseline to Cloud Run (scale-to-zero), preserved GKE+Helm as alternative path, and deferred initial cluster creation until required.
 - v1.43 (2026-03-01): Expanded observability architecture to dual runtime modes (`direct_otlp` for Cloud Run baseline, `collector_gateway` for GKE path) and locked shared observability library requirement with profile parity.
 - v1.44 (2026-03-04): Deferred Sentry and incident.io integrations to Phase 8 hardening; baseline observability/incident flow remains Grafana Cloud + webhook/Slack.
-
+- v1.45 (2026-03-29): Switched the frontend package-manager baseline from npm to Bun and expanded the frontend stack baseline with Vitest, Playwright, and Zustand.
 
 
