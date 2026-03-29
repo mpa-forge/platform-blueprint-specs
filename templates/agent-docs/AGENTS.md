@@ -11,13 +11,13 @@ Before making changes:
 1. Read `README.md`.
 2. Read `Makefile` if present.
 3. Read the shared planning docs referenced below.
-4. Check for repo-specific docs under `docs/` that affect the task.
+4. Read `../platform-blueprint-specs/.codex/skills/automated-ai-worker/SKILL.md` when the repo is being changed by an automated AI worker or when following the same autonomous workflow manually.
+5. Check for repo-specific docs under `docs/` that affect the task.
 
 ## Shared Planning Docs
 
-- `../platform-blueprint-specs/docs/shared/agent-common-operating-rules.md`
-- `../platform-blueprint-specs/docs/shared/agent-platform-workspace-map.md`
-- Add one repo-specific shared context file here.
+- `../platform-blueprint-specs/common/AGENTS.md`
+- Add repo-specific planning or sibling-repo docs here when needed.
 
 ## Priority of Instructions
 

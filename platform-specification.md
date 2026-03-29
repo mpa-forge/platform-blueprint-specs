@@ -139,7 +139,7 @@
 - API runtime baseline: Cloud Run (scale-to-zero).
 - API runtime alternative path: GKE Autopilot + Helm (kept fully supported in IaC/deployment design).
 - API runtime late optional path: single VM for low-scale or cost-sensitive projects, implemented only after the primary runtime path is operational and validated.
-- API runtime path reference: `ops/api-runtime-paths-cloud-run-gke.md`.
+- API runtime path reference: `../backend-api/docs/api-runtime-paths-cloud-run-gke.md`.
 - GKE baseline policy: do not create a cluster for the initial iteration; provision GKE only when product requirements justify it.
 - Ephemeral cluster lifecycle baseline (when GKE path is enabled): prod cluster must be create/destroy/recover capable through Terraform + Helm workflows for cost control and reusable project templates.
 - Repository strategy: Polyrepo.
@@ -179,7 +179,7 @@
     - local mode waits and polls again when cap is reached
     - cloud mode exits and waits for next wake-up
 - Worker output path: branch + PR; review feedback can trigger rework on the same PR branch; merge requires standard human review and required CI checks.
-  - Runtime parity reference: `ops/ai-worker-local-cloud-parity.md`.
+  - Runtime parity reference: `../platform-ai-workers/docs/automation/ai-worker-local-cloud-parity.md`.
 - CD operating model:
   - baseline path: Pipeline-driven GitHub Actions deployment to Cloud Run for API.
   - alternative path: Pipeline-driven GitHub Actions + Helm for GKE workloads.
@@ -506,7 +506,7 @@
 - Bootstrap priority:
   - Implement this automation stack early (immediately after foundational decisions and minimal infra bootstrap) so subsequent platform tasks can be accelerated by agents.
   - Minimal infra prerequisites: Cloud Run Jobs, Secret Manager credential wiring, least-privilege IAM, and on-demand execute permissions for GitHub event workflows (optional scheduler backstop).
-  - Local/cloud parity requirements and validation flow are defined in `ops/ai-worker-local-cloud-parity.md`.
+  - Local/cloud parity requirements and validation flow are defined in `../platform-ai-workers/docs/automation/ai-worker-local-cloud-parity.md`.
 
 ## 18. Living Change Log
 - v0.1 (2026-02-17): Initial high-level draft.
@@ -558,7 +558,7 @@
 - v1.37 (2026-02-28): Added GKE credit guardrail: maintain a single Autopilot cluster during baseline (RC), deferring prod cluster provisioning until production cutover.
 - v1.38 (2026-02-28): Added ephemeral GKE cluster lifecycle requirements artifact (`ops/ephemeral-gke-cluster-lifecycle-requirements.md`) for create/destroy/recover workflows.
 - v1.39 (2026-02-28): Deferred external edge provider decision (Cloudflare-like overlay vs GCP-native edge only) to Phase 8 hardening review, while keeping baseline on GCP-native edge stack.
-- v1.40 (2026-02-28): Added AI worker local/cloud runtime parity requirement (same codepath/container entrypoint) and linked operational spec `ops/ai-worker-local-cloud-parity.md`.
+- v1.40 (2026-02-28): Added AI worker local/cloud runtime parity requirement (same codepath/container entrypoint) and linked operational spec `../platform-ai-workers/docs/automation/ai-worker-local-cloud-parity.md`.
 - v1.41 (2026-02-28): Locked AI worker control-loop model to shared poll logic across local/cloud, with local continuous polling and cloud bounded wake-up executions.
 - v1.42 (2026-03-01): Switched API runtime baseline to Cloud Run (scale-to-zero), preserved GKE+Helm as alternative path, and deferred initial cluster creation until required.
 - v1.43 (2026-03-01): Expanded observability architecture to dual runtime modes (`direct_otlp` for Cloud Run baseline, `collector_gateway` for GKE path) and locked shared observability library requirement with profile parity.

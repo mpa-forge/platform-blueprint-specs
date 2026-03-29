@@ -38,7 +38,7 @@ Windows note:
 
 Reference:
 
-- `docs/standards/windows-developer-tooling.md`
+- `common/standards/windows-developer-tooling.md`
 
 ## Baseline contract
 
