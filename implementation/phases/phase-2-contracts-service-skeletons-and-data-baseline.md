@@ -17,6 +17,14 @@ Observability package contract artifact: `ops/observability-telemetry-budget-pro
   - TypeScript frontend clients/types via Connect ES.
   - Package generated TypeScript client with npm metadata for GitHub Packages publishing.
   - Commit generated artifacts to git as part of normal development flow.
+- Define the frontend application architecture baseline needed for the first
+  authenticated feature flow:
+  - route map and protected-route behavior
+  - real sign-in and sign-up route flow rather than placeholder auth links
+  - app-shell/page structure for authenticated pages
+  - generated client transport/wiring pattern
+  - baseline query/mutation conventions for frontend data access
+  - feature-folder and shared-module boundaries in `frontend-web`
 - Implement Go API skeleton:
   - `chi`-based HTTP server, health/readiness, config loading, structured logging, auth middleware scaffold.
   - Enforce startup validation of the environment contract defined in Phase 1 and fail fast on missing or malformed required config.
@@ -41,6 +49,15 @@ Exit criteria:
 - API can query DB and return health/meta endpoint.
 - At least one protected API endpoint validates JWT and enforces one role-based policy.
 - Frontend consumes at least one generated TypeScript client from protobuf definitions (no manual DTO drift).
+- Frontend bootstrap for published contract packages includes a documented
+  GitHub Packages consumer-auth path that future frontend repos can reuse
+  without committing credentials.
+- Frontend route structure, protected-route behavior, and data-access pattern are
+  explicit enough that the next feature can follow the existing baseline instead
+  of inventing new app structure.
+- Frontend auth entry routes (`/sign-in`, `/sign-up`, or the documented
+  equivalent) lead to a real Clerk auth flow and return the user to the
+  protected app path after successful sign-in.
 - Contract repo includes TypeScript package metadata and release conventions for GitHub Packages distribution.
 - Contract repo includes documented versioning policy and release tags consumed by app repos.
 - Shared observability library package compiles and is consumed by API startup in baseline mode; backend-worker integration is deferred to Phase 9.

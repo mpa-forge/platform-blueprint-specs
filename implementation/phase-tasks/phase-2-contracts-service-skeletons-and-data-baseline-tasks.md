@@ -96,9 +96,67 @@ Done when: An authenticated user without a local row can be provisioned explicit
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T03, P2-T06  
-Action: Use generated client in authenticated page call to API with bearer token flow; structure consumption so it can switch from local/workspace source to versioned GitHub Packages dependency without code changes. This task also provides the final frontend token-acquisition proof needed to close `P2-T06`.  
+Action: Use generated client in authenticated page call to API with bearer token flow; structure consumption so it can switch from local/workspace source to versioned GitHub Packages dependency without code changes. Include the repo-local GitHub Packages consumer-auth/bootstrap pattern needed for Bun-based frontend repos to install the published package without committing credentials, and document how future frontend repos forked from this baseline preserve that bootstrap path. This task also provides the final frontend token-acquisition proof needed to close `P2-T06`.  
 Output: Frontend-to-API typed integration.  
-Done when: Frontend protected page renders data from protected API call and the resulting sign-in/token flow is sufficient to mark `P2-T06` complete.
+Done when: Frontend protected page renders data from protected API call, the resulting sign-in/token flow is sufficient to mark `P2-T06` complete, and the frontend repo documents the GitHub Packages consumer bootstrap path for future frontend forks.
+
+### P2-T10A: Define frontend routing and protected app-shell baseline
+Owner: Agent
+Type: Documentation/Coding
+Dependencies: P2-T06
+Action: Establish the authenticated frontend route map and app-shell structure in
+`frontend-web`, including public entry routes if needed, protected route
+behavior, Clerk-driven sign-in/sign-out handoff, unauthorized/loading states,
+and the minimum page layout expected for the first protected feature flow.
+Output: Canonical frontend routing/app-shell baseline and initial route wiring.
+Done when: `frontend-web` has a documented and implemented baseline route
+structure that makes it clear where protected feature pages live and how
+unauthenticated users are redirected or blocked.
+
+### P2-T10B: Define generated client wiring and data-fetching conventions
+Owner: Agent
+Type: Documentation/Coding
+Dependencies: P2-T03, P2-T10
+Action: Define and implement the frontend integration pattern for generated
+`platform-contracts` clients, including transport/client construction,
+bearer-token injection, environment-based API base URL selection, error mapping,
+and the baseline query/mutation conventions for frontend data access. Align the
+conventions with the locked React Router + TanStack Query frontend stack so the
+first protected flow establishes the reusable fetch pattern for later features.
+Output: Shared frontend API-client wiring and documented data-fetching/query
+conventions.
+Done when: `frontend-web` contains one reusable generated-client integration
+path and one documented query/mutation pattern that later feature work can copy
+without inventing new transport or cache conventions.
+
+### P2-T10C: Define frontend feature/module boundary conventions
+Owner: Agent
+Type: Documentation/Coding
+Dependencies: P2-T10A, P2-T10B
+Action: Define the initial frontend source layout for pages, shared UI,
+feature-local components, stores, API adapters, and route modules so feature
+work can grow without collapsing into a flat `src/` tree. Document when code
+belongs in app-wide shared modules versus feature-scoped folders.
+Output: Baseline frontend folder/module-boundary convention and initial repo
+layout changes in `frontend-web`.
+Done when: The repo contains a documented and embodied module layout that
+future feature work can follow consistently for routes, stores, and API-facing
+code.
+
+### P2-T10D: Implement frontend sign-in and sign-up route flow
+Owner: Agent
+Type: Coding
+Dependencies: P2-T06, P2-T10A
+Action: Implement the missing `/sign-in` and `/sign-up` route flow in
+`frontend-web` using the chosen Clerk SPA route model so auth links no longer
+reload the same shell. The task must render real auth UI or perform the intended
+Clerk redirect behavior, then return the user to the protected app flow after
+successful authentication.
+Output: Working frontend auth entry routes and post-auth redirect behavior.
+Done when: Navigating to `/sign-in` or `/sign-up` reaches a real auth flow,
+successful authentication returns the user to the protected app path, and the
+frontend is capable of completing the protected profile proof required by
+`P2-T10` and `P2-T12`.
 
 ### P2-T11: Contract versioning and release workflow setup
 Owner: Agent  
@@ -139,5 +197,8 @@ Done when: API initializes observability through the shared package and runtime 
 - DB migration and seed scripts
 - typed query layer and API integration
 - frontend protected page using generated client
+- frontend routing/protected-route baseline
+- frontend generated-client wiring and query conventions
+- frontend module-boundary/layout convention
 - local end-to-end validation notes
 - shared observability library package skeleton and API integration stubs
