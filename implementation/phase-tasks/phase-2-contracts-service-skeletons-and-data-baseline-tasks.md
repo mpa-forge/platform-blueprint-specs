@@ -104,6 +104,8 @@ Done when: Frontend protected page renders data from protected API call, the res
 Owner: Agent
 Type: Documentation/Coding
 Dependencies: P2-T06
+Status: Completed (`2026-03-30`)
+Evidence: `implementation/governance/frontend-routing-app-shell-evidence.md`
 Action: Establish the authenticated frontend route map and app-shell structure in
 `frontend-web`, including public entry routes if needed, protected route
 behavior, Clerk-driven sign-in/sign-out handoff, unauthorized/loading states,
