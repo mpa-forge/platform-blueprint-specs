@@ -127,9 +127,9 @@ Done when: A review comment can trigger one deterministic rework run without wai
 Owner: Agent  
 Type: CI release automation  
 Dependencies: P4-T01, P4-T03, Phase 2 contracts baseline  
-Action: Add release workflow in `platform-contracts` that runs on contract release tags, verifies generation/lint/breaking gates, and publishes the generated TypeScript client package to GitHub Packages (`npm.pkg.github.com`) with scoped package naming and semver alignment to contract tags.  
+Action: Add release workflow in `platform-contracts` that runs on contract release tags, verifies generation/lint/breaking gates, and publishes the generated TypeScript client package to GitHub Packages (`npm.pkg.github.com`) with scoped package naming and semver alignment to contract tags. Treat the first manual package publish (`@mpa-forge/platform-contracts-client@0.1.0`) as bootstrap evidence only; the automated workflow must become the canonical publish path for all subsequent versions and document how consumers move from the bootstrap package to normal tagged releases.  
 Output: Automated contracts package publish pipeline and release runbook.  
-Done when: Creating a release tag publishes a versioned TypeScript client package and `frontend-web` can install that version from GitHub Packages.
+Done when: Creating a release tag publishes a versioned TypeScript client package, the workflow supersedes the bootstrap manual publish path, and `frontend-web` can install the released version from GitHub Packages.
 
 ## Artifacts Checklist
 - Workflow templates and repo CI YAMLs
