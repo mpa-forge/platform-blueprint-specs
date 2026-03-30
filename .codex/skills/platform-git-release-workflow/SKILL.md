@@ -12,13 +12,17 @@ Use this skill when work touches git flow, release policy, or versioning decisio
 1. Work on a short-lived branch.
 2. Merge into `main` only through a PR.
 3. Keep `main` protected and never push to it directly.
-4. Use squash merge on `main`.
-5. Treat release tags as the production promotion boundary.
+4. Never create commits on local `main`; branch before the first commit.
+5. Use squash merge on `main`.
+6. Treat release tags as the production promotion boundary.
 
 ## Branch Policy
 
 - Protected branch:
   - `main`
+- Local working rule:
+  - `main` must stay aligned with `origin/main`
+  - create or switch to a short-lived branch before making the first commit
 - Short-lived branches:
   - `feat/<short-description>`
   - `fix/<short-description>`

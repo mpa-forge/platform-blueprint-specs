@@ -56,6 +56,9 @@ This file is shared by all working repositories in the platform blueprint worksp
 
 - Use the `platform-git-release-workflow` skill at `../platform-blueprint-specs/.codex/skills/platform-git-release-workflow/SKILL.md` when branch, PR, merge-strategy, release, hotfix, or cleanup workflow decisions are involved.
 - Follow that skill instead of duplicating git/release workflow rules here.
+- Never create commits on local `main`.
+- Before the first commit in this repository, create or switch to a short-lived working branch.
+- Merge changes into `main` only through a PR so protected-branch rules are preserved locally and on GitHub.
 
 ## Post-Merge Cleanup
 
