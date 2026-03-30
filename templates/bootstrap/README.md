@@ -54,6 +54,23 @@ Each template provides:
 - `make format`
 - `make format-check`
 
+The frontend and Go-service templates also include hybrid local-stack wrapper
+targets:
+
+- `make support-up`
+- `make support-up BUILD=1`
+- `make support-down`
+- `make support-logs`
+- `make support-ps`
+
+The infra template includes the corresponding centralized stack targets:
+
+- `make local-frontend-support-up`
+- `make local-frontend-support-up BUILD=1`
+- `make local-api-support-up`
+- `make local-api-support-up BUILD=1`
+- `make local-down`
+
 The template validates pinned toolchain versions and performs the minimum repository setup
 for the current phase.
 

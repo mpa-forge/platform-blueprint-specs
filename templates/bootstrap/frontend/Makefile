@@ -2,8 +2,10 @@ SHELL := bash
 
 NODE_VERSION := 24.13.1
 NPM_VERSION := 11.8.0
+PLATFORM_INFRA_DIR := ../platform-infra
+BUILD ?=
 
-.PHONY: help bootstrap doctor install-tools check-tools print-toolchain install-dev-tools precommit-install precommit-run lint format format-check repo-lint repo-format repo-format-check
+.PHONY: help bootstrap doctor install-tools check-tools print-toolchain install-dev-tools precommit-install precommit-run lint format format-check repo-lint repo-format repo-format-check support-up support-down support-logs support-ps
 
 help:
 	@echo "Targets:"
@@ -18,6 +20,10 @@ help:
 	@echo "  lint              Run repo lint checks"
 	@echo "  format            Apply repo formatting"
 	@echo "  format-check      Check repo formatting without writing changes"
+	@echo "  support-up        Start support services from platform-infra (optional: BUILD=1)"
+	@echo "  support-down      Stop the shared local compose stack"
+	@echo "  support-logs      Stream shared support-service logs"
+	@echo "  support-ps        Show shared local compose stack status"
 
 bootstrap: install-tools check-tools install-dev-tools
 	npm ci
@@ -90,3 +96,15 @@ repo-format:
 
 repo-format-check:
 	npm run format:check
+
+support-up:
+	$(MAKE) -C $(PLATFORM_INFRA_DIR) BUILD=$(BUILD) local-frontend-support-up
+
+support-down:
+	$(MAKE) -C $(PLATFORM_INFRA_DIR) local-down
+
+support-logs:
+	$(MAKE) -C $(PLATFORM_INFRA_DIR) local-frontend-support-logs
+
+support-ps:
+	$(MAKE) -C $(PLATFORM_INFRA_DIR) local-ps
