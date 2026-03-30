@@ -59,6 +59,8 @@ Done when: Protected endpoint returns `401/403` correctly and passes auth tests.
 Owner: Human  
 Type: Provider configuration  
 Dependencies: P2-T05  
+Status: Completed (`2026-03-31`)
+Evidence: `implementation/governance/clerk-app-configuration-evidence.md`
 Action: Create SPA app, API audience, callback/logout URLs, test user roles, token lifetimes, configure direct SPA bearer token usage (no BFF in baseline), and ensure session token claims expose the baseline profile/role fields expected by the API (`sub`, optional `email`/`display_name`/`given_name`/`family_name`, and optional `role` or `roles`).  
 Output: Clerk config values and environment mappings documented.  
 Done when: Frontend can authenticate and obtain valid access token for API.
@@ -96,6 +98,8 @@ Done when: An authenticated user without a local row can be provisioned explicit
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T03, P2-T06  
+Status: Completed (`2026-03-31`)
+Evidence: `implementation/governance/frontend-protected-api-integration-evidence.md`
 Action: Use generated client in authenticated page call to API with bearer token flow; structure consumption so it can switch from local/workspace source to versioned GitHub Packages dependency without code changes. Include the repo-local GitHub Packages consumer-auth/bootstrap pattern needed for Bun-based frontend repos to install the published package without committing credentials, and document how future frontend repos forked from this baseline preserve that bootstrap path. This task also provides the final frontend token-acquisition proof needed to close `P2-T06`.  
 Output: Frontend-to-API typed integration.  
 Done when: Frontend protected page renders data from protected API call, the resulting sign-in/token flow is sufficient to mark `P2-T06` complete, and the frontend repo documents the GitHub Packages consumer bootstrap path for future frontend forks.
@@ -118,7 +122,9 @@ unauthenticated users are redirected or blocked.
 ### P2-T10B: Define generated client wiring and data-fetching conventions
 Owner: Agent
 Type: Documentation/Coding
-Dependencies: P2-T03, P2-T10
+Dependencies: P2-T03, P2-T10A
+Status: Completed (`2026-03-31`)
+Evidence: `implementation/governance/frontend-generated-client-query-conventions-evidence.md`
 Action: Define and implement the frontend integration pattern for generated
 `platform-contracts` clients, including transport/client construction,
 bearer-token injection, environment-based API base URL selection, error mapping,
@@ -135,6 +141,8 @@ without inventing new transport or cache conventions.
 Owner: Agent
 Type: Documentation/Coding
 Dependencies: P2-T10A, P2-T10B
+Status: Completed (`2026-03-31`)
+Evidence: `implementation/governance/frontend-module-boundaries-evidence.md`
 Action: Define the initial frontend source layout for pages, shared UI,
 feature-local components, stores, API adapters, and route modules so feature
 work can grow without collapsing into a flat `src/` tree. Document when code
@@ -149,6 +157,8 @@ code.
 Owner: Agent
 Type: Coding
 Dependencies: P2-T06, P2-T10A
+Status: Completed (`2026-03-31`)
+Evidence: `implementation/governance/frontend-auth-entry-flow-evidence.md`
 Action: Implement the missing `/sign-in` and `/sign-up` route flow in
 `frontend-web` using the chosen Clerk SPA route model so auth links no longer
 reload the same shell. The task must render real auth UI or perform the intended
