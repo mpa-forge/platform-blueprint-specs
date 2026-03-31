@@ -20,7 +20,8 @@ useful.
 
 In the current shared workspace model, `make doctor` expects `platform-blueprint-specs` to
 exist as a sibling checkout of the working repository so it can call the shared doctor
-script.
+script. The same sibling checkout is also required for `make sync-agent-skills` and the
+managed-skill pre-push drift check.
 
 ## Developer prerequisites
 
@@ -46,6 +47,8 @@ Each template provides:
 
 - `make bootstrap`
 - `make doctor`
+- `make sync-agent-skills`
+- `make sync-agent-skills-check`
 - `make check-tools`
 - `make print-toolchain`
 - `make precommit-install`
@@ -77,6 +80,8 @@ for the current phase.
 The lint and hook baseline is intentionally split so that:
 
 - `pre-commit` owns common markdown, YAML, JSON, line-ending, and merge-conflict checks
+- `pre-push` verifies managed common skill copies are up to date with
+  `platform-blueprint-specs`
 - repo-specific checks live behind repo-local `Makefile` targets
 - top-level `make lint` and `make format-check` do not invoke `pre-commit`, which avoids
   recursive hook execution when the pre-commit config calls back into repo-local targets

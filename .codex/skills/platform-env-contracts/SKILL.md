@@ -49,4 +49,3 @@ This skill defines the shared cross-repo rules for how those contracts should be
 
 Use the current repo-local `.env.example` and runtime docs for the authoritative variable set.
 Use this skill to keep the shape of those contracts consistent across repos.
-

@@ -68,4 +68,3 @@ Use:
 - `scripts/windows-tooling-doctor.ps1` from `platform-blueprint-specs`
 
 Prefer the doctor script when you need a repeatable check instead of one-off manual probing.
-

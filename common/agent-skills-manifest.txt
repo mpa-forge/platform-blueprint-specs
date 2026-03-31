@@ -1,0 +1,8 @@
+# Shared repo-managed skills copied into sibling repositories.
+automated-ai-worker
+platform-env-contracts
+platform-code-documentation
+platform-validation-workflow
+platform-git-release-workflow
+platform-windows-tooling
+platform-blueprint-repo-workflow
