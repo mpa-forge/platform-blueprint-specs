@@ -49,4 +49,3 @@ Before finishing, ask:
 - did I run the strongest repo-local checks available for this change?
 - did formatting change files after validation, requiring a rerun?
 - did I skip a repo-local entrypoint in favor of an ad hoc command without a good reason?
-

@@ -17,7 +17,8 @@ This file is shared by all working repositories in the platform blueprint worksp
 - Use the checked-out repository as the source of truth for code, commands, and validation.
 - Keep changes scoped to the assigned task.
 - Prefer repo-local entrypoints over ad hoc commands.
-- Use the `automated-ai-worker` skill at `../platform-blueprint-specs/.codex/skills/automated-ai-worker/SKILL.md` when the repo is being changed by an automated AI worker or when intentionally following the same autonomous workflow.
+- Before major changes in a managed sibling repository, run `make sync-agent-skills` there so the repo-local common skill copies are current.
+- Use the repo-local `automated-ai-worker` skill when the repo is being changed by an automated AI worker or when intentionally following the same autonomous workflow.
 - If the task changes shared templates, tool or version pins, repo bootstrap behavior, or any behavior that affects multiple repositories, also load `../platform-blueprint-specs/implementation/governance/shared-change-checklist.md`.
 
 ## When To Consult Planning Docs
@@ -44,17 +45,17 @@ This file is shared by all working repositories in the platform blueprint worksp
 
 ## Validation
 
-- Use the `platform-validation-workflow` skill at `../platform-blueprint-specs/.codex/skills/platform-validation-workflow/SKILL.md` when deciding which repo-local checks to run, when rerunning formatting and validation, or when scripted/autonomous work should run pre-commit.
+- Use the repo-local `platform-validation-workflow` skill when deciding which repo-local checks to run, when rerunning formatting and validation, or when scripted/autonomous work should run pre-commit.
 - Follow that skill instead of duplicating validation workflow rules here.
 
 ## Documentation Guidance
 
-- Use the `platform-code-documentation` skill at `../platform-blueprint-specs/.codex/skills/platform-code-documentation/SKILL.md` when code or docs work needs documentation decisions, comment/doc updates, or cross-repo documentation escalation.
+- Use the repo-local `platform-code-documentation` skill when code or docs work needs documentation decisions, comment/doc updates, or cross-repo documentation escalation.
 - Follow that skill instead of duplicating documentation workflow rules here.
 
 ## Git and PR Flow
 
-- Use the `platform-git-release-workflow` skill at `../platform-blueprint-specs/.codex/skills/platform-git-release-workflow/SKILL.md` when branch, PR, merge-strategy, release, hotfix, or cleanup workflow decisions are involved.
+- Use the repo-local `platform-git-release-workflow` skill when branch, PR, merge-strategy, release, hotfix, or cleanup workflow decisions are involved.
 - Follow that skill instead of duplicating git/release workflow rules here.
 - Never create commits on local `main`.
 - Before the first commit in this repository, create or switch to a short-lived working branch.
