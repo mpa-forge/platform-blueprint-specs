@@ -174,6 +174,8 @@ frontend is capable of completing the protected profile proof required by
 Owner: Agent  
 Type: Documentation/CI  
 Dependencies: P2-T01..P2-T03  
+Status: Completed (`2026-03-31`)
+Evidence: `implementation/governance/contract-release-workflow-evidence.md`
 Action: Document release/tag policy for contracts, GitHub Packages npm publish conventions for the TypeScript client (`npm.pkg.github.com`, package scope/name, semver alignment with `contracts-vX.Y.Z` tags), and dependency pinning in consuming repos.  
 Output: Versioning policy and release checklist.  
 Done when: Teams can publish and consume a tagged contract release and have a clear package publish/install contract.
@@ -182,6 +184,8 @@ Done when: Teams can publish and consume a tagged contract release and have a cl
 Owner: Human  
 Type: Validation  
 Dependencies: P2-T01..P2-T11  
+Status: Completed (`2026-03-31`)
+Evidence: `implementation/governance/phase-2-end-to-end-local-validation-evidence.md`
 Action: Execute local full flow: login -> protected frontend call -> API -> DB.  
 Output: Validation evidence and defect list.  
 Done when: Baseline protected request works end-to-end locally.
