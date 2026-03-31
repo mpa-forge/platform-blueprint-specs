@@ -18,7 +18,6 @@ This file is shared by all working repositories in the platform blueprint worksp
 - Keep changes scoped to the assigned task.
 - Prefer repo-local entrypoints over ad hoc commands.
 - Before major changes in a managed sibling repository, run `make sync-agent-skills` there so the repo-local common skill copies are current.
-- Use the repo-local `automated-ai-worker` skill when the repo is being changed by an automated AI worker or when intentionally following the same autonomous workflow.
 - If the task changes shared templates, tool or version pins, repo bootstrap behavior, or any behavior that affects multiple repositories, also load `../platform-blueprint-specs/implementation/governance/shared-change-checklist.md`.
 
 ## When To Consult Planning Docs
@@ -43,31 +42,11 @@ This file is shared by all working repositories in the platform blueprint worksp
 - GitHub flow: branch + normal PR + human review unless the task explicitly requires draft mode.
 - Clean worktree is required at the end of autonomous work.
 
-## Validation
-
-- Use the repo-local `platform-validation-workflow` skill when deciding which repo-local checks to run, when rerunning formatting and validation, or when scripted/autonomous work should run pre-commit.
-- Follow that skill instead of duplicating validation workflow rules here.
-
-## Documentation Guidance
-
-- Use the repo-local `platform-code-documentation` skill when code or docs work needs documentation decisions, comment/doc updates, or cross-repo documentation escalation.
-- Follow that skill instead of duplicating documentation workflow rules here.
-
 ## Git and PR Flow
 
-- Use the repo-local `platform-git-release-workflow` skill when branch, PR, merge-strategy, release, hotfix, or cleanup workflow decisions are involved.
-- Follow that skill instead of duplicating git/release workflow rules here.
 - Never create commits on local `main`.
 - Before the first commit in this repository, create or switch to a short-lived working branch.
 - Merge changes into `main` only through a PR so protected-branch rules are preserved locally and on GitHub.
-
-## Post-Merge Cleanup
-
-- Use the `platform-git-release-workflow` skill for post-merge cleanup steps.
-
-## Clean Tree Rule
-
-- Use the `platform-git-release-workflow` skill for clean-worktree and branch-cleanup rules.
 
 ## Instruction Priority
 
