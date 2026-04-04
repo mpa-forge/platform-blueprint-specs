@@ -19,12 +19,13 @@ Done when: All required Grafana endpoints and tokens are available for `rc` inte
 Owner: Agent  
 Type: Infra/config  
 Dependencies: P3-T01, Phase 5 baseline GSM availability (plus ESO when GKE path is enabled) or temporary local secret strategy  
+Status: Open. The token-ingredient runtime contract, Cloud Run delivery model, and GKE ESO placeholders are documented, but the task stays open until Phase 5 introduces deployable Terraform roots that can own the real Cloud Run/GSM wiring.
 Evidence in progress: `implementation/governance/observability-secret-delivery-evidence.md`
 Action: Create secret definitions for Grafana Cloud OTLP/auth credentials and wire runtime-specific delivery:
 - Cloud Run baseline path: direct GSM-based secret injection for API runtime envs using the token-ingredient contract (`OTEL_EXPORTER_OTLP_ENDPOINT`, `GRAFANA_CLOUD_INSTANCE_ID`, `GRAFANA_OTLP_INGEST_TOKEN`) with header composition inside the shared runtime.
 - GKE path: ESO sync manifests for API/collector components. Backend-worker secret delivery is deferred to Phase 9.  
 Output: Secrets wired into workloads without plaintext in repo.  
-Done when: Services read credentials through their selected runtime path without plaintext credentials in repo, or when pre-Phase-5 repos at minimum document the exact Cloud Run delivery contract plus GKE ESO placeholders without inventing undeployed Terraform roots.
+Done when: Services read credentials through their selected runtime path without plaintext credentials in repo. Pre-Phase-5 repo work may document the exact Cloud Run delivery contract plus GKE ESO placeholders without inventing undeployed Terraform roots, but final completion waits for Phase 5 Terraform roots and workload wiring.
 
 ### P3-T03: Instrument API with OpenTelemetry
 Owner: Agent  

@@ -9,7 +9,7 @@ Provision reproducible cloud infrastructure for `rc` and `prod` with safe state 
 Owner: Agent  
 Type: IaC design  
 Dependencies: Phase 0 naming standards  
-Action: Create module structure (`network`, `cloudrun_api`, optional `gke`, `gar`, `cloudsql`, `secrets`, optional observability support), shared variables, and explicit per-environment project boundaries (`rc` project, `prod` project). Enforce one root per environment (for example `infra/envs/rc` and `infra/envs/prod`) with shared modules under `infra/modules`, and avoid workspace-based environment switching.  
+Action: Create module structure (`network`, `cloudrun_api`, optional `gke`, `gar`, `cloudsql`, `secrets`, optional observability support), shared variables, and explicit per-environment project boundaries (`rc` project, `prod` project). Enforce one root per environment (for example `infra/envs/rc` and `infra/envs/prod`) with shared modules under `infra/modules`, and avoid workspace-based environment switching. This task also creates the deployable Terraform root/module baseline required to finish `P3-T02` Cloud Run observability secret delivery beyond the current documented placeholder contract.
 Output: Terraform project skeleton.  
 Done when: `terraform validate` runs for all modules/stacks and each environment can be planned from its own root directory.
 
