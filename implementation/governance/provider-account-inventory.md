@@ -286,13 +286,16 @@ Use the following runtime env configuration for services exporting telemetry to 
 
 - `OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf`
 - `OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp-gateway-prod-us-east-3.grafana.net/otlp`
-- `OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic <base64(1546554:<ingest_token>)>`
+- `GRAFANA_CLOUD_INSTANCE_ID=1546554`
+- `GRAFANA_OTLP_INGEST_TOKEN` loaded from GSM per environment
+- shared runtime composes `Authorization: Basic <base64(${GRAFANA_CLOUD_INSTANCE_ID}:${GRAFANA_OTLP_INGEST_TOKEN})>` at startup
 
 Token handling rules:
 
 - Do not store raw OTLP tokens in git.
 - Read ingest tokens from Google Secret Manager (GSM) at runtime.
 - Build the Basic auth payload from `instance_id:token` where instance ID is `1546554`.
+- Inject the token as `GRAFANA_OTLP_INGEST_TOKEN`; do not store a prebuilt `OTEL_EXPORTER_OTLP_HEADERS` secret.
 - The token shown on Grafana's OpenTelemetry connection page is not a source-of-truth secret for this platform; managed policy tokens stored in GSM are the source of truth.
 
 ### OTLP token source mapping (GSM)
@@ -310,7 +313,7 @@ None for Phase 0 `rc` scope.
 Deferred follow-ups (pre-prod / later phases):
 
 1. Create `prod` ingest/read secrets in `mpa-forge-bp-prod` and map to prod policies once prod activation work starts.
-2. Validate runtime wiring in `rc` (`Cloud Run` and later `GKE`) so OTLP headers are composed from GSM token material using instance ID `1546554`. This is intentionally deferred until a deployable service exists (Phase 3+ implementation).
+2. Validate runtime wiring in `rc` (`Cloud Run` and later `GKE`) so services receive `GRAFANA_OTLP_INGEST_TOKEN` from GSM and compose OTLP Basic auth headers at runtime using instance ID `1546554`. The delivery contract is documented in `implementation/governance/observability-secret-delivery-evidence.md`; actual deployable Terraform remains deferred until Phase 5 roots exist.
 3. Extend mandatory label contract with `cloud.provider` and `cloud.region` after runtime wiring and hardening review (post first running workload).
 
 Done when (Phase 0): `rc` policy/token inventory, OTLP metadata/auth contract, and label partitioning rules are recorded in this section.
