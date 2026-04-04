@@ -27,7 +27,7 @@ Use one auth contract across both runtime modes:
 - `OTEL_EXPORTER_OTLP_ENDPOINT=https://otlp-gateway-prod-us-east-3.grafana.net/otlp`
 - `GRAFANA_CLOUD_INSTANCE_ID=1546554`
 - `GRAFANA_OTLP_INGEST_TOKEN` loaded from GSM secret per environment
-- `OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic <base64(${GRAFANA_CLOUD_INSTANCE_ID}:${GRAFANA_OTLP_INGEST_TOKEN})>`
+- the shared runtime composes `Authorization: Basic <base64(${GRAFANA_CLOUD_INSTANCE_ID}:${GRAFANA_OTLP_INGEST_TOKEN})>` at startup
 
 Secret source of truth:
 - `rc`: `projects/mpa-forge-bp-rc/secrets/grafana-otlp-ingest-token-rc`
@@ -36,6 +36,8 @@ Secret source of truth:
 Security requirements:
 - No raw tokens in git, Helm values, Terraform variables, or CI logs.
 - Runtime injects secret material from GSM only.
+- Workloads receive the token ingredient through `GRAFANA_OTLP_INGEST_TOKEN`;
+  they do not receive a prebuilt `OTEL_EXPORTER_OTLP_HEADERS` secret.
 - Token rotation is done by creating a new Grafana token, writing a new GSM secret version, and rolling workloads.
 
 ## Shared Library Requirement
