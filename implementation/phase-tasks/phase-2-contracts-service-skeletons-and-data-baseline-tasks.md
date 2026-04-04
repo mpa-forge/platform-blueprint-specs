@@ -194,6 +194,8 @@ Done when: Baseline protected request works end-to-end locally.
 Owner: Agent  
 Type: Coding  
 Dependencies: P2-T04  
+Status: Completed (`2026-04-04`)
+Evidence: `implementation/governance/backend-observability-package-evidence.md`
 Action: Create a reusable observability package for backend services with:
 - runtime mode switch (`direct_otlp` for Cloud Run baseline, `collector_gateway` for GKE path),
 - common resource/service labeling contract,
