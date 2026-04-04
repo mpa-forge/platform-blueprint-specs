@@ -9,9 +9,11 @@ Deliver production-grade visibility and incident wiring for the baseline stack w
 Owner: Human  
 Type: Provider configuration  
 Dependencies: Phase 0 accounts  
-Action: Create Grafana Cloud Free stack(s), define env labeling strategy, create scoped API tokens for metrics/logs/traces/alerts, and document free-tier limits/watchpoints.  
+Status: Completed (`2026-04-04`) for `rc` baseline scope; prod OTLP ingest secret in GSM is deferred until prod activation.
+Evidence: `implementation/governance/provider-account-inventory.md`
+Action: Create Grafana Cloud Free stack(s), define env labeling strategy, create scoped API tokens for metrics/logs/traces/alerts, and document free-tier limits/watchpoints. For the baseline phase, `rc` inventory and token readiness are required; prod ingest policy may exist ahead of time, but the prod GSM secret may remain deferred until prod activation.
 Output: Provider credentials inventory.  
-Done when: All required endpoints and tokens are available for integration.
+Done when: All required Grafana endpoints and tokens are available for `rc` integration, alert and rules read access is documented, and any prod OTLP ingest secret deferral is explicit in the provider inventory.
 
 ### P3-T02: Store observability credentials in GSM and wire runtime-specific delivery
 Owner: Agent  

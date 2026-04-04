@@ -247,7 +247,7 @@ Status: Completed (`2026-03-04`) for `rc` baseline scope. `prod` token/secrets a
 | Stack identified | PASS | User-provided |
 | Stack URL identified | PASS | User-provided |
 | Plan tier locked to Free | PASS | Prior Phase 0 decision |
-| Access policies/tokens baseline created | PASS | Policies `o11y-ingest-rc-write` and `o11y-read` confirmed; mapped to RC GSM secrets |
+| Access policies/tokens baseline created | PASS | Policies `o11y-ingest-rc-write`, `o11y-ingest-prod-write`, and `o11y-read` confirmed; RC policies mapped to GSM secrets and prod ingest secret explicitly deferred |
 | OTLP endpoint and auth details recorded | PASS | OTLP endpoint + instance ID + header contract documented |
 | Mandatory label partitioning locked | PASS | `env`, `project`, `service` required on all telemetry |
 
@@ -270,8 +270,8 @@ Project: `mpa-forge-bp-rc`
 | Policy name | Intended scopes | Environment | Backing GSM secret |
 | --- | --- | --- | --- |
 | `o11y-ingest-rc-write` | `metrics:write`, `logs:write`, `traces:write` | `rc` | `grafana-otlp-ingest-token-rc` |
-| `o11y-read` | `metrics:read`, `logs:read`, `traces:read` | `rc` | `grafana-otlp-read-token` |
-| `o11y-ingest-prod-write` | `metrics:write`, `logs:write`, `traces:write` | `prod` | deferred until prod activation |
+| `o11y-read` | `alerts:read`, `logs:read`, `metrics:read`, `rules:read`, `traces:read` | `rc` | `grafana-otlp-read-token` |
+| `o11y-ingest-prod-write` | `metrics:write`, `logs:write`, `traces:write` | `prod` | policy exists; backing GSM secret deferred until prod activation |
 
 ### Ingestion details (recorded)
 
@@ -301,7 +301,7 @@ Token handling rules:
 | --- | --- | --- | --- |
 | `rc` | `mpa-forge-bp-rc` | `grafana-otlp-ingest-token-rc` | OTLP ingest auth token for traces/metrics/logs export |
 | `rc` | `mpa-forge-bp-rc` | `grafana-otlp-read-token` | Read/query token for observability automation tooling |
-| `prod` | `mpa-forge-bp-prod` | `grafana-otlp-ingest-token-prod` | OTLP ingest auth token for prod (pending creation) |
+| `prod` | `mpa-forge-bp-prod` | `grafana-otlp-ingest-token-prod` | OTLP ingest auth token for prod (intentionally deferred until prod activation) |
 
 ### Remaining actions to close P0-T03D
 
@@ -309,7 +309,7 @@ None for Phase 0 `rc` scope.
 
 Deferred follow-ups (pre-prod / later phases):
 
-1. Create `prod` ingest/read secrets in `mpa-forge-bp-prod` and map to prod policies.
+1. Create `prod` ingest/read secrets in `mpa-forge-bp-prod` and map to prod policies once prod activation work starts.
 2. Validate runtime wiring in `rc` (`Cloud Run` and later `GKE`) so OTLP headers are composed from GSM token material using instance ID `1546554`. This is intentionally deferred until a deployable service exists (Phase 3+ implementation).
 3. Extend mandatory label contract with `cloud.provider` and `cloud.region` after runtime wiring and hardening review (post first running workload).
 
