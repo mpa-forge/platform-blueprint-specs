@@ -271,3 +271,4 @@ For each decision capture:
 - v2.39 (2026-03-08): Added a late-phase optional single-VM deployment path task for cost-sensitive or low-scale projects, to be implemented only after the primary runtime path is running and tested.
 - v2.40 (2026-03-22): Deferred `backend-worker` implementation and worker-specific deploy/observability/hardening work to new Phase 9 so the blueprint proves the frontend + backend API path end to end first.
 - v2.41 (2026-03-29): Switched the frontend tooling baseline from npm to Bun and added Vitest, Playwright, and Zustand to the frontend stack baseline.
+- v2.42 (2026-04-04): Added Phase 3 frontend observability tasks for a shared browser observability package/module plus `frontend-web` consumption.

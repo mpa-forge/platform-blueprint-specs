@@ -4,6 +4,7 @@ Detailed tasks: `implementation/phase-tasks/phase-3-observability-and-operabilit
 Specification artifact: `ops/observability-telemetry-budget-profile.md`
 
 - Instrument API with OpenTelemetry and keep backend-worker instrumentation deferred to Phase 9.
+- Create a shared frontend observability package/module and consume it in `frontend-web` so browser telemetry follows one reusable blueprint pattern.
 - Implement dual observability runtime modes with one shared configuration contract:
   - Cloud Run baseline path: direct OTLP/HTTP export to Grafana Cloud.
   - GKE alternative path: cluster-level collector gateway (Grafana Alloy / OTel Collector).
@@ -36,6 +37,7 @@ Specification artifact: `ops/observability-telemetry-budget-profile.md`
 
 Exit criteria:
 - Traces visible end-to-end for one synthetic flow.
+- Frontend browser telemetry is emitted through the shared frontend package for at least one protected flow.
 - Dashboard and at least 3 actionable alerts active.
 - Alert-to-AI flow produces deterministic, testable incident summaries from synthetic alerts.
 - Telemetry budget profile can be toggled (`balanced`/`cost`/`debug`) through configuration only, and the effect is visible in ingestion volume dashboards.
@@ -44,6 +46,7 @@ Phase 3 checklist:
 - Provision Grafana Cloud org/stack and service accounts.
 - Create and store telemetry/API tokens in secret manager.
 - Configure OTEL env vars in API deployments.
+- Define frontend browser telemetry config and consume it through the shared frontend observability package rather than page-local ad hoc wiring.
 - Configure shared observability library mode (`direct_otlp` vs `collector_gateway`) and verify profile parity.
 - Deploy collector/alloy config only for GKE mode and verify ingest for logs/metrics/traces.
 - Verify `OBS_TELEMETRY_PROFILE` toggle path and ingestion impact without application redeploy.

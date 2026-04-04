@@ -31,6 +31,27 @@ Action: Implement/consume a shared observability library package for backend ser
 Output: API telemetry instrumentation.  
 Done when: API requests produce correlated traces and metrics in Grafana Cloud.
 
+### P3-T03A: Scaffold shared frontend observability package
+Owner: Agent
+Type: Coding
+Dependencies: Phase 2 frontend ready, P3-T01
+Action: Create a reusable frontend observability package/module for browser apps with:
+- initialization API for browser telemetry wiring
+- shared labeling contract for app/environment/release/user context
+- hook points for page-view tracking, client-side errors, and Web Vitals or equivalent UX signals
+- trace/correlation helpers so protected frontend flows can be tied back to backend request telemetry
+- environment-based enable/disable and ingest-config hook points without hardcoding provider secrets in repo
+Output: Shared frontend observability package/module and integration contract docs.
+Done when: The shared frontend package compiles, exposes one stable initialization path, and is ready to be consumed by `frontend-web`.
+
+### P3-T03B: Consume shared frontend observability package in `frontend-web`
+Owner: Agent
+Type: Coding
+Dependencies: P3-T03A, P3-T01, Phase 2 frontend ready
+Action: Integrate the shared frontend observability package in `frontend-web` so the authenticated app shell emits baseline browser telemetry, client-side errors, and frontend-to-backend correlation metadata for protected API flows.
+Output: Frontend observability integration baseline.
+Done when: `frontend-web` initializes browser observability through the shared package and one protected flow emits correlated frontend telemetry without bespoke wiring in page components.
+
 ### P3-T04: Instrument worker with OpenTelemetry
 Owner: Agent  
 Type: Coding  
@@ -129,6 +150,8 @@ Done when: Cloud Run API observability is fully operational with direct OTLP exp
 ## Artifacts Checklist
 - Grafana Cloud stack/token inventory
 - OTel instrumentation PRs for API
+- shared frontend observability package/module evidence
+- frontend observability integration evidence
 - shared observability library configuration and usage evidence
 - Cloud Run direct OTLP configuration evidence
 - collector/alloy configs (GKE path)
