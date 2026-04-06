@@ -90,7 +90,7 @@ Done when: Target baseline checklist is passed or deviations are accepted with o
 ### P8-T10: Final baseline certification as reusable template
 Owner: Human  
 Type: Phase gate  
-Dependencies: P8-T01..P8-T09, P8-T11..P8-T17
+Dependencies: P8-T01..P8-T09, P8-T11..P8-T18
 Action: Confirm all phase objectives and baseline MVP acceptance criteria are met; tag template release.  
 Output: Reusable platform blueprint release record.  
 Done when: Template release is tagged and handoff docs are complete.
@@ -157,6 +157,14 @@ Action: Define and implement an additional deployment path that runs `frontend-w
 Output: VM-path architecture doc, infrastructure implementation, deployment workflow, and validation evidence.
 Done when: The single-VM path is documented, provisionable, deployable from CI, and validated as an optional runtime for projects where its tradeoffs are acceptable.
 
+### P8-T18: Backfill canonical ADRs and integrate ADR upkeep into the developer workflow
+Owner: Human + Agent
+Type: Documentation + workflow hardening
+Dependencies: Phase 0 ADR template baseline, P8-T14..P8-T17
+Action: Audit the accumulated planning and design sources (`platform-specification.md`, `common/standards/`, `ops/`, `implementation/`, cross-repo architecture docs, and accepted OpenSpec `design.md`/`spec.md` artifacts) for platform-level decisions that currently live only in docs or specs. Create or update the canonical ADR set in the dedicated docs repository, keep source docs linked to the matching ADRs, and update the workflow skills/checklists so normal planning and implementation work explicitly evaluates whether an ADR must be created, updated, or superseded whenever platform-level decisions change.
+Output: ADR backfill set, source-to-ADR migration map, and updated workflow skills/checklists.
+Done when: The major cross-repo architecture and governance decisions have canonical ADRs, source docs point to the relevant ADRs, and the normal developer workflow includes an explicit ADR-review step.
+
 ## Artifacts Checklist
 - SLO/SLI baseline docs
 - autoscaling/resource tuning configs
@@ -175,3 +183,4 @@ Done when: The single-VM path is documented, provisionable, deployable from CI, 
 - Sentry integration evidence and triage runbook
 - incident.io routing/escalation configuration evidence
 - single-VM deployment path architecture, infra, CI workflow, and validation evidence
+- ADR backfill set, migration map, and workflow-skill updates

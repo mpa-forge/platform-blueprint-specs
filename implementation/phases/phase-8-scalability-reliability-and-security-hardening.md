@@ -43,6 +43,10 @@ Detailed tasks: `implementation/phase-tasks/phase-8-scalability-reliability-and-
   - deployment-time signature verification deferred to a later phase
 - Resolve deferred edge-provider layering decision:
   - Evaluate whether to keep GCP-native edge only, or add external provider capabilities (for example advanced WAF/bot controls) based on real traffic/threat/cost signals.
+- Backfill canonical ADRs from accumulated specs/docs and wire ADR creation or updates into the normal developer workflow:
+  - audit platform specs, standards, ops docs, implementation docs, cross-repo architecture docs, and accepted OpenSpec design artifacts for durable decisions
+  - create or update canonical ADRs in the dedicated docs repository and keep source docs linked to the matching ADRs
+  - update workflow skills/checklists so platform-level decision changes always trigger an ADR review
 - Add an optional low-scale deployment alternative after the primary path is proven:
   - define and implement a single-VM deployment path for `frontend-web` + `backend-api` + PostgreSQL
   - keep it as an additional runtime option for low-usage or cost-sensitive projects, not as the baseline replacement
