@@ -54,17 +54,9 @@ Done when: The shared frontend package compiles, exposes one stable initializati
 Owner: Agent
 Type: Coding
 Dependencies: P3-T03A, P3-T01, Phase 2 frontend ready
-Action: Integrate the shared frontend observability package in `frontend-web` so the authenticated app shell emits baseline browser telemetry, client-side errors, and frontend-to-backend correlation metadata for protected API flows.
+Action: Integrate the shared frontend observability package in `frontend-web` so the authenticated app shell emits baseline browser telemetry, client-side errors, Web Vitals, and frontend-to-backend correlation metadata for protected API flows using the package's Faro-backed wrapper contract. Use the shared package as the only app-facing initialization path, keep Grafana/Faro configuration normalized inside the package, and configure browser delivery through the provider-supported frontend observability path rather than a custom `backend-api` ingest endpoint. Ensure protected API flows preserve correlation with backend traces through the existing request/response correlation contract.
 Output: Frontend observability integration baseline.
-Done when: `frontend-web` initializes browser observability through the shared package and one protected flow emits correlated frontend telemetry without bespoke wiring in page components.
-
-### P3-T03C: Add browser telemetry ingest endpoint in `backend-api`
-Owner: Agent
-Type: Coding
-Dependencies: P3-T03B, Phase 2 API ready
-Action: Create a browser-safe telemetry ingest endpoint in `backend-api` that accepts the shared frontend observability event envelope emitted by `frontend-web` and `platform-frontend-observability`, then hands those events into the backend observability/export path without requiring browser-held secrets. Implement it using the existing API runtime and middleware patterns in `../backend-api/docs/api-runtime.md`, `../backend-api/openspec/specs/api-runtime/spec.md`, `../backend-api/openspec/specs/api-observability/spec.md`, `../backend-api/internal/api/runtime.go`, `../backend-api/internal/api/middleware.go`, `../backend-api/internal/api/runtime_test.go`, and `../backend-api/internal/api/observability_test.go`. Treat the sender contract in `../frontend-web/src/app/observability/runtime.ts` and `../platform-frontend-observability/src/runtime.ts` as the frontend event-shape reference until a dedicated ingest spec is added.
-Output: Backend browser telemetry ingest endpoint, tests, and implementation notes.
-Done when: The browser can POST the shared frontend observability event envelope to a documented `backend-api` endpoint with the required CORS behavior, the endpoint validates or normalizes the event payload without relying on frontend secrets, and the backend is ready to forward those accepted events into the Phase 3 Grafana delivery path.
+Done when: `frontend-web` initializes browser observability through the shared package, one protected flow emits correlated frontend telemetry without bespoke wiring in page components, and the browser delivery path uses the Faro/Grafana ingestion model without requiring a dedicated browser telemetry endpoint in `backend-api`.
 
 ### P3-T04: Instrument worker with OpenTelemetry
 Owner: Agent  
