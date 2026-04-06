@@ -39,6 +39,8 @@ Done when: API requests produce correlated traces and metrics in Grafana Cloud.
 Owner: Agent
 Type: Coding
 Dependencies: Phase 2 frontend ready, P3-T01
+Status: Completed (`2026-04-06`)
+Evidence: `implementation/governance/frontend-observability-package-evidence.md`
 Action: Create a reusable frontend observability package/module for browser apps with:
 - initialization API for browser telemetry wiring
 - shared labeling contract for app/environment/release/user context
