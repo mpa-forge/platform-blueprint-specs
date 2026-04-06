@@ -15,7 +15,7 @@ Specification artifact: `ops/observability-telemetry-budget-profile.md`
   - `prod`: 5% baseline trace sampling.
   - Force sample 100% for error traces, high-latency traces (>1s initial threshold), and explicit debug/incident traffic.
 - Implement one centrally changeable telemetry budget profile (`OBS_TELEMETRY_PROFILE`) that works in both runtime modes to control traces/logs/metrics ingestion and stay within tier caps.
-- Configure Grafana Cloud dashboards (golden signals + service deep-dive views).
+- Configure Grafana Cloud dashboards (golden signals + service deep-dive views) from source-controlled definitions, using a documented bootstrap provisioning path before Phase 5 Terraform ownership exists.
 - Set up log export for both modes:
   - direct OTLP/HTTP export for Cloud Run baseline
   - Alloy/collector shipping for GKE path
@@ -50,7 +50,7 @@ Phase 3 checklist:
 - Configure shared observability library mode (`direct_otlp` vs `collector_gateway`) and verify profile parity.
 - Deploy collector/alloy config only for GKE mode and verify ingest for logs/metrics/traces.
 - Verify `OBS_TELEMETRY_PROFILE` toggle path and ingestion impact without application redeploy.
-- Provision baseline dashboards from code (JSON or Terraform provider).
+- Provision baseline dashboards from code by defining source-controlled dashboard assets and a bootstrap Grafana import path; Phase 5 later adopts the authoritative Terraform provider wiring.
 - Create alert routing and webhook endpoint with signature validation.
 - Run synthetic observability test suite and record evidence.
 

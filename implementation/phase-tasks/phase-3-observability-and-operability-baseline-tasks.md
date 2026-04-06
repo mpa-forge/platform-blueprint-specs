@@ -83,9 +83,9 @@ Done when: Logs/metrics/traces arrive in Grafana Cloud with expected labels in C
 Owner: Agent  
 Type: Observability config  
 Dependencies: P3-T03..P3-T05  
-Action: Define dashboards for API golden signals, edge/runtime path status, and DB connectivity symptoms. Backend-worker dashboards are deferred to Phase 9.  
-Output: Dashboard JSON/Terraform definitions.  
-Done when: Dashboards can be recreated from source-controlled definitions.
+Action: Define dashboards for API golden signals, edge/runtime path status, and DB connectivity symptoms. Treat source-controlled Grafana dashboard JSON as the canonical Phase 3 artifact, and document the bootstrap provisioning inputs and import or refresh procedure needed to validate those dashboards in Grafana Cloud before `platform-infra` owns the final Terraform apply path in Phase 5. Backend-worker dashboards are deferred to Phase 9.  
+Output: Dashboard JSON definitions plus bootstrap provisioning contract docs, with an explicit handoff to later Phase 5 Terraform adoption.  
+Done when: Baseline dashboards are reviewable from source control and can be imported or refreshed in Grafana Cloud through the documented bootstrap path, and the later Phase 5 authoritative provisioning work is explicitly linked.
 
 ### P3-T07: Configure alert rules and routing
 Owner: Agent  
@@ -164,6 +164,8 @@ Done when: Cloud Run API observability is fully operational with direct OTLP exp
 - `OBS_TELEMETRY_PROFILE` mapping config and runbook
 - `ops/observability-telemetry-budget-profile.md` conformance evidence
 - dashboard definitions as code
+- `../platform-infra/docs/grafana-dashboards/*.json`
+- `docs/operations/grafana-dashboard-bootstrap-runbook.md`
 - alert rules and routing policies
 - `../platform-ai-workers/docs/automation/alert-ai-webhook-spec.md` implementation reference
 - alert->AI webhook spec and service implementation

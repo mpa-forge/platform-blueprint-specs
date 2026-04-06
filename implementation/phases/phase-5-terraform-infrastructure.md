@@ -14,7 +14,7 @@ Cost suspend/resume artifact: `ops/cost-suspend-resume-automation.md`
   - Google Secret Manager secrets and IAM policies (plus workload identity bindings for ESO on GKE path)
   - Edge routing resources for single-domain `/api/*` mapping to Cloud Run baseline path
   - Cloud Run Jobs + Cloud Scheduler + IAM for AI task-to-code workers, including on-demand execution permissions for event-trigger workflows
-  - observability dependencies (as needed)
+  - observability dependencies (as needed), including Grafana dashboard provisioning support
 - Create env stacks (`rc`, `prod`) with separate project-level isolation for prod.
 - Apply runtime guardrail: Cloud Run API path enabled by default for first iteration; GKE cluster resources remain disabled/gated until explicitly enabled.
 - Implement lifecycle controls so GKE cluster (when enabled) can be created/destroyed/recovered on demand via Terraform + Helm workflows.
@@ -33,6 +33,7 @@ Cost suspend/resume artifact: `ops/cost-suspend-resume-automation.md`
 
 Exit criteria:
 - `rc` infra provisioned reproducibly from clean state.
+- baseline Grafana dashboards can be recreated from source-controlled definitions through the Phase 5 provisioning path.
 - baseline `rc` API runtime is Cloud Run (no GKE cluster required).
 - prod infra is provisioned as a fully separate environment.
 - IaC plan/apply integrated with CI checks.
