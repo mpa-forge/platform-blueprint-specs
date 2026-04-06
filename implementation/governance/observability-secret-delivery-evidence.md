@@ -39,8 +39,8 @@ Operator (ESO). Placeholder manifests now live in `platform-infra`.
   - `.env.example`, docs, and OpenSpec spec now match the new contract
 - `platform-infra`
   - documents the Cloud Run secret-delivery model
-  - contains placeholder Cloud Run Terraform and GKE ESO artifacts for later
-    Phase 5/6 implementation
+  - contains placeholder Cloud Run Terraform, GKE ESO, workload env, and
+    collector pipeline artifacts for later Phase 5/6 implementation
 
 ## Deferred Items
 
