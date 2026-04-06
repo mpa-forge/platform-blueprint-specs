@@ -77,21 +77,29 @@ Action: Create per-environment root stack composition and parameter files with m
 Output: Environment-specific IaC layers.  
 Done when: `terraform plan` works for all environments from their dedicated root paths.
 
+### P5-T09A: Implement Grafana dashboard provisioning module and env wiring
+Owner: Agent  
+Type: IaC coding  
+Dependencies: P3-T01, P3-T06, P5-T01, P5-T09  
+Action: Add `platform-infra` observability support for authoritative Grafana dashboard provisioning using the scoped Grafana API token and stack inputs established earlier in Phase 3. Define provider and module wiring for Grafana folders and baseline dashboards, and ensure the env roots consume the source-controlled dashboard definitions prepared by `P3-T06` from `../platform-infra/docs/grafana-dashboards/manifest.json`, `../platform-infra/docs/grafana-dashboards/api-golden-signals.json`, `../platform-infra/docs/grafana-dashboards/runtime-path-status.json`, and `../platform-infra/docs/grafana-dashboards/db-connectivity-symptoms.json` without manual UI re-authoring.  
+Output: Grafana dashboard provisioning module and environment bindings.  
+Done when: `terraform plan` from each env root shows Grafana folder and dashboard resources that recreate the baseline dashboards from the prepared source-controlled definitions.
+
 ### P5-T10: Add IaC policy checks and formatting in CI
 Owner: Agent  
 Type: CI/IaC  
-Dependencies: P5-T01  
-Action: Add formatting, validation, static analysis, and policy checks to PR pipelines.  
+Dependencies: P5-T01, P5-T09A  
+Action: Add formatting, validation, static analysis, and policy checks to PR pipelines, including checks that cover Grafana dashboard provisioning assets and their Terraform wiring once the dashboard module exists.  
 Output: Infrastructure quality gates.  
 Done when: Invalid infra changes are blocked in CI before apply.
 
 ### P5-T11: Execute `rc` clean-state apply and document runbook
 Owner: Human + Agent  
 Type: Validation  
-Dependencies: P5-T01..P5-T10, P5-T15  
-Action: Apply full stack from empty state, capture timings, rollback instructions, and known caveats.  
+Dependencies: P5-T01..P5-T10, P5-T09A, P5-T15  
+Action: Apply full stack from empty state, including authoritative Grafana dashboard provisioning where configured, and capture timings, rollback instructions, and known caveats.  
 Output: Provisioning evidence and runbook.  
-Done when: `rc` can be recreated from scratch reproducibly.
+Done when: `rc` can be recreated from scratch reproducibly, including restoration of the baseline Grafana dashboards from source-controlled definitions.
 
 ### P5-T12: Implement prod cluster lifecycle runbooks and guarded workflows
 Owner: Human + Agent  
@@ -137,6 +145,11 @@ Done when: `rc` can be suspended and restored end-to-end with documented evidenc
 - Terraform module/stacks structure
 - remote state backend/locking configuration
 - network, Cloud Run API, optional GKE cluster, GAR, Cloud SQL, GSM modules
+- Grafana dashboard provisioning module and environment bindings
+- `../platform-infra/docs/grafana-dashboards/manifest.json`
+- `../platform-infra/docs/grafana-dashboards/api-golden-signals.json`
+- `../platform-infra/docs/grafana-dashboards/runtime-path-status.json`
+- `../platform-infra/docs/grafana-dashboards/db-connectivity-symptoms.json`
 - Cloud Run API runtime module validation evidence
 - Cloud Run Job/Scheduler module for AI workers
 - `../platform-ai-workers/docs/automation/ai-comment-trigger-cloud-run-jobs.md` IAM mapping reference
@@ -150,3 +163,4 @@ Done when: `rc` can be suspended and restored end-to-end with documented evidenc
 - environment variable files and outputs
 - IaC CI validation checks
 - `rc` apply evidence and infra runbook
+- Grafana dashboard recreate-from-source evidence
