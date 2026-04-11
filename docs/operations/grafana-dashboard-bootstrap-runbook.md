@@ -36,6 +36,9 @@ Deferred:
 - backend-worker dashboards, which remain part of Phase 9
 - alert-rule provisioning, which begins in `P3-T07`
 
+Related alert bootstrap routing guidance now lives in
+`docs/operations/grafana-alert-routing-bootstrap-runbook.md`.
+
 ## Source Artifact Contract
 
 Canonical Phase 3 artifact format:
