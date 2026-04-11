@@ -91,8 +91,13 @@ Done when: Baseline dashboards are reviewable from source control and can be imp
 Owner: Agent  
 Type: Observability config  
 Dependencies: P3-T06  
+Status: Completed (`2026-04-11`).  
 Action: Implement at least 3 actionable alerts (availability, latency, error rate), route to webhook/Slack channels, and apply baseline severity policy (`P1` immediate page/webhook; `P2/P3/P4` notify-only; escalate unacknowledged `P2` after 15 minutes).  
 Output: Alert rules and routing policy docs.  
+Evidence:
+- `../docs/operations/grafana-alert-routing-bootstrap-runbook.md`
+- `../../backend-api/docs/api-alerting.md`
+- `../../backend-api/docs/grafana-alert-rules.phase3.yaml`
 Done when: Synthetic trigger tests demonstrate expected routing behavior.
 
 ### P3-T08: Configure Sentry projects and SDK integration
@@ -117,17 +122,19 @@ Done when: Phase 3 does not depend on incident.io provisioning.
 Owner: Agent  
 Type: Coding  
 Dependencies: P3-T07  
-Action: Build webhook endpoint with signature validation, parse payload, request enrichment data from Grafana APIs, and emit machine-readable diagnostic payloads that can be consumed by later-phase AI diagnostic/task-generation workers, following `../platform-ai-workers/docs/automation/alert-ai-webhook-spec.md`.  
-Output: Automation service baseline running with deterministic output format and conformance notes to `../platform-ai-workers/docs/automation/alert-ai-webhook-spec.md`.  
-Done when: Synthetic alert generates a structured AI-ready incident summary payload.
+Status: Deferred to Phase 8 (`P8-T12`).  
+Action: Defer the alert -> AI automation service contract and endpoint until late-phase hardening after baseline alert routing is stable, following `../platform-ai-workers/docs/automation/alert-ai-webhook-spec.md`.  
+Output: Deferral linkage to `P8-T12`.  
+Done when: Phase 3 does not depend on alert -> AI automation service delivery.
 
 ### P3-T11: Add enrichment integrations and evidence links
 Owner: Agent  
 Type: Coding  
 Dependencies: P3-T10  
-Action: Query metrics/logs/traces APIs for correlated context and include links in result payload.  
-Output: Enriched incident summary artifacts.  
-Done when: Output includes direct evidence links and bounded analysis window.
+Status: Deferred to Phase 8 (`P8-T12`).  
+Action: Defer telemetry-context enrichment and evidence-link generation until the Phase 8 alert-driven diagnostic pipeline is implemented.  
+Output: Deferral linkage to `P8-T12`.  
+Done when: Phase 3 does not depend on enrichment integrations or evidence-link generation.
 
 ### P3-T12: Run synthetic observability E2E tests
 Owner: Human  
