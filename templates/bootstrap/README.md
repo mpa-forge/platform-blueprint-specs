@@ -10,6 +10,10 @@ Canonical bootstrap `Makefile` templates for the baseline repository types.
 - `contracts/Makefile`
 - `infra/Makefile`
 
+GitHub Actions starter templates live separately in:
+
+- `../github-actions/`
+
 ## Usage
 
 Copy the matching template into the target repository root as `Makefile`.

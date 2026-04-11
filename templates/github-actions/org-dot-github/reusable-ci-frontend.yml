@@ -1,0 +1,58 @@
+name: reusable-ci-frontend
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: Repository path to run the workflow from.
+        required: false
+        type: string
+        default: "."
+      node-version:
+        description: Node.js version to install for the frontend baseline.
+        required: false
+        type: string
+        default: "24.13.1"
+      bun-version:
+        description: Bun version to install for the frontend baseline.
+        required: false
+        type: string
+        default: "1.3.11"
+      toolchain-command:
+        description: Baseline command used to prove the shared CI wiring is active.
+        required: false
+        type: string
+        default: "make print-toolchain"
+
+permissions:
+  contents: read
+
+jobs:
+  toolchain:
+    name: toolchain
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ inputs.bun-version }}
+
+      - name: Print toolchain
+        run: ${{ inputs.toolchain-command }}
+
+      - name: Baseline note
+        run: |
+          echo "P4-T01 starter baseline only."
+          echo "Later Phase 4 tasks add lint, test, scan, and artifact jobs."

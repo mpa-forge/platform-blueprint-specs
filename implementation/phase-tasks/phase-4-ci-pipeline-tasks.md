@@ -9,6 +9,7 @@ Enforce quality, contract integrity, and reproducible artifacts from every chang
 Owner: Agent  
 Type: CI design  
 Dependencies: Phase 1 repos created  
+Status: Complete  
 Action: Establish centralized reusable workflow templates for Go, frontend, contracts, and infra repos, consumed by each repository pipeline.  
 Output: Shared workflow policy doc and starter YAMLs.  
 Done when: Each repo has a consistent CI entrypoint and naming convention.

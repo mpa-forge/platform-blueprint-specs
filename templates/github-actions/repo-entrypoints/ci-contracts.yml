@@ -1,0 +1,20 @@
+name: ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: mpa-forge/org-dot-github/.github/workflows/reusable-ci-contracts.yml@main
+    with:
+      working-directory: "."
+      go-version-file: "go.mod"
+      node-version: "24.13.1"
+      buf-version: "1.65.0"
