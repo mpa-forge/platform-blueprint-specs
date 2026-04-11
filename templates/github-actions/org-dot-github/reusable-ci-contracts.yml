@@ -1,0 +1,72 @@
+name: reusable-ci-contracts
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: Repository path to run the workflow from.
+        required: false
+        type: string
+        default: "."
+      go-version-file:
+        description: Go version file path relative to the working directory.
+        required: false
+        type: string
+        default: "go.mod"
+      node-version:
+        description: Node.js version to install for the contracts baseline.
+        required: false
+        type: string
+        default: "24.13.1"
+      buf-version:
+        description: Buf CLI version to install for the contracts baseline.
+        required: false
+        type: string
+        default: "1.65.0"
+      toolchain-command:
+        description: Baseline command used to prove the shared CI wiring is active.
+        required: false
+        type: string
+        default: "make print-toolchain"
+
+permissions:
+  contents: read
+
+jobs:
+  toolchain:
+    name: toolchain
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: ${{ inputs.go-version-file }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Install Buf CLI
+        env:
+          BUF_VERSION: ${{ inputs.buf-version }}
+        run: |
+          set -euo pipefail
+          curl -fsSL "https://github.com/bufbuild/buf/releases/download/v${BUF_VERSION}/buf-Linux-x86_64" -o /usr/local/bin/buf
+          chmod +x /usr/local/bin/buf
+          buf --version
+
+      - name: Print toolchain
+        run: ${{ inputs.toolchain-command }}
+
+      - name: Baseline note
+        run: |
+          echo "P4-T01 starter baseline only."
+          echo "Later Phase 4 tasks add repo lint, Buf, generation, and publish jobs."

@@ -1,0 +1,48 @@
+name: reusable-ci-infra
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: Repository path to run the workflow from.
+        required: false
+        type: string
+        default: "."
+      terraform-version:
+        description: Terraform version to install for the infra baseline.
+        required: false
+        type: string
+        default: "1.14.5"
+      toolchain-command:
+        description: Baseline command used to prove the shared CI wiring is active.
+        required: false
+        type: string
+        default: "make print-toolchain"
+
+permissions:
+  contents: read
+
+jobs:
+  toolchain:
+    name: toolchain
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ inputs.terraform-version }}
+
+      - name: Print toolchain
+        run: ${{ inputs.toolchain-command }}
+
+      - name: Baseline note
+        run: |
+          echo "P4-T01 starter baseline only."
+          echo "Later Phase 4 and Phase 5 tasks add fmt, validate, and IaC policy jobs."
