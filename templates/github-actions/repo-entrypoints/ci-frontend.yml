@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   ci:
-    uses: mpa-forge/org-dot-github/.github/workflows/reusable-ci-frontend.yml@main
+    uses: mpa-forge/.github/.github/workflows/reusable-ci-frontend.yml@main
     with:
       working-directory: "."
       node-version: "24.13.1"
