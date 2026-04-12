@@ -37,6 +37,7 @@ Done when: Sonar analysis runs on PRs for target repos and reports status checks
 Owner: Agent  
 Type: CI coding  
 Dependencies: Phase 2 contracts baseline  
+Status: Complete  
 Action: Add `buf lint`, `buf breaking`, and generated-code drift checks.  
 Output: Contract integrity checks in CI.  
 Done when: Breaking changes are blocked unless versioning policy is followed.
