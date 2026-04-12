@@ -68,6 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_PACKAGES_TOKEN: ${{ github.token }}
+      NODE_AUTH_TOKEN: ${{ github.token }}
     defaults:
       run:
         shell: bash
@@ -105,6 +106,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_PACKAGES_TOKEN: ${{ github.token }}
+      NODE_AUTH_TOKEN: ${{ github.token }}
     defaults:
       run:
         shell: bash
@@ -142,6 +144,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_PACKAGES_TOKEN: ${{ github.token }}
+      NODE_AUTH_TOKEN: ${{ github.token }}
     defaults:
       run:
         shell: bash
