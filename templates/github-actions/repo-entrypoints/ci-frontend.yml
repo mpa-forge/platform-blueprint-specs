@@ -9,12 +9,14 @@ on:
 
 permissions:
   contents: read
+  packages: read
 
 jobs:
   ci:
-    uses: mpa-forge/org-dot-github/.github/workflows/reusable-ci-frontend.yml@main
+    uses: mpa-forge/.github/.github/workflows/reusable-ci-frontend.yml@main
+    secrets: inherit
     with:
       working-directory: "."
       node-version: "24.13.1"
       bun-version: "1.3.11"
-      test-command: "bun test"
+      test-command: "bun run test"
