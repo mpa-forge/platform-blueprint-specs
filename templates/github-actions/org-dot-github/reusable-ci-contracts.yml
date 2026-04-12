@@ -23,14 +23,29 @@ on:
         required: false
         type: string
         default: "1.65.0"
+      sonar-organization-key:
+        description: SonarQube Cloud organization key.
+        required: false
+        type: string
+        default: ""
+      sonar-project-key:
+        description: SonarQube Cloud project key for this repository.
+        required: false
+        type: string
+        default: ""
       toolchain-command:
         description: Baseline command used to prove the shared CI wiring is active.
         required: false
         type: string
         default: "make print-toolchain"
+    secrets:
+      SONAR_TOKEN:
+        description: SonarQube Cloud token used by the optional sonar job.
+        required: false
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   toolchain:
@@ -70,3 +85,39 @@ jobs:
         run: |
           echo "P4-T01 starter baseline only."
           echo "Later Phase 4 tasks add repo lint, Buf, generation, and publish jobs."
+
+  sonar:
+    name: sonar
+    runs-on: ubuntu-latest
+    needs:
+      - toolchain
+    if: inputs.sonar-organization-key != '' && inputs.sonar-project-key != ''
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      GITHUB_TOKEN: ${{ github.token }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Cache SonarQube packages
+        uses: actions/cache@v5
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: |
+            ${{ runner.os }}-sonar
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v7
+        with:
+          projectBaseDir: ${{ inputs.working-directory }}
+          args: >
+            -Dsonar.organization=${{ inputs.sonar-organization-key }}
+            -Dsonar.projectKey=${{ inputs.sonar-project-key }}
+            -Dsonar.qualitygate.wait=true

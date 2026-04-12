@@ -12,9 +12,13 @@ permissions:
 
 jobs:
   ci:
-    uses: mpa-forge/org-dot-github/.github/workflows/reusable-ci-contracts.yml@main
+    uses: mpa-forge/.github/.github/workflows/reusable-ci-contracts.yml@4454175b41c288c2fe2052d84889336f3c3591b1
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     with:
       working-directory: "."
       go-version-file: "go.mod"
       node-version: "24.13.1"
       buf-version: "1.65.0"
+      sonar-organization-key: ""
+      sonar-project-key: ""
