@@ -12,6 +12,9 @@ permissions:
 
 jobs:
   ci:
-    uses: mpa-forge/org-dot-github/.github/workflows/reusable-ci-go.yml@main
+    uses: mpa-forge/.github/.github/workflows/reusable-ci-go.yml@main
+    secrets: inherit
     with:
       working-directory: "."
+      sonar-organization-key: ""
+      sonar-project-key: ""
