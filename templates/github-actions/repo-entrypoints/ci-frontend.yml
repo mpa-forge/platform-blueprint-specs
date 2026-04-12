@@ -14,6 +14,7 @@ permissions:
 jobs:
   ci:
     uses: mpa-forge/.github/.github/workflows/reusable-ci-frontend.yml@main
+    secrets: inherit
     with:
       working-directory: "."
       node-version: "24.13.1"
