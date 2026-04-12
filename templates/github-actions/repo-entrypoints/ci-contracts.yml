@@ -9,10 +9,11 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   ci:
-    uses: mpa-forge/.github/.github/workflows/reusable-ci-contracts.yml@4454175b41c288c2fe2052d84889336f3c3591b1
+    uses: mpa-forge/.github/.github/workflows/reusable-ci-contracts.yml@614c6bc602ee74329f93c7ce251c3df50cc09ae5
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     with:

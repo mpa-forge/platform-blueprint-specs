@@ -93,6 +93,14 @@ jobs:
             echo "has_go_files=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Download Go modules
+        if: steps.go-files.outputs.has_go_files == 'true'
+        run: go mod download
+
+      - name: Prime Go package metadata
+        if: steps.go-files.outputs.has_go_files == 'true'
+        run: go list -deps ./... > /dev/null
+
       - name: Run GolangCI-Lint
         if: steps.go-files.outputs.has_go_files == 'true'
         env:

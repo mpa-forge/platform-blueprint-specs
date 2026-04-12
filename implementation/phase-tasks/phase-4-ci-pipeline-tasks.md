@@ -28,6 +28,7 @@ Done when: PRs fail on lint/test errors.
 Owner: Human + Agent  
 Type: Provider setup + CI integration  
 Dependencies: P4-T01, P4-T02  
+Status: Complete  
 Action: Create or confirm SonarQube Cloud organization bound to GitHub, lock Free tier assumptions, configure projects for active repos, and wire PR analysis/check reporting into CI.  
 Output: SonarQube Cloud org/project inventory + CI integration evidence.  
 Done when: Sonar analysis runs on PRs for target repos and reports status checks that can be used by branch protection.
@@ -36,6 +37,7 @@ Done when: Sonar analysis runs on PRs for target repos and reports status checks
 Owner: Agent  
 Type: CI coding  
 Dependencies: Phase 2 contracts baseline  
+Status: Complete  
 Action: Add `buf lint`, `buf breaking`, and generated-code drift checks.  
 Output: Contract integrity checks in CI.  
 Done when: Breaking changes are blocked unless versioning policy is followed.
