@@ -31,6 +31,7 @@ on:
 
 permissions:
   contents: read
+  packages: read
 
 jobs:
   toolchain:
@@ -65,6 +66,8 @@ jobs:
   lint:
     name: lint
     runs-on: ubuntu-latest
+    env:
+      GITHUB_PACKAGES_TOKEN: ${{ github.token }}
     defaults:
       run:
         shell: bash
@@ -100,6 +103,8 @@ jobs:
   type-check:
     name: type-check
     runs-on: ubuntu-latest
+    env:
+      GITHUB_PACKAGES_TOKEN: ${{ github.token }}
     defaults:
       run:
         shell: bash
@@ -135,6 +140,8 @@ jobs:
   test:
     name: test
     runs-on: ubuntu-latest
+    env:
+      GITHUB_PACKAGES_TOKEN: ${{ github.token }}
     defaults:
       run:
         shell: bash
