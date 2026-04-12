@@ -13,6 +13,11 @@ on:
         required: false
         type: string
         default: "go.mod"
+      golangci-lint-version:
+        description: GolangCI-Lint version used by the lint job.
+        required: false
+        type: string
+        default: "v1.64.8"
       toolchain-command:
         description: Baseline command used to prove the shared CI wiring is active.
         required: false
@@ -44,5 +49,79 @@ jobs:
 
       - name: Baseline note
         run: |
-          echo "P4-T01 starter baseline only."
-          echo "Later Phase 4 tasks add lint, test, scan, and artifact jobs."
+          echo "Phase 4 shared workflow baseline."
+          echo "Later Phase 4 tasks add scan and artifact jobs."
+
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: ${{ inputs.go-version-file }}
+          cache: true
+
+      - name: Detect Go sources
+        id: go-files
+        run: |
+          if find . -name '*.go' -not -path './vendor/*' | grep -q .; then
+            echo "has_go_files=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_go_files=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run GolangCI-Lint
+        if: steps.go-files.outputs.has_go_files == 'true'
+        env:
+          GOLANGCI_LINT_VERSION: ${{ inputs.golangci-lint-version }}
+        run: go run github.com/golangci/golangci-lint/cmd/golangci-lint@${GOLANGCI_LINT_VERSION} run ./...
+
+      - name: Run Go vet
+        if: steps.go-files.outputs.has_go_files == 'true'
+        run: go vet ./...
+
+      - name: No Go sources
+        if: steps.go-files.outputs.has_go_files != 'true'
+        run: echo "No Go sources found; skipping lint."
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: ${{ inputs.go-version-file }}
+          cache: true
+
+      - name: Detect Go sources
+        id: go-files
+        run: |
+          if find . -name '*.go' -not -path './vendor/*' | grep -q .; then
+            echo "has_go_files=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_go_files=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run Go tests
+        if: steps.go-files.outputs.has_go_files == 'true'
+        run: go test ./...
+
+      - name: No Go sources
+        if: steps.go-files.outputs.has_go_files != 'true'
+        run: echo "No Go sources found; skipping tests."
