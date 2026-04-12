@@ -42,10 +42,10 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node-version }}
 
@@ -71,10 +71,10 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node-version }}
 
@@ -84,7 +84,7 @@ jobs:
           bun-version: ${{ inputs.bun-version }}
 
       - name: Cache Bun install artifacts
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ inputs.bun-version }}-${{ hashFiles(format('{0}/bun.lock', inputs.working-directory)) }}
@@ -106,10 +106,10 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node-version }}
 
@@ -119,7 +119,7 @@ jobs:
           bun-version: ${{ inputs.bun-version }}
 
       - name: Cache Bun install artifacts
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ inputs.bun-version }}-${{ hashFiles(format('{0}/bun.lock', inputs.working-directory)) }}
@@ -141,10 +141,10 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node-version }}
 
@@ -154,7 +154,7 @@ jobs:
           bun-version: ${{ inputs.bun-version }}
 
       - name: Cache Bun install artifacts
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.bun/install/cache
           key: ${{ runner.os }}-bun-${{ inputs.bun-version }}-${{ hashFiles(format('{0}/bun.lock', inputs.working-directory)) }}
