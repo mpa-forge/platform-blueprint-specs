@@ -71,13 +71,15 @@ needs a special-case workflow.
 
 ### 3. Pass secrets correctly through reusable workflows
 
-For repo-local caller workflows, ensure:
+For repo-local caller workflows, pass only the specific secrets the reusable
+workflow needs:
 
 ```yaml
 jobs:
   ci:
     uses: owner/.github/.github/workflows/reusable-ci-<kind>.yml@main
-    secrets: inherit
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 ```
 
 For the reusable workflow, read the secret directly:
@@ -87,8 +89,8 @@ env:
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 ```
 
-Do not assume reusable workflows receive secrets unless `secrets: inherit` is
-present in the caller.
+Declare reusable-workflow secrets explicitly under `workflow_call.secrets`, and
+do not use `secrets: inherit` unless there is a deliberate reviewed reason.
 
 ### 4. Wire Sonar identifiers explicitly
 
@@ -110,7 +112,7 @@ Recommended reusable-workflow contract:
   - `contents: read`
   - `pull-requests: read`
 - when packages from GitHub Packages are required, preserve the existing auth
-  setup before the Sonar install step
+  setup before the Sonar install step and pass `GH_PACKAGES_TOKEN` explicitly
 
 ### 5. Decide where repo-specific config lives
 

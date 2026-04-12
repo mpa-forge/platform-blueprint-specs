@@ -128,12 +128,14 @@ Once the agent has added Sonar jobs:
 Expected implementation pattern:
 
 - repo-local `ci.yml` stays a thin caller
-- caller workflow uses `secrets: inherit`
+- caller workflow passes only the specific reusable-workflow secrets it needs
 - shared reusable workflow receives:
   - `sonar-organization-key`
   - `sonar-project-key`
 - reusable workflow reads `SONAR_TOKEN` from GitHub Actions secrets and runs
   the Sonar scan after the main validation jobs succeed
+- frontend callers also pass `GH_PACKAGES_TOKEN` only when private package
+  installation requires it
 
 ### 8. Enforce branch protection
 

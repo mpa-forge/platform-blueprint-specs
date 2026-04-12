@@ -38,6 +38,13 @@ on:
         required: false
         type: string
         default: "make print-toolchain"
+    secrets:
+      GH_PACKAGES_TOKEN:
+        description: GitHub Packages token used to install private scoped packages.
+        required: false
+      SONAR_TOKEN:
+        description: SonarQube Cloud token used by the optional sonar job.
+        required: false
 
 permissions:
   contents: read

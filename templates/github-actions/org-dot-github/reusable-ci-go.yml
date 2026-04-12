@@ -33,6 +33,10 @@ on:
         required: false
         type: string
         default: "make print-toolchain"
+    secrets:
+      SONAR_TOKEN:
+        description: SonarQube Cloud token used by the optional sonar job.
+        required: false
 
 permissions:
   contents: read
