@@ -33,6 +33,51 @@ on:
         required: false
         type: string
         default: "make print-toolchain"
+      image-build-enabled:
+        description: Enable canonical container build verification and publish flow.
+        required: false
+        type: boolean
+        default: false
+      image-name:
+        description: Final image name in GAR.
+        required: false
+        type: string
+        default: ""
+      image-context:
+        description: Docker build context path relative to the repository root.
+        required: false
+        type: string
+        default: "."
+      image-dockerfile:
+        description: Dockerfile path relative to the repository root.
+        required: false
+        type: string
+        default: "Dockerfile"
+      gar-location:
+        description: GAR location prefix such as us-east4.
+        required: false
+        type: string
+        default: ""
+      gar-project-id:
+        description: GCP project ID that owns the GAR repository.
+        required: false
+        type: string
+        default: ""
+      gar-repository:
+        description: GAR repository name such as apps.
+        required: false
+        type: string
+        default: ""
+      gcp-workload-identity-provider:
+        description: Workload Identity Provider resource used for GAR publish auth.
+        required: false
+        type: string
+        default: ""
+      gcp-service-account:
+        description: Service account email used for GAR publish auth.
+        required: false
+        type: string
+        default: ""
     secrets:
       SONAR_TOKEN:
         description: SonarQube Cloud token used by the optional sonar job.
@@ -185,3 +230,184 @@ jobs:
             -Dsonar.organization=${{ inputs.sonar-organization-key }}
             -Dsonar.projectKey=${{ inputs.sonar-project-key }}
             -Dsonar.qualitygate.wait=true
+
+  api-image-verify:
+    name: api-image-verify
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+      - test
+    if: inputs.image-build-enabled && github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build canonical API image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ inputs.image-context }}
+          file: ${{ inputs.image-dockerfile }}
+          push: false
+          provenance: false
+
+  api-image-publish:
+    name: api-image-publish
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+      - test
+    if: inputs.image-build-enabled && github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      image-uri: ${{ steps.publish-summary.outputs.image_uri }}
+      image-digest: ${{ steps.publish-summary.outputs.image_digest }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Resolve image metadata
+        id: image-meta
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          image_repository="${{ inputs.gar-location }}-docker.pkg.dev/${{ inputs.gar-project-id }}/${{ inputs.gar-repository }}/${{ inputs.image-name }}"
+          sha_tag="sha-${GITHUB_SHA::12}"
+          release_tag=""
+
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            if [[ "${GITHUB_REF_NAME}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+              release_tag="${GITHUB_REF_NAME}"
+            else
+              echo "Only semver release tags are supported for API image publishing." >&2
+              exit 1
+            fi
+          fi
+
+          {
+            echo "image_repository=${image_repository}"
+            echo "sha_tag=${sha_tag}"
+            echo "release_tag=${release_tag}"
+            echo "primary_ref=${image_repository}:${sha_tag}"
+            echo "tags<<EOF"
+            echo "${image_repository}:${sha_tag}"
+            if [[ -n "${release_tag}" ]]; then
+              echo "${image_repository}:${release_tag}"
+            fi
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Check publish configuration
+        id: publish-config
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          missing=()
+
+          [[ -n "${{ inputs.image-name }}" ]] || missing+=("image-name")
+          [[ -n "${{ inputs.gar-location }}" ]] || missing+=("gar-location")
+          [[ -n "${{ inputs.gar-project-id }}" ]] || missing+=("gar-project-id")
+          [[ -n "${{ inputs.gar-repository }}" ]] || missing+=("gar-repository")
+          [[ -n "${{ inputs.gcp-workload-identity-provider }}" ]] || missing+=("gcp-workload-identity-provider")
+          [[ -n "${{ inputs.gcp-service-account }}" ]] || missing+=("gcp-service-account")
+
+          if [[ "${#missing[@]}" -eq 0 ]]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+            echo "missing=" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            {
+              echo "missing<<EOF"
+              printf '%s\n' "${missing[@]}"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish configuration pending
+        if: steps.publish-config.outputs.configured != 'true'
+        shell: bash
+        run: |
+          {
+            echo "API image publish was skipped because the GAR/WIF inputs are not configured yet."
+            echo
+            echo "Missing inputs:"
+            echo "${{ steps.publish-config.outputs.missing }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Authenticate to Google Cloud
+        if: steps.publish-config.outputs.configured == 'true'
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ inputs.gcp-workload-identity-provider }}
+          service_account: ${{ inputs.gcp-service-account }}
+
+      - name: Set up gcloud
+        if: steps.publish-config.outputs.configured == 'true'
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for GAR
+        if: steps.publish-config.outputs.configured == 'true'
+        shell: bash
+        run: gcloud auth configure-docker "${{ inputs.gar-location }}-docker.pkg.dev" --quiet
+
+      - name: Build and push API image
+        if: steps.publish-config.outputs.configured == 'true'
+        id: push-image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ inputs.image-context }}
+          file: ${{ inputs.image-dockerfile }}
+          push: true
+          provenance: false
+          tags: ${{ steps.image-meta.outputs.tags }}
+
+      - name: Verify published tag digests
+        if: steps.publish-config.outputs.configured == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          expected_digest="${{ steps.push-image.outputs.digest }}"
+          refs=("${{ steps.image-meta.outputs.image_repository }}:${{ steps.image-meta.outputs.sha_tag }}")
+
+          if [[ -n "${{ steps.image-meta.outputs.release_tag }}" ]]; then
+            refs+=("${{ steps.image-meta.outputs.image_repository }}:${{ steps.image-meta.outputs.release_tag }}")
+          fi
+
+          for ref in "${refs[@]}"; do
+            actual_digest="$(docker buildx imagetools inspect "${ref}" --format '{{json .Manifest.Digest}}' | tr -d '"')"
+            if [[ "${actual_digest}" != "${expected_digest}" ]]; then
+              echo "Digest mismatch for ${ref}: expected ${expected_digest}, got ${actual_digest}" >&2
+              exit 1
+            fi
+          done
+
+      - name: Publish summary
+        id: publish-summary
+        shell: bash
+        run: |
+          if [[ "${{ steps.publish-config.outputs.configured }}" != "true" ]]; then
+            echo "image_uri=" >> "$GITHUB_OUTPUT"
+            echo "image_digest=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          {
+            echo "Published image URI: ${{ steps.image-meta.outputs.primary_ref }}"
+            echo "Published digest: ${{ steps.push-image.outputs.digest }}"
+            if [[ -n "${{ steps.image-meta.outputs.release_tag }}" ]]; then
+              echo "Release alias: ${{ steps.image-meta.outputs.image_repository }}:${{ steps.image-meta.outputs.release_tag }}"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo "image_uri=${{ steps.image-meta.outputs.primary_ref }}" >> "$GITHUB_OUTPUT"
+          echo "image_digest=${{ steps.push-image.outputs.digest }}" >> "$GITHUB_OUTPUT"
