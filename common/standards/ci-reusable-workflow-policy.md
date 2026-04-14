@@ -1,6 +1,6 @@
 # Reusable CI Workflow Policy
 
-Last updated: 2026-04-11
+Last updated: 2026-04-14
 
 ## Scope
 
@@ -50,7 +50,7 @@ names.
 | Shared workflow host repo | `mpa-forge/org-dot-github` |
 | Shared workflow file prefix | `reusable-ci-` |
 | Shared workflow names | `reusable-ci-go`, `reusable-ci-frontend`, `reusable-ci-contracts`, `reusable-ci-infra` |
-| Baseline triggers | `pull_request`, `push` to `main`, and `workflow_dispatch` |
+| Baseline triggers | `pull_request`, `push` to `main`, `workflow_dispatch`, and semver tag pushes when image publishing is enabled |
 | Baseline permissions | `contents: read` unless a later phase explicitly needs more |
 
 ## `P4-T01` starter contract
@@ -88,6 +88,13 @@ During the bootstrap baseline the reusable workflow reference may point at `@mai
 `org-dot-github` already uses protected-branch flow and does not yet expose a release-tag
 contract. Once reusable workflow release governance exists, callers should move to immutable
 tag or SHA pinning without changing the local entrypoint filename.
+
+For Go-service repositories that publish OCI images, the reusable workflow now also supports:
+
+- pull-request-only Docker build verification without registry pushes
+- merge and semver-tag image publication using immutable `sha-<git_sha_12>` tags
+- optional `v<semver>` aliases that must resolve to the same pushed digest
+- repository-variable-driven GAR and WIF wiring so auth can be layered in without forking the workflow
 
 ## Future-task guardrails
 
