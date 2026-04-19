@@ -17,6 +17,7 @@
 - Phase 7: `implementation/phases/phase-7-cd-release-and-rollback-controls.md`
 - Phase 8: `implementation/phases/phase-8-scalability-reliability-and-security-hardening.md`
 - Phase 9: `implementation/phases/phase-9-backend-worker-and-async-extensions.md`
+- Milestone quick reference: `implementation/milestone-quick-reference.md`
 
 ### 2.1 Phase Task Packs
 - Phase 0 tasks: `implementation/phase-tasks/phase-0-foundation-and-decisions-tasks.md`

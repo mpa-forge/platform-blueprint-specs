@@ -46,6 +46,7 @@ Done when: Breaking changes are blocked unless versioning policy is followed.
 Owner: Agent  
 Type: CI coding  
 Dependencies: P4-T02  
+Status: Complete  
 Action: Build API images with immutable tags (commit SHA + semver tag support). Backend-worker image build is deferred to Phase 9.  
 Output: Reproducible container artifacts.  
 Done when: CI publishes deterministic API image tags for every merge.

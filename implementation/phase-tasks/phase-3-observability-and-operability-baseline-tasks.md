@@ -21,6 +21,9 @@ Type: Infra/config
 Dependencies: P3-T01, Phase 5 baseline GSM availability (plus ESO when GKE path is enabled) or temporary local secret strategy  
 Status: Open. The token-ingredient runtime contract, Cloud Run delivery model, and GKE ESO placeholders are documented, but the task stays open until Phase 5 introduces deployable Terraform roots that can own the real Cloud Run/GSM wiring.
 Evidence in progress: `implementation/governance/observability-secret-delivery-evidence.md`
+Implemented so far: `platform-observability` and `backend-api` now consume Grafana token ingredients instead of prebuilt OTLP headers, and `platform-infra/docs/observability-secret-delivery.md` plus the Cloud Run and GKE placeholder artifacts lock the runtime contract.
+Missing: Real Cloud Run GSM secret injection owned by deployable `platform-infra` Terraform, plus live GKE ESO-backed secret sync and workload wiring.
+Blocked: `platform-infra` still has placeholder-only observability artifacts and no deployable Phase 5 roots/modules yet, so workload-level secret delivery cannot be finished or validated in a live environment.
 Action: Create secret definitions for Grafana Cloud OTLP/auth credentials and wire runtime-specific delivery:
 - Cloud Run baseline path: direct GSM-based secret injection for API runtime envs using the token-ingredient contract (`OTEL_EXPORTER_OTLP_ENDPOINT`, `GRAFANA_CLOUD_INSTANCE_ID`, `GRAFANA_OTLP_INGEST_TOKEN`) with header composition inside the shared runtime.
 - GKE path: ESO sync manifests for API/collector components. Backend-worker secret delivery is deferred to Phase 9.  
@@ -31,6 +34,9 @@ Done when: Services read credentials through their selected runtime path without
 Owner: Agent  
 Type: Coding  
 Dependencies: Phase 2 API ready, P2-T13  
+Implemented so far: The archived `backend-api` change is complete, with `platform-observability` providing the shared runtime and `backend-api` emitting request telemetry, protected-flow metadata, correlation fields, docs, and focused tests.
+Missing: Live evidence that a deployed API sends correlated traces, metrics, and logs to Grafana Cloud for real `rc` traffic using the final secret-delivery contract.
+Blocked: Repo-local tests prove the instrumentation contract, but end-to-end Grafana validation depends on P3-T02 secret delivery and later Cloud Run deployment work.
 Action: Implement/consume a shared observability library package for backend services and instrument API with traces/metrics/logs context propagation, semantic resource attributes, error status mapping, and runtime-mode support (`direct_otlp`, `collector_gateway`) controlled by config.  
 Output: API telemetry instrumentation.  
 Done when: API requests produce correlated traces and metrics in Grafana Cloud.
@@ -54,6 +60,9 @@ Done when: The shared frontend package compiles, exposes one stable initializati
 Owner: Agent
 Type: Coding
 Dependencies: P3-T03A, P3-T01, Phase 2 frontend ready
+Implemented so far: The archived `frontend-web` change is complete, with app-shell bootstrap, shared package provider wiring, route tracking, auth-context sync, Web Vitals/error capture, and protected-request correlation headers implemented and tested.
+Missing: Planning-repo completion evidence for the `frontend-web` adoption plus live `rc` validation that browser telemetry reaches the real Grafana/Faro path and correlates with backend requests.
+Blocked: The repo shows the code path, but live browser telemetry proof needs deployed frontend runtime config and later environment routing/deployment work.
 Action: Integrate the shared frontend observability package in `frontend-web` so the authenticated app shell emits baseline browser telemetry, client-side errors, Web Vitals, and frontend-to-backend correlation metadata for protected API flows using the package's Faro-backed wrapper contract. Use the shared package as the only app-facing initialization path, keep Grafana/Faro configuration normalized inside the package, and configure browser delivery through the provider-supported frontend observability path rather than a custom `backend-api` ingest endpoint. Ensure protected API flows preserve correlation with backend traces through the existing request/response correlation contract.
 Output: Frontend observability integration baseline.
 Done when: `frontend-web` initializes browser observability through the shared package, one protected flow emits correlated frontend telemetry without bespoke wiring in page components, and the browser delivery path uses the Faro/Grafana ingestion model without requiring a dedicated browser telemetry endpoint in `backend-api`.
@@ -71,6 +80,9 @@ Done when: Worker loop activity is visible in traces and dashboard metrics.
 Owner: Agent  
 Type: Deployment/config  
 Dependencies: P3-T01  
+Implemented so far: The archived `P3-T05` OpenSpec change is complete at the code-and-doc baseline level across `platform-observability`, `backend-api`, `platform-infra`, and this repo, including profile mapping, token-ingredient auth, collector placeholders, and the shared runbook/evidence set.
+Missing: Live runtime wiring and validation for both modes, especially a deployed GKE collector/alloy path and parity evidence that both modes deliver expected labeled signals to Grafana Cloud.
+Blocked: `collector_gateway` remains placeholder-only until Phase 5/6 create deployable GKE roots, secret delivery, and collector rollout; full closeout also depends on later validation tasks proving runtime parity.
 Action: Implement telemetry export and budget controls for both runtime modes:
 - Cloud Run baseline path: direct OTLP/HTTP export config to Grafana Cloud for traces/metrics/logs via shared library.
 - GKE alternative path: collector/alloy receivers/processors/exporters for OTLP traces, metrics scrape forwarding, and log shipping.
@@ -83,6 +95,9 @@ Done when: Logs/metrics/traces arrive in Grafana Cloud with expected labels in C
 Owner: Agent  
 Type: Observability config  
 Dependencies: P3-T03..P3-T05  
+Implemented so far: Source-controlled dashboard JSON, the dashboard manifest, the bootstrap import runbook, and the explicit Phase 5 Grafana provisioning handoff are all in place under `platform-infra/docs/grafana-dashboards` and `docs/operations/grafana-dashboard-bootstrap-runbook.md`.
+Missing: Evidence that those source dashboards were imported or refreshed into the `rc` Grafana stack and rendered correctly against live telemetry.
+Blocked: Live dashboard validation depends on real telemetry from P3-T03/P3-T05, and authoritative recreate-from-source provisioning is intentionally deferred to Phase 5.
 Action: Define dashboards for API golden signals, edge/runtime path status, and DB connectivity symptoms. Treat source-controlled Grafana dashboard JSON as the canonical Phase 3 artifact, and document the bootstrap provisioning inputs and import or refresh procedure needed to validate those dashboards in Grafana Cloud before `platform-infra` owns the final Terraform apply path in Phase 5. Backend-worker dashboards are deferred to Phase 9.  
 Output: Dashboard JSON definitions plus bootstrap provisioning contract docs, with an explicit handoff to later Phase 5 Terraform adoption.  
 Done when: Baseline dashboards are reviewable from source control and can be imported or refreshed in Grafana Cloud through the documented bootstrap path, and the later Phase 5 authoritative provisioning work is explicitly linked.
@@ -140,6 +155,9 @@ Done when: Phase 3 does not depend on enrichment integrations or evidence-link g
 Owner: Human  
 Type: Validation  
 Dependencies: P3-T01..P3-T07, P3-T10, P3-T11  
+Implemented so far: The prerequisite alert rules, dashboard assets, routing runbooks, and synthetic-trigger guidance exist, so the validation target is defined even though no end-to-end report has been captured yet.
+Missing: An executed `rc` test report covering synthetic load or failures, dashboard rendering, alert firing, webhook or Slack routing, and the remediation list from the observed outcomes.
+Blocked: The task still depends on deferred P3-T10 and P3-T11 for AI workflow output, so the acceptance text cannot be fully satisfied in Phase 3 as written; Grafana-side checks also wait on deployed runtime wiring.
 Action: Trigger synthetic load/errors and verify dashboard, alerts, webhook/Slack routing, and AI workflow output.  
 Output: Test report and remediation list.  
 Done when: All phase 3 exit criteria are objectively validated.
@@ -148,6 +166,9 @@ Done when: All phase 3 exit criteria are objectively validated.
 Owner: Human + Agent  
 Type: Validation + operations documentation  
 Dependencies: P3-T05, P3-T06, P3-T12  
+Implemented so far: The shared `OBS_TELEMETRY_PROFILE` contract is implemented in `platform-observability` and `backend-api`, and `docs/operations/telemetry-budget-profile-runbook.md` documents the intended direct and collector validation procedure.
+Missing: Live profile toggles with measured ingestion impact, rollback evidence, and a conformance note showing both runtime modes behave as documented.
+Blocked: This task depends on P3-T12, and the collector path remains undeployed until Phase 5/6 runtime work exists, so only the runbook and code contract are ready today.
 Action: Execute controlled toggles of `OBS_TELEMETRY_PROFILE` (`balanced` -> `cost` -> `balanced`, optional `debug` window) in both runtime modes, validate expected ingestion-volume changes for traces/logs/metrics, and document safe operating thresholds plus rollback steps for free-tier cap protection.  
 Output: `docs/operations/telemetry-budget-profile-runbook.md`, validation evidence, and conformance notes to `ops/observability-telemetry-budget-profile.md`.  
 Done when: Operators can adjust telemetry ingestion within one config change, observe impact in dashboards, and revert safely.
@@ -156,6 +177,9 @@ Done when: Operators can adjust telemetry ingestion within one config change, ob
 Owner: Human + Agent  
 Type: Validation  
 Dependencies: P3-T03, P3-T05, P5-T04  
+Implemented so far: The direct OTLP code path, startup diagnostics, resource-label contract, and focused tests are already in `platform-observability` and `backend-api`, and the Cloud Run secret-delivery model is documented in `platform-infra`.
+Missing: A deployed Cloud Run API revision using GSM-delivered Grafana credentials, plus live evidence for traces, metrics, logs, labels, telemetry-profile behavior, and correlation IDs in Grafana Cloud.
+Blocked: The task explicitly waits on P5-T04 and still also needs Phase 5/6 secret and deployment wiring before a real Cloud Run `rc` validation can happen.
 Action: Validate end-to-end Cloud Run API telemetry export without a cluster collector: traces, metrics, and logs are exported via OTLP/HTTP to Grafana Cloud; verify resource labels, profile behavior, and correlation ids.  
 Output: Cloud Run observability validation report with evidence links.  
 Done when: Cloud Run API observability is fully operational with direct OTLP export and no dependency on in-cluster scraping/collector components.
