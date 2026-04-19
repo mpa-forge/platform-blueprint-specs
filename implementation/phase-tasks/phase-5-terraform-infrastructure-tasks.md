@@ -93,10 +93,18 @@ Action: Add formatting, validation, static analysis, and policy checks to PR pip
 Output: Infrastructure quality gates.  
 Done when: Invalid infra changes are blocked in CI before apply.
 
+### P5-T10A: Implement `rc` Terraform apply workflow through CI
+Owner: Human + Agent  
+Type: CI/IaC deployment automation  
+Dependencies: P5-T02, P5-T09, P5-T10  
+Action: Implement a dedicated CI workflow that runs Terraform apply for the `rc` environment from the `platform-infra` repository using the shared remote state backend, workload identity/OIDC authentication, explicit root-path targeting, plan visibility, and concurrency protection. The workflow must define the trigger model for `rc` apply (for example merge to `main`, manual approval, or approved workflow dispatch), ensure `terraform plan` output is preserved or surfaced before apply, use the shared lock timeout convention, and prevent accidental prod execution from the same path. Document the operational contract, including who can trigger the workflow, what branch/event gates it, rollback expectations, and how it interacts with follow-up verification/runbook tasks.
+Output: CI-managed `rc` Terraform apply workflow and operator guidance.  
+Done when: A reviewed change merged to the approved branch or an approved dispatch can run `terraform apply` for `environments/rc` from CI against shared remote state, with authenticated least-privilege access, visible plan/apply logs, and protections that prevent `prod` apply from the `rc` workflow.
+
 ### P5-T11: Execute `rc` clean-state apply and document runbook
 Owner: Human + Agent  
 Type: Validation  
-Dependencies: P5-T01..P5-T10, P5-T09A, P5-T15  
+Dependencies: P5-T01..P5-T10, P5-T10A, P5-T09A, P5-T15  
 Action: Apply full stack from empty state, including authoritative Grafana dashboard provisioning where configured, and capture timings, rollback instructions, and known caveats.  
 Output: Provisioning evidence and runbook.  
 Done when: `rc` can be recreated from scratch reproducibly, including restoration of the baseline Grafana dashboards from source-controlled definitions.
@@ -162,5 +170,6 @@ Done when: `rc` can be suspended and restored end-to-end with documented evidenc
 - Cloud Run `/api/*` routing infrastructure definitions
 - environment variable files and outputs
 - IaC CI validation checks
+- `rc` Terraform apply CI workflow and trigger/approval contract
 - `rc` apply evidence and infra runbook
 - Grafana dashboard recreate-from-source evidence
