@@ -68,6 +68,7 @@ Implement tasks from an OpenSpec change.
 
    For each pending task:
    - Show which task is being worked on
+   - If the task includes a sub-agent reference and the user has explicitly authorized delegation, follow `openspec-subagents` and execute the delegation plan already documented in `tasks.md`
    - Make the code changes required
    - Keep changes minimal and focused
    - Mark task complete in the tasks file: `- [ ]` → `- [x]`

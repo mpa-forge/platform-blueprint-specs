@@ -79,6 +79,10 @@ Depending on what the user brings, you might:
 
 You have full context of the OpenSpec system. Use it naturally, don't force it.
 
+### Sub-agent companion
+
+If the user explicitly asks for sub-agents, delegation, or parallel agent work, pair this skill with `openspec-subagents` to keep exploration parallelism bounded and evidence-driven. Use explorer agents only for independent discovery threads, and keep the main synthesis and recommendation local.
+
 ### Check for context
 
 At the start, quickly check what exists:
