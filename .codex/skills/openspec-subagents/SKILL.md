@@ -90,6 +90,7 @@ When spawning a sub-agent:
 - state the owned files or modules
 - state the expected output
 - keep the prompt narrow
+- before using a pinned model from `.codex/agents/*.toml`, confirm it appears in `~/.codex/models_cache.json`; if it does not, use a supported fallback from the cache instead of stalling on spawn failure
 
 For worker-oriented agents, explicitly say they are not alone in the codebase and must not revert others' edits.
 
