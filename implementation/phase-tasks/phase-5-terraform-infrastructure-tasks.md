@@ -29,6 +29,8 @@ Done when: Team and CI run plan/apply against shared remote state, locks prevent
 Owner: Agent  
 Type: IaC coding  
 Dependencies: P5-T01  
+Status: Completed (`2026-04-21`)
+Evidence: `platform-infra` OpenSpec change `p5-t03-implement-vpc-network-module`; network module exports VPC, subnet, private service access range, and service networking connection contracts. Validated with `make terraform-validate`, default-disabled `make terraform-plan ENV=rc` and `make terraform-plan ENV=prod`, plus network-enabled Terraform plans for both environment roots showing 4 network resources to add.
 Action: Define network, subnets, private service access, and routing needed for Cloud Run-to-Cloud SQL connectivity baseline and optional GKE path.  
 Output: Network module with outputs for downstream modules.  
 Done when: Network resources apply cleanly and are consumable by runtime/DB modules.

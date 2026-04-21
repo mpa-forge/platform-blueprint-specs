@@ -1,0 +1,7 @@
+# Shared repo-managed agents copied into sibling repositories.
+openspec-analyst.toml
+openspec-architect.toml
+openspec-heavy-lift.toml
+openspec-implementer.toml
+openspec-refactorer.toml
+openspec-scout.toml

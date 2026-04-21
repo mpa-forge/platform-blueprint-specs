@@ -1,6 +1,7 @@
 # Shared repo-managed skills copied into sibling repositories.
 automated-ai-worker
 openspec-pr-prep
+openspec-subagents
 platform-env-contracts
 platform-code-documentation
 platform-validation-workflow
