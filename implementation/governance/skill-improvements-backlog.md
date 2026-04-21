@@ -164,6 +164,19 @@ A dedicated skill or helper script could define:
 
 This would make cross-repo mechanical updates less error-prone.
 
+#### 12. Add Windows `gcloud` authentication guidance for Terraform backends
+
+During `P5-T02`, Terraform could use `GOOGLE_OAUTH_ACCESS_TOKEN`, but the
+Makefile's bash shell found the Unix-style `gcloud` shim first. That shim failed
+because Python was not available in the same shell path, while `gcloud.cmd`
+worked correctly.
+
+A Windows tooling or validation skill improvement should document:
+
+- prefer `gcloud.cmd` from bash on Windows when the Cloud SDK Python shim fails
+- strip CRLF from `gcloud auth print-access-token` before exporting it
+- use ADC for the durable workflow and token fallback only for local convenience
+
 ## Suggested Priority
 
 ### High
@@ -173,6 +186,7 @@ This would make cross-repo mechanical updates less error-prone.
 - add cross-repo Go module validation guidance
 - add planning-repo validation fallback guidance
 - add PowerShell-safe command guidance
+- add Windows `gcloud` Terraform backend auth guidance
 
 ### Medium
 

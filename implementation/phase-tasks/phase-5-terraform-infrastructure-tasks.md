@@ -9,6 +9,8 @@ Provision reproducible cloud infrastructure for `rc` and `prod` with safe state 
 Owner: Agent  
 Type: IaC design  
 Dependencies: Phase 0 naming standards  
+Status: Completed (`2026-04-21`)  
+Evidence: `platform-infra` PR #25 (`Add Phase 5 Terraform skeleton and docs`), validated with `make terraform-validate`, `make terraform-plan ENV=rc`, and `make terraform-plan ENV=prod`.  
 Action: Create module structure (`network`, `cloudrun_api`, optional `gke`, `gar`, `cloudsql`, `secrets`, optional observability support), shared variables, and explicit per-environment project boundaries (`rc` project, `prod` project). Enforce one root per environment (for example `infra/envs/rc` and `infra/envs/prod`) with shared modules under `infra/modules`, and avoid workspace-based environment switching. This task also creates the deployable Terraform root/module baseline required to finish `P3-T02` Cloud Run observability secret delivery beyond the current documented placeholder contract.
 Output: Terraform project skeleton.  
 Done when: `terraform validate` runs for all modules/stacks and each environment can be planned from its own root directory.
@@ -17,6 +19,8 @@ Done when: `terraform validate` runs for all modules/stacks and each environment
 Owner: Human + Agent  
 Type: IaC + platform config  
 Dependencies: P5-T01  
+Status: Completed (`2026-04-21`)  
+Evidence: Dedicated state project `mpa-forge-bp-tfstate`, protected buckets `mpa-forge-bp-tfstate-rc` and `mpa-forge-bp-tfstate-prod`, `platform-infra` branch `codex/p5-t02-remote-state`, and `implementation/governance/terraform-remote-state-evidence.md`. Validated with `make terraform-validate`, `make terraform-plan ENV=rc`, and `make terraform-plan ENV=prod`.  
 Action: Configure Terraform `backend \"gcs\"` using a dedicated state project, separate buckets for `rc` and `prod`, prefix convention `<env>/<root-module>`, bucket safeguards (Object Versioning, Uniform bucket-level access, Public Access Prevention), and CI/apply lock timeout (`-lock-timeout=5m`).  
 Output: Secure remote state setup.  
 Done when: Team and CI run plan/apply against shared remote state, locks prevent concurrent state writes, and environment IAM separation is enforced.
