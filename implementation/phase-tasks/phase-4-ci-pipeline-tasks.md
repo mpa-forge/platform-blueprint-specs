@@ -9,6 +9,7 @@ Enforce quality, contract integrity, and reproducible artifacts from every chang
 Owner: Agent  
 Type: CI design  
 Dependencies: Phase 1 repos created  
+Affected repos: `templates/github-actions`, `org-dot-github`, `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`
 Status: Complete  
 Action: Establish centralized reusable workflow templates for Go, frontend, contracts, and infra repos, consumed by each repository pipeline.  
 Output: Shared workflow policy doc and starter YAMLs.  
@@ -18,6 +19,7 @@ Done when: Each repo has a consistent CI entrypoint and naming convention.
 Owner: Agent  
 Type: CI coding  
 Dependencies: P4-T01  
+Affected repos: `templates/github-actions`, `org-dot-github`, `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`
 Action: Add jobs for Go/TS linting and unit tests with caching and deterministic tooling versions; baseline tools:
 - Go: `golangci-lint`, `go test`, `go vet`
 - Frontend: `eslint`, `tsc --noEmit` (plus optional `prettier --check`)  
@@ -28,6 +30,7 @@ Done when: PRs fail on lint/test errors.
 Owner: Human + Agent  
 Type: Provider setup + CI integration  
 Dependencies: P4-T01, P4-T02  
+Affected repos: `org-dot-github`, `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`
 Status: Complete  
 Action: Create or confirm SonarQube Cloud organization bound to GitHub, lock Free tier assumptions, configure projects for active repos, and wire PR analysis/check reporting into CI.  
 Output: SonarQube Cloud org/project inventory + CI integration evidence.  
@@ -37,6 +40,7 @@ Done when: Sonar analysis runs on PRs for target repos and reports status checks
 Owner: Agent  
 Type: CI coding  
 Dependencies: Phase 2 contracts baseline  
+Affected repos: `platform-contracts`, `templates/github-actions`, `org-dot-github`
 Status: Complete  
 Action: Add `buf lint`, `buf breaking`, and generated-code drift checks.  
 Output: Contract integrity checks in CI.  
@@ -46,6 +50,7 @@ Done when: Breaking changes are blocked unless versioning policy is followed.
 Owner: Agent  
 Type: CI coding  
 Dependencies: P4-T02  
+Affected repos: `backend-api`, `templates/github-actions`, `org-dot-github`
 Status: Complete  
 Action: Build API images with immutable tags (commit SHA + semver tag support). Backend-worker image build is deferred to Phase 9.  
 Output: Reproducible container artifacts.  
@@ -55,6 +60,7 @@ Done when: CI publishes deterministic API image tags for every merge.
 Owner: Human + Agent  
 Type: Provider config + CI  
 Dependencies: Phase 5 GAR/IAM availability or temporary manual bootstrap  
+Affected repos: `org-dot-github`, `platform-infra`, `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`
 Action: Ensure CI principal can push to GAR with least privilege.  
 Output: Working auth path to GAR from GitHub Actions.  
 Done when: Merge pipeline pushes images without static keys.
@@ -63,6 +69,7 @@ Done when: Merge pipeline pushes images without static keys.
 Owner: Human + Agent  
 Type: Security configuration  
 Dependencies: P4-T05  
+Affected repos: `org-dot-github`, `platform-infra`, `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`
 Action: Create identity pool/provider, map GitHub claims, grant minimal IAM roles.  
 Output: Keyless CI-to-GCP authentication.  
 Done when: CI can authenticate to GCP via OIDC and no service account key files are used.
@@ -71,6 +78,7 @@ Done when: CI can authenticate to GCP via OIDC and no service account key files 
 Owner: Agent  
 Type: CI coding  
 Dependencies: P4-T02, P4-T04  
+Affected repos: `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`, `org-dot-github`
 Action: Integrate scanners (language dependencies + container images), and enforce baseline gate policy (block `Critical` in runtime deps/images; block `High` in runtime deps/images when fix is available; notify-only for `High` without fix, `Medium`/`Low`, and dev/test-only findings; support time-boxed waiver tickets). Baseline tooling:
 - `trivy` for dependency + image vulnerability scanning
 - `gitleaks` for secret scanning
@@ -83,6 +91,7 @@ Done when: CI enforces the defined gate policy and accepted exceptions are trace
 Owner: Agent  
 Type: CI coding  
 Dependencies: P4-T02  
+Affected repos: `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`, `org-dot-github`
 Action: Upload test results, logs, and relevant build artifacts with retention policy.  
 Output: Traceable CI outputs for debugging.  
 Done when: Failed jobs include downloadable diagnostics.
@@ -91,6 +100,7 @@ Done when: Failed jobs include downloadable diagnostics.
 Owner: Human  
 Type: Governance  
 Dependencies: P4-T02..P4-T08, P4-T02A  
+Affected repos: `org-dot-github`, `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`
 Action: Configure protected branch required statuses and review rules in GitHub.  
 Output: Enforcement settings active.  
 Done when: Merge is blocked unless required CI checks pass.
@@ -99,6 +109,7 @@ Done when: Merge is blocked unless required CI checks pass.
 Owner: Agent  
 Type: Optimization  
 Dependencies: P4-T02..P4-T08  
+Affected repos: `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`, `org-dot-github`
 Action: Add caching, parallel job splitting, and timeout budgets for fast feedback loops.  
 Output: CI runtime optimization report.  
 Done when: PR pipeline runtime meets SLO baseline (`p50 <= 10 min`, `p95 <= 15 min`) and required checks enforce a hard cap of `20 min`.
@@ -107,6 +118,7 @@ Done when: PR pipeline runtime meets SLO baseline (`p50 <= 10 min`, `p95 <= 15 m
 Owner: Human + Agent  
 Type: CI governance  
 Dependencies: P4-T09, Phase 1 AI worker bootstrap  
+Affected repos: `org-dot-github`, `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`
 Action: Configure required checks and review policy for AI-generated PRs (normal PRs, mandatory human reviewer, CODEOWNERS enforcement, required metadata labels such as `ai-generated` and `ai-run-id`, and explicit rework trigger controls for `changes requested` or `/ai rework` command usage) aligned to `../platform-ai-workers/docs/automation/ai-comment-trigger-cloud-run-jobs.md`.
 Output: Enforced governance policy for automation-created PRs.  
 Done when: AI-created PRs cannot merge without the same required review/check gates as human-authored PRs.
@@ -115,6 +127,7 @@ Done when: AI-created PRs cannot merge without the same required review/check ga
 Owner: Human + Agent  
 Type: Governance + documentation  
 Dependencies: P4-T02, P4-T07  
+Affected repos: `platform-blueprint-specs`, `platform-infra`, `backend-api`, `frontend-web`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `org-dot-github`
 Action: Document approved alternatives and swap criteria for core CI tools (for example `sonar` vs `semgrep`/`codeql`, `trivy` vs `grype`, `tfsec` vs `checkov`) and define migration trigger points (cost, false positives, runtime impact, enterprise compliance).  
 Output: `common/standards/ci-quality-security-tooling.md`.  
 Done when: Tool substitutions can be made with explicit rationale and no policy ambiguity.
@@ -123,6 +136,7 @@ Done when: Tool substitutions can be made with explicit rationale and no policy 
 Owner: Agent  
 Type: CI automation  
 Dependencies: P4-T06, P4-T11, Phase 1 AI worker bootstrap  
+Affected repos: `platform-ai-workers`, `org-dot-github`, `frontend-web`, `backend-api`, `backend-worker`, `platform-contracts`, `platform-infra`
 Action: Add GitHub Actions workflows that trigger on task-ready and review-feedback events (issue label `ai:ready`, PR review `changes_requested`, maintainer `/ai rework` comment command), authenticate to GCP via WIF, and execute the mapped Cloud Run Job on-demand as a wake-up signal for the target worker lane following `../platform-ai-workers/docs/automation/ai-comment-trigger-cloud-run-jobs.md`.  
 Output: Event-driven trigger workflows and runbook referencing `../platform-ai-workers/docs/automation/ai-comment-trigger-cloud-run-jobs.md`.  
 Done when: A review comment can trigger one deterministic rework run without waiting for the scheduler cadence.
@@ -131,6 +145,7 @@ Done when: A review comment can trigger one deterministic rework run without wai
 Owner: Agent  
 Type: CI release automation  
 Dependencies: P4-T01, P4-T03, Phase 2 contracts baseline  
+Affected repos: `platform-contracts`, `org-dot-github`, `frontend-web`
 Action: Add release workflow in `platform-contracts` that runs on contract release tags, verifies generation/lint/breaking gates, and publishes the generated TypeScript client package to GitHub Packages (`npm.pkg.github.com`) with scoped package naming and semver alignment to contract tags. Treat the first manual package publish (`@mpa-forge/platform-contracts-client@0.1.0`) as bootstrap evidence only; the automated workflow must become the canonical publish path for all subsequent versions and document how consumers move from the bootstrap package to normal tagged releases.  
 Output: Automated contracts package publish pipeline and release runbook.  
 Done when: Creating a release tag publishes a versioned TypeScript client package, the workflow supersedes the bootstrap manual publish path, and `frontend-web` can install the released version from GitHub Packages.

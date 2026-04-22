@@ -9,6 +9,7 @@ Define safe promotion and rollback mechanics so releases are predictable, audita
 Owner: Human  
 Type: Release governance  
 Dependencies: Phase 6 deploy baseline  
+Affected repos: `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-infra`, `org-dot-github`
 Action: Document promotion criteria from `rc` -> `prod` including required evidence, sign-offs, and on-demand production deployment timing.  
 Output: Release promotion policy document.  
 Done when: Release policy is approved and referenced by CI/CD workflows.
@@ -17,6 +18,7 @@ Done when: Release policy is approved and referenced by CI/CD workflows.
 Owner: Agent  
 Type: CI/CD coding  
 Dependencies: P7-T01  
+Affected repos: `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-infra`, `org-dot-github`
 Action: Add GitHub Actions workflows/jobs for staged promotion and environment-specific deployment parameters.  
 Output: Automated multi-environment deployment pipeline.  
 Done when: Tagged release can be promoted through environments with clear status tracking.
@@ -25,6 +27,7 @@ Done when: Tagged release can be promoted through environments with clear status
 Owner: Human + Agent  
 Type: Governance + config  
 Dependencies: P7-T02  
+Affected repos: `org-dot-github`, `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-infra`
 Action: Set GitHub environment protection rules and required approvers for prod deployment jobs.  
 Output: Controlled production gate configuration.  
 Done when: Production deploy cannot proceed without explicit approval.
@@ -33,6 +36,7 @@ Done when: Production deploy cannot proceed without explicit approval.
 Owner: Agent  
 Type: CI/CD coding  
 Dependencies: Phase 2 DB migration tooling, P7-T02  
+Affected repos: `backend-api`, `platform-infra`
 Action: Define migration step ordering, failure handling, and idempotency strategy in deployment pipeline.  
 Output: Automated migration stage in release flow.  
 Done when: Deploy pipeline applies migrations safely before app rollout.
@@ -41,6 +45,7 @@ Done when: Deploy pipeline applies migrations safely before app rollout.
 Owner: Agent  
 Type: QA automation  
 Dependencies: P7-T02  
+Affected repos: `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `org-dot-github`
 Action: Run mandatory baseline smoke tests after each deployment and gate promotion on results. Required blockers are:
 - API health and readiness (`/healthz`, `/readyz`).
 - Authenticated frontend -> protected API happy-path check.
@@ -53,6 +58,7 @@ Done when: Failed smoke tests block subsequent promotion stages.
 Owner: Agent  
 Type: CI/CD coding  
 Dependencies: P7-T02, P7-T04  
+Affected repos: `frontend-web`, `backend-api`, `backend-worker`, `platform-infra`, `org-dot-github`
 Action: Add rollback jobs for selected runtime path (Cloud Run revision rollback baseline; Helm rollback for GKE path) and define DB rollback policy as forward-fix only.  
 Output: Rollback pipeline actions.  
 Done when: Team can execute rollback through repeatable documented commands/workflows.
@@ -61,6 +67,7 @@ Done when: Team can execute rollback through repeatable documented commands/work
 Owner: Agent  
 Type: Documentation  
 Dependencies: P7-T01..P7-T06  
+Affected repos: `platform-blueprint-specs`, `frontend-web`, `backend-api`, `backend-worker`
 Action: Document step-by-step release and rollback operations with failure branch paths.  
 Output: `docs/runbooks/release.md` and `docs/runbooks/rollback.md`.  
 Done when: On-call can execute procedures without tribal knowledge.
@@ -69,6 +76,7 @@ Done when: On-call can execute procedures without tribal knowledge.
 Owner: Human  
 Type: Validation  
 Dependencies: P7-T01..P7-T07  
+Affected repos: `frontend-web`, `backend-api`, `backend-worker`, `platform-infra`, `org-dot-github`
 Action: Execute one full simulated release and induced failure rollback in `rc`.  
 Output: Drill report and remediation tasks.  
 Done when: Release and rollback criteria are validated and signed off.

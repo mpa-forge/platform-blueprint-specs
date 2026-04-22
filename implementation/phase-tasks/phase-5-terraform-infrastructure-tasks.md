@@ -9,6 +9,7 @@ Provision reproducible cloud infrastructure for `rc` and `prod` with safe state 
 Owner: Agent  
 Type: IaC design  
 Dependencies: Phase 0 naming standards  
+Affected repos: `platform-infra`, `backend-api`, `frontend-web`, `platform-ai-workers`
 Status: Completed (`2026-04-21`)  
 Evidence: `platform-infra` PR #25 (`Add Phase 5 Terraform skeleton and docs`), validated with `make terraform-validate`, `make terraform-plan ENV=rc`, and `make terraform-plan ENV=prod`.  
 Action: Create module structure (`network`, `cloudrun_api`, optional `gke`, `gar`, `cloudsql`, `secrets`, optional observability support), shared variables, and explicit per-environment project boundaries (`rc` project, `prod` project). Enforce one root per environment (for example `infra/envs/rc` and `infra/envs/prod`) with shared modules under `infra/modules`, and avoid workspace-based environment switching. This task also creates the deployable Terraform root/module baseline required to finish `P3-T02` Cloud Run observability secret delivery beyond the current documented placeholder contract.
@@ -19,6 +20,7 @@ Done when: `terraform validate` runs for all modules/stacks and each environment
 Owner: Human + Agent  
 Type: IaC + platform config  
 Dependencies: P5-T01  
+Affected repos: `platform-infra`
 Status: Completed (`2026-04-21`)  
 Evidence: Dedicated state project `mpa-forge-bp-tfstate`, protected buckets `mpa-forge-bp-tfstate-rc` and `mpa-forge-bp-tfstate-prod`, `platform-infra` branch `codex/p5-t02-remote-state`, and `implementation/governance/terraform-remote-state-evidence.md`. Validated with `make terraform-validate`, `make terraform-plan ENV=rc`, and `make terraform-plan ENV=prod`.  
 Action: Configure Terraform `backend \"gcs\"` using a dedicated state project, separate buckets for `rc` and `prod`, prefix convention `<env>/<root-module>`, bucket safeguards (Object Versioning, Uniform bucket-level access, Public Access Prevention), and CI/apply lock timeout (`-lock-timeout=5m`).  
@@ -29,6 +31,7 @@ Done when: Team and CI run plan/apply against shared remote state, locks prevent
 Owner: Agent  
 Type: IaC coding  
 Dependencies: P5-T01  
+Affected repos: `platform-infra`, `backend-api`
 Status: Completed (`2026-04-21`)
 Evidence: `platform-infra` OpenSpec change `p5-t03-implement-vpc-network-module`; network module exports VPC, subnet, private service access range, and service networking connection contracts. Validated with `make terraform-validate`, default-disabled `make terraform-plan ENV=rc` and `make terraform-plan ENV=prod`, plus network-enabled Terraform plans for both environment roots showing 4 network resources to add.
 Action: Define network, subnets, private service access, and routing needed for Cloud Run-to-Cloud SQL connectivity baseline and optional GKE path.  
@@ -39,6 +42,7 @@ Done when: Network resources apply cleanly and are consumable by runtime/DB modu
 Owner: Agent  
 Type: IaC coding  
 Dependencies: P5-T03  
+Affected repos: `platform-infra`, `backend-api`
 Action: Provision Cloud Run service module for API with revision settings, min/max instances, concurrency, service account/IAM, secret/env wiring, and Cloud SQL connectivity settings for `rc`/`prod`.  
 Output: Cloud Run API module and environment bindings.  
 Done when: RC API service can be planned/applied and deployed with healthy revisions in Cloud Run.
@@ -47,6 +51,7 @@ Done when: RC API service can be planned/applied and deployed with healthy revis
 Owner: Agent  
 Type: IaC coding  
 Dependencies: P5-T01  
+Affected repos: `platform-infra`, `org-dot-github`, `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`
 Action: Provision GAR repos and roles for CI push and runtime pull principals.  
 Output: Artifact registry resources and IAM policies.  
 Done when: CI can push and Cloud Run runtime (and optional GKE runtime) can pull images.
@@ -55,22 +60,25 @@ Done when: CI can push and Cloud Run runtime (and optional GKE runtime) can pull
 Owner: Agent  
 Type: IaC coding  
 Dependencies: P5-T03  
-Action: Provision instance, backups, maintenance window, private networking, and DB/IAM auth baseline.  
-Output: Managed Postgres infrastructure.  
-Done when: API connectivity path from selected runtime (Cloud Run baseline, optional GKE) to DB is validated.
+Affected repos: `platform-infra`, `backend-api`
+Action: Provision instance, backups, maintenance window, private networking, application database/user baseline, and DB/IAM auth baseline. Define the API database credential contract so Terraform creates or references only a password secret placeholder, never a committed full connection string with embedded credentials. The backend runtime must build its database connection string from non-secret inputs (`DB_HOST` or Cloud SQL socket path, `DB_NAME`, `DB_USER`) plus a secret-backed `DB_PASSWORD`.  
+Output: Managed Postgres infrastructure and API database credential contract.  
+Done when: API connectivity path from selected runtime (Cloud Run baseline, optional GKE) to DB is validated using a password sourced from Secret Manager rather than a plaintext or placeholder password in Terraform environment values.
 
 ### P5-T07: Implement GSM + IAM + ESO integration resources
 Owner: Agent  
 Type: IaC coding  
 Dependencies: P5-T01  
-Action: Provision secret placeholders and access bindings for runtimes; include Cloud Run direct secret access baseline and ESO/workload identity permissions for optional GKE/controller/workloads.  
-Output: Secret management infrastructure baseline.  
-Done when: Cloud Run API can read expected secrets directly and GKE path can retrieve expected secrets via ESO sync when enabled.
+Affected repos: `platform-infra`, `backend-api`, `backend-worker`, `platform-ai-workers`
+Action: Provision secret placeholders and access bindings for runtimes; include Cloud Run direct secret access baseline and ESO/workload identity permissions for optional GKE/controller/workloads. For the backend API database credential, store only the database password in Secret Manager (for example an environment-scoped `api-db-password` secret) and grant the selected API runtime access to that password secret; do not store the full `DATABASE_URL` as the canonical secret unless a later ADR explicitly changes this decision.  
+Output: Secret management infrastructure baseline, including password-only API database secret delivery.  
+Done when: Cloud Run API can read expected secrets directly, including `DB_PASSWORD`, the backend can construct its DB connection string from secret and non-secret parts, and GKE path can retrieve expected secrets via ESO sync when enabled.
 
 ### P5-T08: Implement Cloud Run Jobs + Scheduler module for AI workers
 Owner: Agent  
 Type: IaC coding  
 Dependencies: P5-T01, P5-T05, P5-T07  
+Affected repos: `platform-infra`, `platform-ai-workers`, `org-dot-github`
 Action: Provision Cloud Run Job definitions (and optional low-frequency Scheduler backstop), service accounts/IAM, and Secret Manager bindings for `platform-ai-workers` execution. Support multiple worker-job deployments, each targeting a repository with environment-specific configuration (`WORKER_RUNTIME_MODE=cloud`, `WORKER_ID`, `TARGET_REPO`, `MAX_PENDING_REVIEW`, `POLL_INTERVAL`, credential refs), and grant least-privilege on-demand execution permissions for GitHub Actions event-trigger wake-up workflows as defined in `../platform-ai-workers/docs/automation/ai-comment-trigger-cloud-run-jobs.md`. Ensure Cloud Run Job command/args invoke the same runtime entrypoint used for local execution, per `../platform-ai-workers/docs/automation/ai-worker-local-cloud-parity.md`.  
 Output: AI worker runtime infrastructure module.  
 Done when: At least one worker-job deployment can be created per environment and triggered on-demand with least privilege (with optional scheduler backstop enabled when configured).
@@ -79,6 +87,7 @@ Done when: At least one worker-job deployment can be created per environment and
 Owner: Agent  
 Type: IaC coding  
 Dependencies: P5-T03..P5-T08  
+Affected repos: `platform-infra`
 Action: Create per-environment root stack composition and parameter files with minimal drift, while enforcing prod full separation and RC internal isolation boundaries; keep environment selection explicit by root path, not Terraform workspace; include explicit runtime gates so baseline enables Cloud Run API and keeps GKE modules disabled until explicit enable decision, aligned with `ops/ephemeral-gke-cluster-lifecycle-requirements.md`.  
 Output: Environment-specific IaC layers.  
 Done when: `terraform plan` works for all environments from their dedicated root paths.
@@ -87,6 +96,7 @@ Done when: `terraform plan` works for all environments from their dedicated root
 Owner: Agent  
 Type: IaC coding  
 Dependencies: P3-T01, P3-T06, P5-T01, P5-T09  
+Affected repos: `platform-infra`
 Action: Add `platform-infra` observability support for authoritative Grafana dashboard provisioning using the scoped Grafana API token and stack inputs established earlier in Phase 3. Define provider and module wiring for Grafana folders and baseline dashboards, and ensure the env roots consume the source-controlled dashboard definitions prepared by `P3-T06` from `../platform-infra/docs/grafana-dashboards/manifest.json`, `../platform-infra/docs/grafana-dashboards/api-golden-signals.json`, `../platform-infra/docs/grafana-dashboards/runtime-path-status.json`, and `../platform-infra/docs/grafana-dashboards/db-connectivity-symptoms.json` without manual UI re-authoring.  
 Output: Grafana dashboard provisioning module and environment bindings.  
 Done when: `terraform plan` from each env root shows Grafana folder and dashboard resources that recreate the baseline dashboards from the prepared source-controlled definitions.
@@ -95,6 +105,7 @@ Done when: `terraform plan` from each env root shows Grafana folder and dashboar
 Owner: Agent  
 Type: CI/IaC  
 Dependencies: P5-T01, P5-T09A  
+Affected repos: `platform-infra`, `org-dot-github`
 Action: Add formatting, validation, static analysis, and policy checks to PR pipelines, including checks that cover Grafana dashboard provisioning assets and their Terraform wiring once the dashboard module exists.  
 Output: Infrastructure quality gates.  
 Done when: Invalid infra changes are blocked in CI before apply.
@@ -103,6 +114,7 @@ Done when: Invalid infra changes are blocked in CI before apply.
 Owner: Human + Agent  
 Type: CI/IaC deployment automation  
 Dependencies: P5-T02, P5-T09, P5-T10  
+Affected repos: `platform-infra`, `org-dot-github`
 Action: Implement a dedicated CI workflow that runs Terraform apply for the `rc` environment from the `platform-infra` repository using the shared remote state backend, workload identity/OIDC authentication, explicit root-path targeting, plan visibility, and concurrency protection. The workflow must define the trigger model for `rc` apply (for example merge to `main`, manual approval, or approved workflow dispatch), ensure `terraform plan` output is preserved or surfaced before apply, use the shared lock timeout convention, and prevent accidental prod execution from the same path. Document the operational contract, including who can trigger the workflow, what branch/event gates it, rollback expectations, and how it interacts with follow-up verification/runbook tasks.
 Output: CI-managed `rc` Terraform apply workflow and operator guidance.  
 Done when: A reviewed change merged to the approved branch or an approved dispatch can run `terraform apply` for `environments/rc` from CI against shared remote state, with authenticated least-privilege access, visible plan/apply logs, and protections that prevent `prod` apply from the `rc` workflow.
@@ -111,6 +123,7 @@ Done when: A reviewed change merged to the approved branch or an approved dispat
 Owner: Human + Agent  
 Type: Validation  
 Dependencies: P5-T01..P5-T10, P5-T10A, P5-T09A, P5-T15  
+Affected repos: `platform-infra`
 Action: Apply full stack from empty state, including authoritative Grafana dashboard provisioning where configured, and capture timings, rollback instructions, and known caveats.  
 Output: Provisioning evidence and runbook.  
 Done when: `rc` can be recreated from scratch reproducibly, including restoration of the baseline Grafana dashboards from source-controlled definitions.
@@ -119,6 +132,7 @@ Done when: `rc` can be recreated from scratch reproducibly, including restoratio
 Owner: Human + Agent  
 Type: IaC operations design  
 Dependencies: P5-T09, P5-T10, P5-T13  
+Affected repos: `platform-infra`
 Action: Define and implement guarded Terraform workflow paths for prod cluster `create`, `destroy`, and `recover` operations (explicit enable flags, approval gates, plan visibility, and state protections), and document procedures per `ops/ephemeral-gke-cluster-lifecycle-requirements.md`.  
 Output: `docs/operations/create-prod-cluster.md`, `docs/operations/destroy-prod-cluster.md`, and `docs/operations/recover-prod-cluster.md`.  
 Done when: Operators can run controlled create/destroy/recover flows for prod cluster without manual infrastructure drift.
@@ -127,6 +141,7 @@ Done when: Operators can run controlled create/destroy/recover flows for prod cl
 Owner: Agent  
 Type: IaC coding  
 Dependencies: P5-T03  
+Affected repos: `platform-infra`
 Action: Provision Autopilot cluster module with workload identity config and baseline node/network policies, but keep module disabled by default in env stacks; include explicit enable flags and safe defaults for later activation.  
 Output: Optional GKE cluster module and gated environment bindings.  
 Done when: GKE cluster can be enabled/disabled by configuration without restructuring Terraform roots.
@@ -135,6 +150,7 @@ Done when: GKE cluster can be enabled/disabled by configuration without restruct
 Owner: Human + Agent  
 Type: IaC operations design  
 Dependencies: P5-T04, P5-T09, P5-T13  
+Affected repos: `platform-infra`, `backend-api`
 Action: Define and document a reversible runtime switch procedure (Cloud Run baseline <-> GKE optional) covering Terraform toggles, routing changes, secret wiring differences, observability mode switch, and validation checkpoints.  
 Output: `docs/operations/api-runtime-switch-runbook.md`.  
 Done when: Team can enable/disable either API runtime path with documented steps and no manual infrastructure drift.
@@ -143,6 +159,7 @@ Done when: Team can enable/disable either API runtime path with documented steps
 Owner: Agent  
 Type: IaC coding  
 Dependencies: P5-T04, P5-T05, P5-T09  
+Affected repos: `platform-infra`, `frontend-web`, `backend-api`
 Action: Implement Terraform resources required to route single-domain `/api/*` traffic to Cloud Run API baseline path (for example serverless NEG/backend wiring, URL map/path matcher integration, TLS/certificate references as applicable). Keep configuration compatible with later runtime switch to GKE backend path.  
 Output: Runtime-routing infrastructure definitions for Cloud Run API path.  
 Done when: RC environment can route `/api/*` requests to Cloud Run API through IaC-managed configuration.
@@ -151,6 +168,7 @@ Done when: RC environment can route `/api/*` requests to Cloud Run API through I
 Owner: Human + Agent  
 Type: IaC operations automation  
 Dependencies: P5-T04, P5-T05, P5-T06, P5-T08, P5-T09  
+Affected repos: `platform-infra`
 Action: Implement a script/tooling package (in `platform-infra`) that can suspend an environment to near-zero run cost and later restore it with data integrity. The tool must support deterministic `suspend <env>` and `resume <env>` commands, and follow the contract in `ops/cost-suspend-resume-automation.md`. Suspend flow must include Cloud SQL backup/export, Cloud Storage backup/sync, artifact image metadata snapshot (and optional image copy/export policy), scale-to-zero where possible (Cloud Run), and deletion/disablement of always-costing resources where required (for example Cloud SQL instance, schedulers, optional GKE resources when enabled). Resume flow must recreate resources via Terraform and restore required datasets/artifacts before reopening traffic.  
 Output: Suspend/resume tooling, state snapshot manifest format, and operations runbook.  
 Done when: `rc` can be suspended and restored end-to-end with documented evidence, successful smoke validation after resume, and measured idle cost reduction consistent with near-zero objective (except retained backup/archive storage).
@@ -165,6 +183,7 @@ Done when: `rc` can be suspended and restored end-to-end with documented evidenc
 - `../platform-infra/docs/grafana-dashboards/runtime-path-status.json`
 - `../platform-infra/docs/grafana-dashboards/db-connectivity-symptoms.json`
 - Cloud Run API runtime module validation evidence
+- password-only API database secret contract and runtime env wiring
 - Cloud Run Job/Scheduler module for AI workers
 - `../platform-ai-workers/docs/automation/ai-comment-trigger-cloud-run-jobs.md` IAM mapping reference
 - `../platform-ai-workers/docs/automation/ai-worker-local-cloud-parity.md` runtime parity mapping reference

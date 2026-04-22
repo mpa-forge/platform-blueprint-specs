@@ -9,6 +9,7 @@ Deploy the API runtime for RC with Cloud Run baseline and keep GKE+Helm deployme
 Owner: Agent  
 Type: Deployment design  
 Dependencies: Phase 5 infra baseline  
+Affected repos: `backend-api`, `frontend-web`, `backend-worker`, `platform-ai-workers`, `platform-infra`
 Action: Document deployment naming for both runtime paths:
 - Cloud Run baseline: service names, revision tags, env/service-account conventions.
 - GKE path: namespace strategy and Helm release naming scheme, including strict RC isolation boundaries (separate namespaces, DB boundaries, secret scope, and domains).  
@@ -19,6 +20,7 @@ Done when: All manifests/charts reference consistent namespace/release names.
 Owner: Agent  
 Type: Deployment/config  
 Dependencies: P6-T01, P5-T04, Phase 2 API  
+Affected repos: `backend-api`, `platform-infra`
 Action: Configure and deploy API to Cloud Run with runtime settings (timeout, concurrency, min/max instances, CPU/memory), revision labeling, health endpoints, and zero-traffic validation before promotion.  
 Output: Cloud Run API deployment configuration and first deployed revision in `rc`.  
 Done when: API is reachable through Cloud Run URL and reports healthy readiness checks.
@@ -27,6 +29,7 @@ Done when: API is reachable through Cloud Run URL and reports healthy readiness 
 Owner: Agent  
 Type: Deployment/config  
 Dependencies: P6-T12, P5-T06, P5-T07  
+Affected repos: `backend-api`, `platform-infra`
 Action: Wire API runtime secrets from GSM and configure Cloud SQL connectivity for Cloud Run runtime (connector/connection settings, IAM/service account permissions, environment config).  
 Output: Secure runtime connectivity configuration.  
 Done when: Deployed Cloud Run API can perform authenticated DB reads with no plaintext secrets in deployment config.
@@ -35,6 +38,7 @@ Done when: Deployed Cloud Run API can perform authenticated DB reads with no pla
 Owner: Human + Agent  
 Type: Provider config + deployment  
 Dependencies: P6-T12, P6-T06, P5-T15  
+Affected repos: `frontend-web`, `backend-api`, `platform-infra`
 Action: Configure edge routing so frontend remains CDN-backed while `/api/*` routes to Cloud Run backend under the same domain, with managed TLS and required headers.  
 Output: Unified domain routing config (CDN static + Cloud Run API path).  
 Done when: Frontend uses same-domain API path successfully in `rc`.
@@ -43,6 +47,7 @@ Done when: Frontend uses same-domain API path successfully in `rc`.
 Owner: Agent  
 Type: CI/CD coding  
 Dependencies: P6-T12, Phase 4 CI  
+Affected repos: `backend-api`, `org-dot-github`
 Action: Add GitHub Actions jobs to deploy API image revisions to Cloud Run on merge/tag, including rollout status checks and failure diagnostics.  
 Output: Automated Cloud Run API deployment pipeline.  
 Done when: Merge to `main` updates running Cloud Run API revision in `rc`.
@@ -51,6 +56,7 @@ Done when: Merge to `main` updates running Cloud Run API revision in `rc`.
 Owner: Human + Agent  
 Type: Validation  
 Dependencies: P6-T12, P6-T15  
+Affected repos: `backend-api`
 Action: Validate scale-to-zero behavior, cold-start recovery, readiness, and basic latency envelope under low/high traffic profiles; document operational settings and tradeoffs.  
 Output: Cloud Run scaling validation report.  
 Done when: Team has documented baseline scaling/cold-start expectations and tuning defaults.
@@ -59,6 +65,7 @@ Done when: Team has documented baseline scaling/cold-start expectations and tuni
 Owner: Agent  
 Type: Coding  
 Dependencies: P6-T01, Phase 2 API  
+Affected repos: `backend-api`, `platform-infra`
 Action: GKE alternative path: create chart templates for deployment, service, ingress, resources, probes, config, and secrets references.  
 Output: API chart with env-specific values files.  
 Done when: Chart deploys API successfully in `rc`.
@@ -67,6 +74,7 @@ Done when: Chart deploys API successfully in `rc`.
 Owner: Agent  
 Type: Coding  
 Dependencies: P6-T01, Phase 9 worker  
+Affected repos: `backend-worker`, `platform-infra`
 Status: Moved to Phase 9 (`P9-T04`)  
 Action: GKE alternative path: create worker deployment chart templates with resources, probes, and config/secret injection.  
 Output: Worker chart with env-specific values files.  
@@ -76,6 +84,7 @@ Done when: Worker deploys and reports healthy status in `rc`.
 Owner: Agent  
 Type: Deployment/config  
 Dependencies: Phase 5 GSM/IAM setup  
+Affected repos: `platform-infra`, `backend-api`, `backend-worker`
 Action: GKE alternative path: install ESO chart, define `SecretStore`/`ExternalSecret` objects for API and related tokens. Backend-worker secret wiring is deferred to Phase 9.  
 Output: Secrets sync runtime path operational.  
 Done when: Kubernetes secrets are materialized from GSM and consumed by workloads.
@@ -84,6 +93,7 @@ Done when: Kubernetes secrets are materialized from GSM and consumed by workload
 Owner: Agent  
 Type: Deployment/config  
 Dependencies: P6-T02  
+Affected repos: `platform-infra`, `backend-api`
 Action: GKE alternative path: define ingress resources using a single domain with path-based routing, managed TLS certificates, and baseline security headers; ensure `/api/*` routing is explicitly mapped to backend ingress/service targets.  
 Output: API ingress routing configuration.  
 Done when: API reachable securely through expected endpoint.
@@ -92,6 +102,7 @@ Done when: API reachable securely through expected endpoint.
 Owner: Human + Agent  
 Type: Provider config + CI  
 Dependencies: Phase 4 CI + Phase 5 infra  
+Affected repos: `frontend-web`, `platform-infra`, `org-dot-github`
 Action: Set up authenticated frontend delivery on Cloud CDN + External HTTPS Load Balancer + Cloud Storage backend bucket, including cache headers, invalidation mechanism, and path rules compatible with `/api/*` backend routing under the same domain.  
 Output: CDN-backed frontend hosting path.  
 Done when: Authenticated frontend static assets are served via Cloud CDN in `rc` and coexist with working `/api/*` routing.
@@ -100,6 +111,7 @@ Done when: Authenticated frontend static assets are served via Cloud CDN in `rc`
 Owner: Agent  
 Type: CI/CD coding  
 Dependencies: P6-T02, P6-T03, Phase 4 CI  
+Affected repos: `backend-api`, `backend-worker`, `org-dot-github`
 Action: GKE alternative path: add GitHub Actions jobs that deploy API charts on merge with environment protections. Backend-worker deployment jobs are deferred to Phase 9.  
 Output: Automated Helm-based deployment pipeline.  
 Done when: Merge to `main` updates running workloads in `rc`.
@@ -108,6 +120,7 @@ Done when: Merge to `main` updates running workloads in `rc`.
 Owner: Agent  
 Type: CI/CD coding  
 Dependencies: P6-T06, Phase 4 CI  
+Affected repos: `frontend-web`, `org-dot-github`
 Action: Build frontend artifacts, publish to origin path, invalidate cache for changed files.  
 Output: Automated frontend delivery pipeline.  
 Done when: Frontend changes are visible after pipeline run without manual publish steps.
@@ -116,6 +129,7 @@ Done when: Frontend changes are visible after pipeline run without manual publis
 Owner: Agent  
 Type: Deployment config  
 Dependencies: P6-T02, P6-T03  
+Affected repos: `backend-api`, `backend-worker`, `platform-infra`
 Action: GKE alternative path: add rolling strategy controls, min ready seconds, pod disruption constraints, and basic HPA placeholders for the API path. Backend-worker rollout controls are deferred to Phase 9.  
 Output: Safer baseline rollout behavior.  
 Done when: Deployment update does not cause service downtime in smoke tests.
@@ -124,6 +138,7 @@ Done when: Deployment update does not cause service downtime in smoke tests.
 Owner: Human  
 Type: Validation  
 Dependencies: P6-T01, P6-T06, P6-T12..P6-T16  
+Affected repos: `frontend-web`, `backend-api`, `platform-infra`
 Action: Validate full cloud path (Cloud Run baseline): frontend CDN -> Clerk -> `/api/*` -> Cloud Run API -> DB read path.  
 Output: Deployment validation report with defects/issues.  
 Done when: Phase 6 exit criteria are met and documented.
@@ -132,6 +147,7 @@ Done when: Phase 6 exit criteria are met and documented.
 Owner: Human + Agent  
 Type: Validation  
 Dependencies: P6-T01, P6-T02..P6-T09, P5-T12  
+Affected repos: `platform-infra`, `backend-api`, `backend-worker`
 Action: GKE alternative path: execute a controlled fresh-cluster deployment validation (bootstrap add-ons + Helm releases + smoke checks) using the prod/reusable lifecycle model defined in `ops/ephemeral-gke-cluster-lifecycle-requirements.md`; record steps needed to restore a cluster from zero to healthy workloads.  
 Output: Cluster recreation validation report and deployment recovery checklist.  
 Done when: Team can recover workloads on a newly created cluster with documented, repeatable steps and no manual drift corrections.

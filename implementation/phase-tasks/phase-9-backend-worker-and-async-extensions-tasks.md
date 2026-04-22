@@ -11,6 +11,7 @@ path is already working end to end.
 Owner: Agent  
 Type: Coding  
 Dependencies: Phase 2 frontend/API baseline proven end to end  
+Affected repos: `backend-worker`, `platform-ai-workers`
 Action: Add worker startup loop, graceful shutdown, periodic no-op job, health endpoint, structured logs, and startup validation of required environment variables defined in `P1-T05`, with fail-fast errors for missing or malformed config. Follow `common/standards/code-documentation.md` for package docs, exported symbol comments, and non-obvious runtime behavior.  
 Output: Runnable worker service baseline.  
 Done when: Worker executes periodic task and exposes health with valid config, and exits early with clear messages when required env is missing or invalid.
@@ -19,6 +20,7 @@ Done when: Worker executes periodic task and exposes health with valid config, a
 Owner: Agent  
 Type: Coding  
 Dependencies: P9-T01, P2-T13  
+Affected repos: `backend-worker`, `platform-observability`
 Action: Wire the shared observability library into `backend-worker`, including runtime mode config, common resource labels, and `OBS_TELEMETRY_PROFILE` support already proven by the API path.  
 Output: Worker observability integration baseline.  
 Done when: Worker startup uses the shared observability package and can run in baseline mode with no bespoke telemetry contract.
@@ -27,6 +29,7 @@ Done when: Worker startup uses the shared observability package and can run in b
 Owner: Agent  
 Type: Coding  
 Dependencies: P9-T02, Phase 3 observability baseline  
+Affected repos: `backend-worker`, `platform-observability`, `platform-infra`
 Action: Emit traces/metrics/logs for worker loop activity, retries, and failures; add worker dashboard requirements and runtime-mode compatibility.  
 Output: Worker telemetry instrumentation and dashboard notes.  
 Done when: Worker loop activity is visible in traces and dashboard metrics.
@@ -35,6 +38,7 @@ Done when: Worker loop activity is visible in traces and dashboard metrics.
 Owner: Agent  
 Type: CI/CD + deployment coding  
 Dependencies: P9-T01, Phase 4 CI baseline, Phase 6 deployment baseline  
+Affected repos: `backend-worker`, `platform-infra`, `org-dot-github`
 Action: Add worker image build/tagging in CI, worker deployment artifact(s) for the selected runtime path, worker secret/config wiring, and worker-specific rollout controls.  
 Output: Worker CI image build path and deployment artifact baseline.  
 Done when: A worker image can be built reproducibly and deployed through the selected runtime path with no manual drift fixes.
@@ -43,6 +47,7 @@ Done when: A worker image can be built reproducibly and deployed through the sel
 Owner: Human + Agent  
 Type: Validation + hardening  
 Dependencies: P9-T03, P9-T04, Phase 7 release baseline, Phase 8 hardening baseline  
+Affected repos: `backend-worker`, `platform-infra`, `org-dot-github`
 Action: Define worker-specific smoke checks, worker heartbeat/no-op validation, scaling expectations, and worker SLO/SLI additions; run one worker-focused load/reliability pass and document the outcome.  
 Output: Worker runbook additions, smoke checks, and reliability evidence.  
 Done when: Worker-specific operational expectations are documented and validated against the deployed runtime.
