@@ -65,6 +65,8 @@ Owner: Agent
 Type: IaC coding  
 Dependencies: P5-T03  
 Affected repos: `platform-infra`, `backend-api`
+Status: Completed (`2026-04-23`)
+Evidence: `platform-infra` PR #30 (`Add Cloud SQL Postgres baseline`) and `backend-api` PR #43 (`Add Cloud SQL split database config`). OpenSpec change archived as `2026-04-23-p5-t06-cloudsql-postgres-module`. Validated with `make terraform-validate`, `openspec validate --specs --strict`, `openspec validate --changes --strict`, `make lint`, `make test`, `make format-check`, and passing backend CI checks including Sonar.
 Action: Provision instance, backups, maintenance window, private networking, application database/user baseline, and DB/IAM auth baseline. Define the API database credential contract so Terraform creates or references only a password secret placeholder, never a committed full connection string with embedded credentials. The backend runtime must build its database connection string from non-secret inputs (`DB_HOST` or Cloud SQL socket path, `DB_NAME`, `DB_USER`) plus a secret-backed `DB_PASSWORD`.  
 Output: Managed Postgres infrastructure and API database credential contract.  
 Done when: API connectivity path from selected runtime (Cloud Run baseline, optional GKE) to DB is validated using a password sourced from Secret Manager rather than a plaintext or placeholder password in Terraform environment values.
@@ -126,7 +128,7 @@ Done when: A reviewed change merged to the approved branch or an approved dispat
 ### P5-T11: Execute `rc` clean-state apply and document runbook
 Owner: Human + Agent  
 Type: Validation  
-Dependencies: P5-T01..P5-T10, P5-T10A, P5-T09A, P5-T15  
+Dependencies: P5-T01..P5-T10, P5-T10A, P5-T09A, P5-T15, P5-T15A  
 Affected repos: `platform-infra`
 Action: Apply full stack from empty state, including authoritative Grafana dashboard provisioning where configured, and capture timings, rollback instructions, and known caveats.  
 Output: Provisioning evidence and runbook.  
@@ -168,6 +170,15 @@ Action: Implement Terraform resources required to route single-domain `/api/*` t
 Output: Runtime-routing infrastructure definitions for Cloud Run API path.  
 Done when: RC environment can route `/api/*` requests to Cloud Run API through IaC-managed configuration.
 
+### P5-T15A: Provision frontend runtime infrastructure for RC and gated prod delivery
+Owner: Agent  
+Type: IaC coding  
+Dependencies: P5-T05, P5-T09, P5-T15  
+Affected repos: `platform-infra`, `frontend-web`, `org-dot-github`
+Action: Implement Terraform resources for the authenticated frontend runtime split: provision a Cloud Run frontend path for `rc` with service account, runtime configuration, image contract, and same-domain routing compatibility; also define the prod authenticated frontend static delivery path using Cloud CDN + External HTTPS Load Balancer + Cloud Storage backend bucket. Keep prod frontend resources disabled/gated by default so the infrastructure shape exists without enabling prod traffic or unnecessary baseline spend before the intentional prod rollout phase.
+Output: Frontend runtime infrastructure definitions for Cloud Run (`rc`) and gated CDN/static delivery (`prod`).
+Done when: `rc` frontend can be planned/applied as a Cloud Run service, the prod CDN/static path can be planned behind explicit enable flags, and both paths remain compatible with single-domain `/api/*` backend routing.
+
 ### P5-T16: Build environment suspend/resume cost-control tool
 Owner: Human + Agent  
 Type: IaC operations automation  
@@ -197,6 +208,7 @@ Done when: `rc` can be suspended and restored end-to-end with documented evidenc
 - API runtime switch runbook
 - suspend/resume tooling and runbook
 - Cloud Run `/api/*` routing infrastructure definitions
+- frontend runtime infrastructure definitions for `rc` Cloud Run and gated `prod` CDN/static delivery
 - environment variable files and outputs
 - IaC CI validation checks
 - `rc` Terraform apply CI workflow and trigger/approval contract

@@ -16,12 +16,16 @@ Runtime selection artifact: `../backend-api/docs/api-runtime-paths-cloud-run-gke
 - Ensure Helm deployment path supports cluster recreation (fresh cluster bootstrap and redeploy without manual drift) when GKE path is enabled.
 - API ingress routing uses a single domain with path-based routing.
 - TLS certificate management defaults to managed certificates.
-- Authenticated frontend delivery is standardized on Cloud CDN + External HTTPS Load Balancer + Cloud Storage backend bucket.
+- Authenticated frontend delivery is environment-split:
+  - `rc`: Cloud Run frontend path
+  - `prod`: Cloud CDN + External HTTPS Load Balancer + Cloud Storage backend bucket
 - Path routing baseline on the single domain:
-  - frontend app/static assets served from CDN path.
+  - `rc`: frontend app served from Cloud Run path.
+  - `prod`: frontend app/static assets served from CDN path.
   - `/api/*` routed to selected backend runtime path (Cloud Run baseline, ingress/service path for GKE).
 - Frontend serving path execution:
-  - Authenticated app: deploy static assets via CDN path (CI publish + cache invalidation) and route API via `/api/*` backend mapping.
+  - Authenticated app in `rc`: deploy frontend to Cloud Run and route API via `/api/*` backend mapping.
+  - Authenticated app in `prod`: publish static assets via CDN path (CI publish + cache invalidation) when prod is intentionally enabled.
   - Public website/blog: choose between CDN/static hosting path and in-cluster hosting path.
 
 Exit criteria:

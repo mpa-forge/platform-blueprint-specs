@@ -66,10 +66,10 @@ Pipeline and deployment path (must be proven end-to-end):
   - lint, unit tests, `buf lint`, `buf breaking`, generated-code drift check.
 - Merge to `main`:
   - Build containers, scan, push immutable image tags to GAR.
-  - Publish frontend build to CDN origin bucket/path.
+  - Deploy frontend to Cloud Run in `rc`.
   - Deploy API to Cloud Run in `rc` (baseline path).
   - Keep optional GKE/Helm deployment path runnable but disabled by default.
-  - Invalidate CDN cache for changed frontend assets.
+  - For later gated `prod`, publish frontend build to CDN origin bucket/path and invalidate changed assets.
 - Post-deploy:
   - Smoke test: authenticated frontend -> protected API -> DB read.
   - Smoke test: trace/log/metric visibility in Grafana Cloud.
@@ -97,7 +97,7 @@ Acceptance checklist (Definition of Done for baseline):
 - Cloud RC:
   - Terraform provisions/updates required infrastructure from clean state.
   - API deploys successfully to Cloud Run with revisioned rollout.
-  - Frontend is served through CDN and can call RC API through single-domain `/api/*` routing.
+  - Frontend is served through Cloud Run in `rc` and can call RC API through single-domain `/api/*` routing.
   - RC isolation boundaries are enforced: separate databases (or DB names), secrets, and domains; namespace boundaries apply when GKE path is enabled.
 - Operability:
   - Dashboard exists with API latency and error rate.
@@ -193,7 +193,7 @@ For each decision capture:
 - Apply `us-east4` as the primary region baseline for RC/prod infrastructure components.
 - Define RC isolation model implementation details (DB boundaries, secret scopes, and domain layout; namespace boundaries for GKE path).
 - Define Google Secret Manager namespace/secret naming and ESO sync mappings for all services.
-- Implement authenticated frontend CDN path first (asset hosting, cache policy, invalidation strategy).
+- Implement authenticated frontend runtime split: Cloud Run frontend for `rc`, and gated Cloud CDN + External HTTPS Load Balancer + Cloud Storage delivery for `prod`.
 - Keep public website/blog scope deferred until authenticated app baseline is complete.
 - Keep queue/broker scope deferred until post-baseline feature implementation requires async messaging.
 - Keep external edge-provider layering decision deferred (GCP-native edge only in baseline; evaluate Cloudflare-like overlay during hardening).
@@ -227,7 +227,7 @@ For each decision capture:
 - v1.4 (2026-02-19): Locked Google Secret Manager + External Secrets Operator and updated infra/deployment tasks.
 - v1.5 (2026-02-19): Locked CD operating model to pipeline-driven GitHub Actions + Helm deployment.
 - v1.6 (2026-02-19): Added dual frontend delivery options and implementation checkpoints for public site and authenticated app paths.
-- v1.7 (2026-02-19): Locked frontend sequencing to authenticated app first and prioritized CDN-first delivery for the authenticated frontend.
+- v1.7 (2026-02-19): Locked frontend sequencing to authenticated app first and prioritized production static delivery for the authenticated frontend.
 - v1.8 (2026-02-20): Confirmed blueprint-first strategy (minimal end-to-end implementation before business logic) and deferred queue decision until post-baseline completion.
 - v1.9 (2026-02-20): Added concrete Baseline MVP Definition checklist (repos, minimal scope, CI/CD flow, integrations, and acceptance criteria).
 - v2.0 (2026-02-20): Split phased roadmap into separate files under `implementation/phases/` and converted this file into the index entrypoint.
@@ -245,7 +245,8 @@ For each decision capture:
 - v2.12 (2026-02-20): Locked PR CI runtime SLO baseline (`p50 <= 10 min`, `p95 <= 15 min`, hard cap `20 min` for required checks).
 - v2.13 (2026-02-20): Locked Terraform remote state/locking pattern on GCS (dedicated state project, per-env buckets, prefix convention, bucket safeguards, lock-timeout).
 - v2.14 (2026-02-20): Locked Terraform environment structure to separate roots per env (`rc`, `prod`) with shared modules; no workspace-based env switching.
-- v2.15 (2026-02-20): Locked authenticated frontend CDN implementation to Cloud CDN + External HTTPS Load Balancer + Cloud Storage, with single-domain `/api/*` routing to backend ingress.
+- v2.15 (2026-02-20): Locked authenticated frontend production delivery to Cloud CDN + External HTTPS Load Balancer + Cloud Storage, with single-domain `/api/*` routing to backend ingress.
+- v2.43 (2026-04-23): Split authenticated frontend runtime by environment: Cloud Run frontend in `rc`, gated Cloud CDN + External HTTPS Load Balancer + Cloud Storage in `prod`.
 - v2.16 (2026-02-21): Locked baseline mandatory smoke-test blockers for prod promotion and aligned Phase 7 gating criteria.
 - v2.17 (2026-02-21): Locked provisional baseline API SLO targets for RC/prod (availability and p95 latency) with a defined post-launch recalibration checkpoint.
 - v2.18 (2026-02-21): Locked baseline secret rotation cadence/policy for RC and prod, including emergency rotation SLA, rollback window, and prod approval governance.
