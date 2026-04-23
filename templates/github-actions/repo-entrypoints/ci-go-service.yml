@@ -11,12 +11,16 @@ on:
 
 permissions:
   contents: read
-  id-token: write
   pull-requests: read
 
 jobs:
   ci:
-    uses: mpa-forge/.github/.github/workflows/reusable-ci-go.yml@main
+    uses: mpa-forge/.github/.github/workflows/reusable-ci-go.yml@1bc325943d02d591979952caf6369eb43f54295c
+    # Uncomment when this caller enables OIDC-backed publish in the shared workflow.
+    # permissions:
+    #   contents: read
+    #   id-token: write
+    #   pull-requests: read
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     with:
