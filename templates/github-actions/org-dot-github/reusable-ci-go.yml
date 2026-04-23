@@ -163,6 +163,8 @@ jobs:
   test:
     name: test
     runs-on: ubuntu-latest
+    outputs:
+      has_go_files: ${{ steps.go-files.outputs.has_go_files }}
     defaults:
       run:
         shell: bash
@@ -187,8 +189,20 @@ jobs:
           fi
 
       - name: Run Go tests
-        if: steps.go-files.outputs.has_go_files == 'true'
+        if: steps.go-files.outputs.has_go_files == 'true' && (inputs.sonar-organization-key == '' || inputs.sonar-project-key == '')
         run: go test ./...
+
+      - name: Run Go tests with coverage
+        if: steps.go-files.outputs.has_go_files == 'true' && inputs.sonar-organization-key != '' && inputs.sonar-project-key != ''
+        run: go test ./... -covermode=atomic -coverprofile=coverage.out
+
+      - name: Upload Go coverage report
+        if: steps.go-files.outputs.has_go_files == 'true' && inputs.sonar-organization-key != '' && inputs.sonar-project-key != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-coverage
+          path: ${{ inputs.working-directory }}/coverage.out
+          if-no-files-found: error
 
       - name: No Go sources
         if: steps.go-files.outputs.has_go_files != 'true'
@@ -200,7 +214,7 @@ jobs:
     needs:
       - lint
       - test
-    if: inputs.sonar-organization-key != '' && inputs.sonar-project-key != ''
+    if: inputs.sonar-organization-key != '' && inputs.sonar-project-key != '' && needs.test.outputs.has_go_files == 'true'
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       GITHUB_TOKEN: ${{ github.token }}
@@ -222,6 +236,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-sonar
 
+      - name: Download Go coverage report
+        uses: actions/download-artifact@v5
+        with:
+          name: go-coverage
+          path: ${{ inputs.working-directory }}
+
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v7
         with:
@@ -229,6 +249,7 @@ jobs:
           args: >
             -Dsonar.organization=${{ inputs.sonar-organization-key }}
             -Dsonar.projectKey=${{ inputs.sonar-project-key }}
+            -Dsonar.go.coverage.reportPaths=coverage.out
             -Dsonar.qualitygate.wait=true
 
   api-image-verify:
@@ -260,6 +281,8 @@ jobs:
       - lint
       - test
     if: inputs.image-build-enabled && github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+    # Callers that enable publish must grant the reusable-workflow call job
+    # matching `id-token: write`; reusable workflows cannot elevate it here.
     permissions:
       contents: read
       id-token: write

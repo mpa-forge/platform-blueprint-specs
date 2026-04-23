@@ -18,7 +18,7 @@ This skill assumes a human has already supplied:
 If those inputs are missing, stop and ask for them or point to the human
 runbook:
 
-- [sonarqube-cloud-human-setup.md](C:/Users/Miquel/dev/platform-blueprint-specs/implementation/governance/sonarqube-cloud-human-setup.md)
+- [sonarqube-cloud-human-setup.md](C:/Users/Miquel/dev/platform-blueprint-specs/docs/runbooks/sonarqube-cloud-human-setup.md)
 
 ## Default Goal
 
