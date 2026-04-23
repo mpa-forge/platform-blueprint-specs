@@ -39,8 +39,8 @@ Owner: Human + Agent
 Type: Provider config + deployment  
 Dependencies: P6-T12, P6-T06, P5-T15  
 Affected repos: `frontend-web`, `backend-api`, `platform-infra`
-Action: Configure edge routing so frontend remains CDN-backed while `/api/*` routes to Cloud Run backend under the same domain, with managed TLS and required headers.  
-Output: Unified domain routing config (CDN static + Cloud Run API path).  
+Action: Configure edge routing so the `rc` frontend remains Cloud Run-backed while `/api/*` routes to Cloud Run backend under the same domain, with managed TLS and required headers.  
+Output: Unified domain routing config (`rc` frontend Cloud Run + Cloud Run API path, compatible with later prod CDN path).  
 Done when: Frontend uses same-domain API path successfully in `rc`.
 
 ### P6-T15: Implement CI deployment jobs for Cloud Run API
@@ -98,14 +98,23 @@ Action: GKE alternative path: define ingress resources using a single domain wit
 Output: API ingress routing configuration.  
 Done when: API reachable securely through expected endpoint.
 
-### P6-T06: Configure frontend CDN origin and delivery path
+### P6-T06: Configure frontend Cloud Run delivery path for RC
 Owner: Human + Agent  
 Type: Provider config + CI  
 Dependencies: Phase 4 CI + Phase 5 infra  
 Affected repos: `frontend-web`, `platform-infra`, `org-dot-github`
-Action: Set up authenticated frontend delivery on Cloud CDN + External HTTPS Load Balancer + Cloud Storage backend bucket, including cache headers, invalidation mechanism, and path rules compatible with `/api/*` backend routing under the same domain.  
-Output: CDN-backed frontend hosting path.  
-Done when: Authenticated frontend static assets are served via Cloud CDN in `rc` and coexist with working `/api/*` routing.
+Action: Set up authenticated frontend delivery on Cloud Run for `rc`, including image/runtime configuration, service settings, domain/routing compatibility, and env contract needed to call the same-domain API path.  
+Output: Cloud Run-backed frontend hosting path for `rc`.  
+Done when: Authenticated frontend is served from Cloud Run in `rc` and coexists with working `/api/*` routing.
+
+### P6-T06A: Configure gated prod frontend CDN origin and delivery path
+Owner: Human + Agent  
+Type: Provider config + CI  
+Dependencies: Phase 4 CI, Phase 5 infra, P6-T06  
+Affected repos: `frontend-web`, `platform-infra`, `org-dot-github`
+Action: Define the prod authenticated frontend static delivery path on Cloud CDN + External HTTPS Load Balancer + Cloud Storage backend bucket, including cache headers, invalidation mechanism, and path rules compatible with `/api/*` backend routing under the same domain. Keep the prod frontend path disabled until prod rollout is intentional.  
+Output: Gated prod CDN-backed frontend hosting path.  
+Done when: The prod frontend CDN/static path can be planned and deployed behind explicit prod enablement controls without changing the `rc` Cloud Run frontend path.
 
 ### P6-T07: Implement CI deployment jobs for Helm releases
 Owner: Agent  
@@ -121,9 +130,9 @@ Owner: Agent
 Type: CI/CD coding  
 Dependencies: P6-T06, Phase 4 CI  
 Affected repos: `frontend-web`, `org-dot-github`
-Action: Build frontend artifacts, publish to origin path, invalidate cache for changed files.  
-Output: Automated frontend delivery pipeline.  
-Done when: Frontend changes are visible after pipeline run without manual publish steps.
+Action: Build and deliver the frontend through the selected environment path: deploy the `rc` frontend to Cloud Run, and prepare the prod static publish + CDN cache invalidation flow for later gated prod enablement.  
+Output: Automated frontend delivery pipeline for `rc`, plus gated prod static publish path.  
+Done when: `rc` frontend changes are visible after pipeline run without manual deployment steps, and the prod static publish path is defined for later use.
 
 ### P6-T09: Configure rollout safeguards and availability controls
 Owner: Agent  
@@ -139,7 +148,7 @@ Owner: Human
 Type: Validation  
 Dependencies: P6-T01, P6-T06, P6-T12..P6-T16  
 Affected repos: `frontend-web`, `backend-api`, `platform-infra`
-Action: Validate full cloud path (Cloud Run baseline): frontend CDN -> Clerk -> `/api/*` -> Cloud Run API -> DB read path.  
+Action: Validate full cloud path (Cloud Run baseline): frontend Cloud Run -> Clerk -> `/api/*` -> Cloud Run API -> DB read path.  
 Output: Deployment validation report with defects/issues.  
 Done when: Phase 6 exit criteria are met and documented.
 
@@ -157,7 +166,8 @@ Done when: Team can recover workloads on a newly created cluster with documented
 - Helm charts for API
 - ESO manifests and secret mappings
 - ingress and TLS configs
-- frontend CDN configuration docs
+- frontend Cloud Run configuration docs for `rc`
+- gated prod frontend CDN/static delivery configuration docs
 - CI deployment workflows (Cloud Run baseline backend + optional GKE backend + frontend)
 - rollout safety configurations
 - end-to-end deployment validation evidence

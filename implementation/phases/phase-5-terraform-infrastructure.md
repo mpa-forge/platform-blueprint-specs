@@ -8,15 +8,18 @@ Cost suspend/resume artifact: `ops/cost-suspend-resume-automation.md`
 - Create Terraform modules for:
   - network/VPC
   - Cloud Run API service baseline
+  - Cloud Run frontend service baseline for `rc`
   - optional GKE Autopilot cluster
   - Google Artifact Registry repositories and IAM bindings
   - Cloud SQL for PostgreSQL instances, networking, backups, and IAM/database auth integration
   - Google Secret Manager secrets and IAM policies (plus workload identity bindings for ESO on GKE path)
   - Edge routing resources for single-domain `/api/*` mapping to Cloud Run baseline path
+  - gated prod frontend delivery resources (Cloud CDN + External HTTPS Load Balancer + Cloud Storage backend bucket)
   - Cloud Run Jobs + Cloud Scheduler + IAM for AI task-to-code workers, including on-demand execution permissions for event-trigger workflows
   - observability dependencies (as needed), including Grafana dashboard provisioning support
 - Create env stacks (`rc`, `prod`) with separate project-level isolation for prod.
 - Apply runtime guardrail: Cloud Run API path enabled by default for first iteration; GKE cluster resources remain disabled/gated until explicitly enabled.
+- Apply frontend delivery guardrail: `rc` frontend path uses Cloud Run; prod frontend CDN/static resources are provisionable through Terraform but remain disabled/gated until intentional prod rollout.
 - Implement lifecycle controls so GKE cluster (when enabled) can be created/destroyed/recovered on demand via Terraform + Helm workflows.
 - Enforce one Terraform root per environment (`rc`, `prod`) with shared modules.
 - Do not use Terraform workspaces for environment isolation/switching.
