@@ -43,6 +43,8 @@ Owner: Agent
 Type: IaC coding  
 Dependencies: P5-T03  
 Affected repos: `platform-infra`, `backend-api`
+Status: Completed (`2026-04-22`)  
+Evidence: `platform-infra` PR #28 (`Implement P5-T04 Cloud Run API baseline`), with archived OpenSpec change `2026-04-22-p5-t04-cloudrun-api-baseline-runtime`. Validated with `make terraform-validate`, `make terraform-plan ENV=rc`, `make terraform-plan ENV=prod`, an RC Cloud Run/secrets-enabled plan, and `openspec validate --specs --strict`.  
 Action: Provision Cloud Run service module for API with revision settings, min/max instances, concurrency, service account/IAM, secret/env wiring, and Cloud SQL connectivity settings for `rc`/`prod`.  
 Output: Cloud Run API module and environment bindings.  
 Done when: RC API service can be planned/applied and deployed with healthy revisions in Cloud Run.
@@ -52,6 +54,8 @@ Owner: Agent
 Type: IaC coding  
 Dependencies: P5-T01  
 Affected repos: `platform-infra`, `org-dot-github`, `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`
+Status: Completed (`2026-04-22`)  
+Evidence: `platform-infra` PR #29 (`Implement P5-T05 GAR module IAM bindings`), with archived OpenSpec change `2026-04-22-p5-t05-gar-module-iam-bindings`. Validated with `terraform fmt -recursive`, `make terraform-validate`, `make terraform-plan ENV=rc`, `make terraform-plan ENV=prod`, GAR-enabled plans for both environment roots, and `openspec validate --specs --strict`.  
 Action: Provision GAR repos and roles for CI push and runtime pull principals.  
 Output: Artifact registry resources and IAM policies.  
 Done when: CI can push and Cloud Run runtime (and optional GKE runtime) can pull images.
