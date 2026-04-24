@@ -144,6 +144,39 @@ cover the bootstrap steps that are easy to forget, including:
 This would help when spinning up new shared repos like
 `platform-observability`.
 
+### `openspec-subagents`
+
+#### 13. Add model-availability fallback guidance for pinned project agents
+
+When a project agent points at a model that is not available for the current
+auth context, the skill should immediately fall back to a supported cached
+model instead of requiring manual recovery.
+
+Suggested guidance:
+
+- check cached model availability before spawning pinned project agents
+- define an ordered fallback list per agent role
+- record the fallback in the run summary so later cleanup is easy
+
+This surfaced during `P5-T07` when `openspec_heavy_lift` resolved to a model
+unsupported in ChatGPT-account mode.
+
+### `platform-validation-workflow`
+
+#### 14. Add doc-only markdown normalization guidance
+
+The skill should explicitly cover repos whose existing README style violates the
+current markdownlint baseline even when the task only changes a few lines.
+
+Suggested rule:
+
+- if a touched markdown file fails only on local spacing/style drift, normalize
+  the touched file before rerunning scoped validation
+- distinguish style-drift cleanup from unrelated content changes in the final
+  summary
+
+This came up in `backend-worker` during `P5-T07`.
+
 ### Potential New Skill: multi-repo mechanical rollout
 
 #### 11. Add a rollout helper for repetitive cross-repo edits
