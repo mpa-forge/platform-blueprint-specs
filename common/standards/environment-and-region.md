@@ -36,12 +36,31 @@ Notes:
 ## API Runtime Path Baseline
 - Baseline runtime path for first iteration: `Cloud Run`.
 - Alternative runtime path: `GKE Autopilot + Helm`.
+- Additional approved low-scale path: `single-vps` for colocated frontend +
+  backend + PostgreSQL when simpler operations or lower fixed cost matter more
+  than managed-service guarantees.
 - Initial GKE cluster provisioning is deferred until explicitly needed.
 - Runtime selection contract is defined in `../backend-api/docs/api-runtime-paths-cloud-run-gke.md`.
 
 Runtime selector baseline:
 - `API_RUNTIME_PATH=cloud_run` (default)
 - `API_RUNTIME_PATH=gke` (alternative, enable later)
+
+## Deployment Preset Model
+
+- Environment roots remain `rc` and `prod`.
+- Runtime topology is selected through an explicit deployment preset in
+  `platform-infra`, not by adding more long-lived environment roots.
+- Approved preset catalog baseline:
+  - `single-vps`
+  - `cloudrun-cloudsql`
+  - `cloudrun-cdn-cloudsql`
+  - `gke-cloudsql`
+- Current committed `platform-infra` defaults:
+  - `rc`: `single-vps`
+  - `prod`: `cloudrun-cloudsql`
+
+The preset model changes topology without changing what `rc` or `prod` mean.
 
 ## Compliance Rule
 Any deviation from this standard (environment model, region, separation policy, or runtime default) requires an ADR update before implementation.

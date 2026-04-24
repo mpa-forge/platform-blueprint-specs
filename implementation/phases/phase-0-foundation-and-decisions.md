@@ -39,7 +39,7 @@ Detailed tasks: `implementation/phase-tasks/phase-0-foundation-and-decisions-tas
 - Confirmed: Provider/account ownership model is single owner.
 - Confirmed: Shared documentation and ADRs live in a dedicated docs repository.
 - Confirmed: Frontend sequencing is authenticated app first.
-- Confirmed: Authenticated frontend delivery is environment-split: `rc` uses a Cloud Run frontend path for low idle cost and simpler preview delivery, while `prod` uses Cloud CDN + External HTTPS Load Balancer + Cloud Storage. Prod frontend delivery remains gated until intentionally enabled.
+- Confirmed: Runtime topology is selected through deployment presets in `platform-infra`; current committed defaults are `rc=single-vps` and `prod=cloudrun-cloudsql`, while managed frontend CDN/static delivery remains a preferred future preset path.
 - Confirmed: Queue/broker decision remains deferred until after the first end-to-end baseline implementation is complete.
 - Confirmed: External edge-provider layering decision (GCP-native edge only vs Cloudflare-like overlay) is deferred to hardening phase review; baseline remains GCP-native edge stack.
 - Define naming conventions, branch strategy, semantic versioning.

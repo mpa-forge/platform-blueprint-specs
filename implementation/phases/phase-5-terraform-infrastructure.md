@@ -7,9 +7,10 @@ Cost suspend/resume artifact: `ops/cost-suspend-resume-automation.md`
 
 - Create Terraform modules for:
   - network/VPC
+  - shared stack/preset assembly
   - Cloud Run API service baseline
-  - Cloud Run frontend service baseline for `rc`
   - optional GKE Autopilot cluster
+  - optional single-VPS runtime path for colocated frontend + backend + PostgreSQL
   - Google Artifact Registry repositories and IAM bindings
   - Cloud SQL for PostgreSQL instances, networking, backups, and IAM/database auth integration
   - Google Secret Manager secrets and IAM policies (plus workload identity bindings for ESO on GKE path)
@@ -18,8 +19,8 @@ Cost suspend/resume artifact: `ops/cost-suspend-resume-automation.md`
   - Cloud Run Jobs + Cloud Scheduler + IAM for AI task-to-code workers, including on-demand execution permissions for event-trigger workflows
   - observability dependencies (as needed), including Grafana dashboard provisioning support
 - Create env stacks (`rc`, `prod`) with separate project-level isolation for prod.
-- Apply runtime guardrail: Cloud Run API path enabled by default for first iteration; GKE cluster resources remain disabled/gated until explicitly enabled.
-- Apply frontend delivery guardrail: `rc` frontend path uses Cloud Run; prod frontend CDN/static resources are provisionable through Terraform but remain disabled/gated until intentional prod rollout.
+- Apply runtime guardrail: Cloud Run remains the managed baseline; GKE cluster resources remain disabled/gated until explicitly enabled; single-VPS remains an allowed low-scale preset.
+- Apply preset guardrail: keep one root per environment and select topology through deployment presets rather than adding more root directories.
 - Implement lifecycle controls so GKE cluster (when enabled) can be created/destroyed/recovered on demand via Terraform + Helm workflows.
 - Enforce one Terraform root per environment (`rc`, `prod`) with shared modules.
 - Do not use Terraform workspaces for environment isolation/switching.
@@ -37,7 +38,7 @@ Cost suspend/resume artifact: `ops/cost-suspend-resume-automation.md`
 Exit criteria:
 - `rc` infra provisioned reproducibly from clean state.
 - baseline Grafana dashboards can be recreated from source-controlled definitions through the Phase 5 provisioning path.
-- baseline `rc` API runtime is Cloud Run (no GKE cluster required).
+- current committed topology defaults are documented and reproducible through preset selection.
 - prod infra is provisioned as a fully separate environment.
 - IaC plan/apply integrated with CI checks.
 

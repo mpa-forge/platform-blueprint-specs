@@ -42,8 +42,7 @@ Target repositories (polyrepo):
 - `backend-worker`: Go worker service reserved for deferred async/background additions after the frontend + API baseline is proven end to end.
 - `platform-ai-workers`: AI task-to-code worker runtime (Cloud Run Jobs with event-driven wake-ups and optional scheduler backstop) that converts GitHub tasks into PRs with human review gates.
 - `frontend-web`: authenticated React app using generated TypeScript client from protobuf contracts.
-- `platform-infra`: Terraform + GitHub Actions deployment workflows for Cloud Run baseline, plus Helm workflows for optional GKE path.
-- optional later deployment path: single virtual machine running `frontend-web` + `backend-api` + PostgreSQL for low-scale or cost-sensitive projects once the main runtime path is proven.
+- `platform-infra`: Terraform + GitHub Actions deployment workflows for preset-driven environment assembly, with Cloud Run as the managed baseline, optional GKE path, and a single-VPS preset for low-scale environments.
 - dedicated docs repository: ADRs, platform standards, runbooks, and cross-repo operational documentation.
 - code documentation standard: `common/standards/code-documentation.md` defines comment/doc expectations for repos as code-bearing phases start.
 
@@ -193,7 +192,7 @@ For each decision capture:
 - Apply `us-east4` as the primary region baseline for RC/prod infrastructure components.
 - Define RC isolation model implementation details (DB boundaries, secret scopes, and domain layout; namespace boundaries for GKE path).
 - Define Google Secret Manager namespace/secret naming and ESO sync mappings for all services.
-- Implement authenticated frontend runtime split: Cloud Run frontend for `rc`, and gated Cloud CDN + External HTTPS Load Balancer + Cloud Storage delivery for `prod`.
+- Expand managed frontend delivery on top of the new preset layer, including Cloud Run or CDN/static presets where the frontend should be provisioned by Terraform instead of remaining colocated or external/manual.
 - Keep public website/blog scope deferred until authenticated app baseline is complete.
 - Keep queue/broker scope deferred until post-baseline feature implementation requires async messaging.
 - Keep external edge-provider layering decision deferred (GCP-native edge only in baseline; evaluate Cloudflare-like overlay during hardening).
@@ -274,3 +273,4 @@ For each decision capture:
 - v2.40 (2026-03-22): Deferred `backend-worker` implementation and worker-specific deploy/observability/hardening work to new Phase 9 so the blueprint proves the frontend + backend API path end to end first.
 - v2.41 (2026-03-29): Switched the frontend tooling baseline from npm to Bun and added Vitest, Playwright, and Zustand to the frontend stack baseline.
 - v2.42 (2026-04-04): Added Phase 3 frontend observability tasks for a shared browser observability package/module plus `frontend-web` consumption.
+- v2.44 (2026-04-24): Documented preset-driven Terraform environment assembly with committed `platform-infra` defaults of `rc=single-vps` and `prod=cloudrun-cloudsql`.

@@ -27,11 +27,11 @@
 - Platform runtime paths:
   - Path A (baseline): API on Google Cloud Run (scale-to-zero capable).
   - Path B (alternative): API on GKE Autopilot with Helm-managed workloads.
-  - Path C (late optional alternative): single virtual machine running `frontend-web` + `backend-api` + PostgreSQL for low-scale or cost-sensitive projects after the primary runtime path is proven.
+  - Path C (optional low-scale preset): single virtual machine running `frontend-web` + `backend-api` + PostgreSQL for low-scale or cost-sensitive projects.
 - Packaging:
   - Cloud Run path: container image deploys through Cloud Run service revisions.
   - GKE path: Helm charts per environment.
-- Infra: Terraform modules for networking, Cloud Run, optional GKE cluster, optional single-VM path, data services, and secrets integration.
+- Infra: Terraform modules for networking, Cloud Run, optional GKE cluster, optional single-VM path, data services, secrets integration, and a shared stack/preset assembly layer.
 - Observability: OpenTelemetry -> Grafana Cloud (managed metrics/logs/traces/alerting) + automation workflows.
 
 ## 4. Proposed Stack (Initial)
@@ -87,6 +87,11 @@
 - RC: release-candidate environment with continuous deploy from `main` and strict internal isolation (separate DB boundaries, secret scopes, and domains; namespaces apply when GKE path is enabled).
 - Prod: fully separate production environment with controlled rollout strategy and stronger change controls.
 
+Current `platform-infra` topology defaults are:
+
+- `rc`: `single-vps`
+- `prod`: `cloudrun-cloudsql`
+
 ### Frontend Delivery Options
 - Option A: Public website/blog frontend.
   - Best fit: marketing pages, documentation/blog content, SEO-focused public surface.
@@ -138,7 +143,7 @@
 - Cloud provider: GCP.
 - API runtime baseline: Cloud Run (scale-to-zero).
 - API runtime alternative path: GKE Autopilot + Helm (kept fully supported in IaC/deployment design).
-- API runtime late optional path: single VM for low-scale or cost-sensitive projects, implemented only after the primary runtime path is operational and validated.
+- API runtime additional optional path: single VM for low-scale or cost-sensitive projects.
 - API runtime path reference: `../backend-api/docs/api-runtime-paths-cloud-run-gke.md`.
 - GKE baseline policy: do not create a cluster for the initial iteration; provision GKE only when product requirements justify it.
 - Ephemeral cluster lifecycle baseline (when GKE path is enabled): prod cluster must be create/destroy/recover capable through Terraform + Helm workflows for cost control and reusable project templates.
@@ -188,7 +193,7 @@
   - baseline Cloud Run path: Google Secret Manager direct integration.
   - alternative GKE path: Google Secret Manager + External Secrets Operator.
 - Frontend sequencing: Authenticated app first.
-- Authenticated frontend serving path: CDN-first.
+- Authenticated frontend serving path preference: CDN-first for the managed path, while deployment presets may temporarily use colocated or externally managed frontend delivery.
 - Authenticated frontend CDN implementation: Cloud CDN + External HTTPS Load Balancer + Cloud Storage backend bucket.
 - Frontend/API single-domain routing baseline:
   - frontend/static assets served from CDN path.
@@ -264,11 +269,14 @@
   - Locking via Terraform GCS backend with `-lock-timeout=5m` in CI/apply.
 - Terraform environment structure baseline:
   - One Terraform root per environment (`rc`, `prod`) with shared modules.
+  - Runtime topology selected by deployment preset, not by multiplying root directories.
   - No workspace-based environment switching.
 - Terraform runtime module baseline:
   - Keep both API runtime modules available in the same IaC repo:
     - Cloud Run API module (baseline enabled).
     - GKE API module (disabled by default, enable on demand).
+  - Keep a single-VPS runtime module available as an additional preset option for low-scale environments.
+  - Current committed `platform-infra` defaults are `rc=single-vps` and `prod=cloudrun-cloudsql`.
 - Deploy-time image signature verification: Deferred to a later hardening phase.
 - Primary cloud region baseline: `us-east4` for both RC and prod.
 - Local environment stack scope: Minimal app stack only (frontend, api, worker, postgres).
@@ -564,5 +572,5 @@
 - v1.43 (2026-03-01): Expanded observability architecture to dual runtime modes (`direct_otlp` for Cloud Run baseline, `collector_gateway` for GKE path) and locked shared observability library requirement with profile parity.
 - v1.44 (2026-03-04): Deferred Sentry and incident.io integrations to Phase 8 hardening; baseline observability/incident flow remains Grafana Cloud + webhook/Slack.
 - v1.45 (2026-03-29): Switched the frontend package-manager baseline from npm to Bun and expanded the frontend stack baseline with Vitest, Playwright, and Zustand.
-
+- v1.46 (2026-04-24): Added preset-driven Terraform topology selection with committed `platform-infra` defaults of `rc=single-vps` and `prod=cloudrun-cloudsql`, while keeping Cloud Run as the managed baseline and GKE as the alternative path.
 
