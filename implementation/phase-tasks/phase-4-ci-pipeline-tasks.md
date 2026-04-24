@@ -117,11 +117,12 @@ Done when: PR pipeline runtime meets SLO baseline (`p50 <= 10 min`, `p95 <= 15 m
 ### P4-T11: Enforce AI-generated PR governance controls
 Owner: Human + Agent  
 Type: CI governance  
-Dependencies: P4-T09, Phase 1 AI worker bootstrap  
+Dependencies: P4-T09, Phase 10 AI worker bootstrap  
 Affected repos: `org-dot-github`, `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`
-Action: Configure required checks and review policy for AI-generated PRs (normal PRs, mandatory human reviewer, CODEOWNERS enforcement, required metadata labels such as `ai-generated` and `ai-run-id`, and explicit rework trigger controls for `changes requested` or `/ai rework` command usage) aligned to `../platform-ai-workers/docs/automation/ai-comment-trigger-cloud-run-jobs.md`.
-Output: Enforced governance policy for automation-created PRs.  
-Done when: AI-created PRs cannot merge without the same required review/check gates as human-authored PRs.
+Status: Deferred to Phase 10 (`P10-T04`).  
+Action: Moved to the dedicated AI-worker automation phase so the main CI baseline remains focused on human-authored delivery.  
+Output: Deferral linkage to `P10-T04`.  
+Done when: Phase 4 does not depend on AI-specific PR governance controls.
 
 ### P4-T12: Document approved tool alternatives and migration path
 Owner: Human + Agent  
@@ -135,11 +136,12 @@ Done when: Tool substitutions can be made with explicit rationale and no policy 
 ### P4-T13: Implement event-driven AI worker trigger workflows
 Owner: Agent  
 Type: CI automation  
-Dependencies: P4-T06, P4-T11, Phase 1 AI worker bootstrap  
+Dependencies: P4-T06, P4-T11, Phase 10 AI worker bootstrap  
 Affected repos: `platform-ai-workers`, `org-dot-github`, `frontend-web`, `backend-api`, `backend-worker`, `platform-contracts`, `platform-infra`
-Action: Add GitHub Actions workflows that trigger on task-ready and review-feedback events (issue label `ai:ready`, PR review `changes_requested`, maintainer `/ai rework` comment command), authenticate to GCP via WIF, and execute the mapped Cloud Run Job on-demand as a wake-up signal for the target worker lane following `../platform-ai-workers/docs/automation/ai-comment-trigger-cloud-run-jobs.md`.  
-Output: Event-driven trigger workflows and runbook referencing `../platform-ai-workers/docs/automation/ai-comment-trigger-cloud-run-jobs.md`.  
-Done when: A review comment can trigger one deterministic rework run without waiting for the scheduler cadence.
+Status: Deferred to Phase 10 (`P10-T05`).  
+Action: Moved with the rest of the AI-worker runtime path because it depends on the deferred managed execution model.  
+Output: Deferral linkage to `P10-T05`.  
+Done when: Phase 4 does not depend on AI-worker wake-up workflows.
 
 ### P4-T14: Implement `platform-contracts` TypeScript package publish workflow
 Owner: Agent  
@@ -160,7 +162,4 @@ Done when: Creating a release tag publishes a versioned TypeScript client packag
 - code quality + security tooling standard document
 - CI artifact retention policy
 - GitHub branch protection settings evidence
-- AI-generated PR governance policy evidence
-- event-driven AI worker trigger workflow definitions
-- `../platform-ai-workers/docs/automation/ai-comment-trigger-cloud-run-jobs.md` implementation reference
 - contracts TypeScript package publish workflow definitions

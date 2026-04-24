@@ -114,21 +114,19 @@ Done when: New developer setup completes within targeted time window.
 Owner: Agent  
 Type: Coding  
 Dependencies: P1-T01, Phase 0 AI automation decisions, `../platform-ai-workers/docs/automation/ai-comment-trigger-cloud-run-jobs.md`, `../platform-ai-workers/docs/automation/ai-worker-local-cloud-parity.md`  
-Status: Completed (`2026-03-08`)  
-Evidence: `implementation/governance/ai-worker-baseline-evidence.md`  
-Action: Scaffold worker job codebase and container with configurable env vars (`WORKER_RUNTIME_MODE`, `WORKER_ID`, `TARGET_REPO`, `MAX_PENDING_REVIEW`, `POLL_INTERVAL`, credential secret refs), support for trigger context (`TRIGGER_SOURCE`, optional `TARGET_ISSUE`/`TARGET_PR`/`EVENT_ID`), shared GitHub poll-loop task selection logic (ready + rework candidates), task state transitions (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`), and PR creation/update path aligned to `../platform-ai-workers/docs/automation/ai-comment-trigger-cloud-run-jobs.md`. Implement the worker runtime as a Go application that invokes the coding agent as a subprocess CLI against the checked-out workspace. Implement one runtime entrypoint used by both local and Cloud Run executions, with environment-specific behavior only through lifecycle/config/adapters as defined in `../platform-ai-workers/docs/automation/ai-worker-local-cloud-parity.md`.
-Output: Runnable automation worker baseline in dedicated repo.  
-Done when: Worker can process one synthetic issue and produce a PR in a target sandbox repo, the agent is invoked through the documented subprocess CLI contract, and the same image/entrypoint can be invoked locally and in Cloud Run mode.
+Status: Deferred to Phase 10 (`P10-T01`).  
+Action: Moved to the dedicated AI-worker implementation phase so the local repo baseline can stay focused on the core frontend/API/Postgres developer path.  
+Output: Deferral linkage to `P10-T01`.  
+Done when: Phase 1 does not depend on the `platform-ai-workers` execution baseline.
 
 ### P1-T12: Add worker lane safety and resume behavior
 Owner: Agent  
 Type: Coding  
 Dependencies: P1-T11  
-Status: Completed (`2026-03-08`)  
-Evidence: `implementation/governance/ai-worker-safety-evidence.md`  
-Action: Implement single-lane processing guard per worker id, deterministic claim-before-work behavior, retry/resume handling for `ai:in-progress` tasks, idempotent rework handling keyed by review/comment event id, and pending-review cap control with mode-specific lifecycle (`local`: wait and continue polling; `cloud`: exit and wait for next wake-up).  
-Output: Safe worker execution loop with deterministic state transitions.  
-Done when: Repeated runs do not duplicate claims and can resume interrupted tasks for the same worker lane.
+Status: Deferred to Phase 10 (`P10-T02`).  
+Action: Moved with the worker runtime bootstrap so lane-safety implementation stays coupled to the dedicated AI-worker phase.  
+Output: Deferral linkage to `P10-T02`.  
+Done when: Phase 1 does not depend on worker-lane safety logic.
 
 ### P1-T12B: Add base agent context and worker skill files to every working repo
 Owner: Agent  
@@ -144,11 +142,10 @@ Done when: Every working repo contains `AGENTS.md` plus the agreed worker skill 
 Owner: Human + Agent  
 Type: Validation  
 Dependencies: P1-T11, P1-T12, P1-T12B  
-Status: Completed (`2026-03-22`)  
-Evidence: `implementation/governance/ai-worker-dry-run.md`  
-Action: Execute controlled dry-run against a sandbox repository and verify end-to-end path (issue selection, branch changes, PR creation, state updates, reviewer handoff, and comment/review-triggered rework updating the same PR) according to `../platform-ai-workers/docs/automation/ai-comment-trigger-cloud-run-jobs.md`; include local/cloud parity checks per `../platform-ai-workers/docs/automation/ai-worker-local-cloud-parity.md` by running equivalent inputs locally and via Cloud Run execution, including idle and outstanding-review-cap behavior.
-Output: `implementation/governance/ai-worker-dry-run.md` with findings and fixes.  
-Done when: One end-to-end task-to-PR flow succeeds under manual observation and the worker is proven to create a PR from a real task in local execution. Cloud Run parity is revalidated later when the managed runtime path is exercised through infrastructure and CI.
+Status: Deferred to Phase 10 (`P10-T03`).  
+Action: Moved with the rest of the worker execution track so Phase 1 validation remains scoped to the human developer local baseline.  
+Output: Deferral linkage to `P10-T03`.  
+Done when: Phase 1 does not depend on AI-worker dry-run validation.
 
 ## Artifacts Checklist
 - Repository settings screenshots/exports
@@ -157,10 +154,6 @@ Done when: One end-to-end task-to-PR flow succeeds under manual observation and 
 - Lint/pre-commit configs
 - `.env.example` contracts
 - Dockerfiles for frontend/API
-- `platform-ai-workers` bootstrap code and container
-- `../platform-ai-workers/docs/automation/ai-comment-trigger-cloud-run-jobs.md` conformance notes
-- `../platform-ai-workers/docs/automation/ai-worker-local-cloud-parity.md` conformance notes
 - `platform-infra/local/compose.yml`
 - local smoke test scripts
-- AI worker dry-run report
 - onboarding runbook updates

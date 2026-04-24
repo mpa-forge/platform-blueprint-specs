@@ -17,6 +17,7 @@
 - Phase 7: `implementation/phases/phase-7-cd-release-and-rollback-controls.md`
 - Phase 8: `implementation/phases/phase-8-scalability-reliability-and-security-hardening.md`
 - Phase 9: `implementation/phases/phase-9-backend-worker-and-async-extensions.md`
+- Phase 10: `implementation/phases/phase-10-ai-worker-automation.md`
 - Milestone quick reference: `implementation/milestone-quick-reference.md`
 
 ### 2.1 Phase Task Packs
@@ -30,6 +31,7 @@
 - Phase 7 tasks: `implementation/phase-tasks/phase-7-cd-release-and-rollback-controls-tasks.md`
 - Phase 8 tasks: `implementation/phase-tasks/phase-8-scalability-reliability-and-security-hardening-tasks.md`
 - Phase 9 tasks: `implementation/phase-tasks/phase-9-backend-worker-and-async-extensions-tasks.md`
+- Phase 10 tasks: `implementation/phase-tasks/phase-10-ai-worker-automation-tasks.md`
 
 ## 3. Baseline MVP Definition (Template Build)
 
@@ -115,25 +117,23 @@ Out of scope until baseline completion:
 - Queue/broker implementation and async delivery semantics.
 - Public website/blog implementation path.
 
-### 3.1 Fast-Track AI Automation Bootstrap
+### 3.1 Deferred AI Automation Phase
 - Priority intent:
-  - Implement minimal AI task-to-code automation as early as possible to accelerate execution of later phase tasks while preserving merge control.
+  - Keep AI-worker implementation work out of the critical path for the core platform baseline and finish it as a dedicated later phase after the frontend, API, infrastructure, and release controls are established.
 - Delivery order:
-  - Phase 0: lock automation architecture, task state machine, and credential model.
-- Phase 1: bootstrap `platform-ai-workers` repo and validate one end-to-end task -> PR flow in a sandbox repo.
-  - Phase 5 (minimal subset pulled earlier as needed): provision Cloud Run Job + GSM/IAM bindings plus on-demand execute permissions for worker runtime (optional low-frequency scheduler backstop).
-  - Phase 4: enforce governance checks for AI-generated PRs (required review/checks/metadata) and event-trigger workflows for immediate rework runs.
+  - Phase 0: keep the architecture, task workflow, and credential model decisions locked so later implementation has a stable target.
+  - Phase 10: implement the deferred AI-worker bootstrap, governance, trigger workflows, Cloud Run Jobs runtime module, and alert-driven diagnostic automation end to end.
 - Guardrails:
 - PR only, no direct protected-branch writes.
   - Required human review and existing CI checks remain mandatory.
 - Human review feedback should trigger rework on the same PR branch by default.
   - Worker lanes are configured per target repo using environment variables and least-privilege credentials.
 
-### 3.2 Later-Phase AI Ops Automation
+### 3.2 Phase 10 AI Ops Automation
 - Objective:
   - Automate alert-driven diagnostics and remediation task creation from production telemetry signals.
 - Delivery target:
-  - Phase 8 hardening (after baseline observability and task workflow are stable).
+  - Phase 10, after the baseline observability and task workflow are stable.
 - Core flow:
   - Grafana Cloud / Prometheus-style alert triggers diagnostic worker lanes.
   - Workers use MCP-integrated access to metrics, logs, and traces for bounded diagnosis.
@@ -175,14 +175,8 @@ For each decision capture:
 - Define GitHub Issues/Projects task-management workflow baseline (issue templates, labels, board states, automation) across repos.
 - Define and codify CI code-quality/security tooling standards (`golangci-lint`, `eslint`, `tsc`, `sonar`/`SonarQube Cloud`, `trivy`, `gitleaks`, `semgrep/codeql`, IaC checks) with swap criteria.
   - Lock SonarQube Cloud Free as baseline tier.
-- Define and bootstrap `platform-ai-workers` repo with task-state machine and PR flow (`ai:ready` -> `ai:in-progress` -> `ai:ready-for-review`).
 - Build shared backend observability library package supporting `direct_otlp` (Cloud Run) and `collector_gateway` (GKE) modes with one `OBS_TELEMETRY_PROFILE` contract.
-- Provision minimal AI worker runtime prerequisites early (Cloud Run Job + GSM/IAM + on-demand execute permissions; optional scheduler backstop) to enable task-to-code automation before full platform completion.
-- Define per-target-repo worker deployment config model (`WORKER_RUNTIME_MODE`, `WORKER_ID`, `TARGET_REPO`, limits, credential refs).
-- Define shared poll-loop behavior (ready tasks + rework tasks + outstanding-review cap) with mode-specific lifecycle: local keeps polling; cloud exits on cap/idle and is re-woken by GitHub events.
-- Define event-trigger rules for cloud wake-up runs (`ai:ready`, PR `changes requested`, `/ai rework`) and idempotent rework behavior tied to review/comment ids.
-- Enforce local/cloud runtime parity for AI workers (same image + runtime entrypoint) and validate with local dry-run plus Cloud Run execution using equivalent inputs.
-  - Specification artifact: `../platform-ai-workers/docs/automation/ai-worker-local-cloud-parity.md`.
+- Keep AI-worker execution automation, Cloud Run Job provisioning, trigger workflows, and alert-driven diagnostic workers deferred to Phase 10.
 - Define Cloud SQL instance topology and connectivity model for RC/prod.
 - Lock API runtime baseline to Cloud Run for first iteration and defer initial GKE cluster creation until needed.
 - Keep Terraform modules for both API runtimes (Cloud Run baseline enabled; GKE module available but disabled by default).
@@ -274,3 +268,4 @@ For each decision capture:
 - v2.41 (2026-03-29): Switched the frontend tooling baseline from npm to Bun and added Vitest, Playwright, and Zustand to the frontend stack baseline.
 - v2.42 (2026-04-04): Added Phase 3 frontend observability tasks for a shared browser observability package/module plus `frontend-web` consumption.
 - v2.44 (2026-04-24): Documented preset-driven Terraform environment assembly with committed `platform-infra` defaults of `rc=single-vps` and `prod=cloudrun-cloudsql`.
+- v2.45 (2026-04-24): Marked `P5-T07` complete and moved AI-worker-exclusive implementation tasks into a dedicated Phase 10.

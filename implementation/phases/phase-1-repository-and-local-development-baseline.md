@@ -24,9 +24,6 @@ Detailed tasks: `implementation/phase-tasks/phase-1-repository-and-local-develop
   - keep workers out of the default frontend/API stack until later phase work requires them
 - Expose repo-local `make` targets that invoke the centralized Compose setup rather than duplicating stack definitions in each repo.
 - Local observability components remain out of scope by default.
-- Ensure AI worker baseline supports poll-loop processing for both ready tasks and rework tasks, with event-triggered cloud wake-ups for review rework loops.
-- Ensure AI worker uses one poll-loop logic across runtimes: local runs continuously (sleep + re-poll), cloud runs bounded and exits on idle/limits waiting for next wake-up trigger.
-- Ensure AI worker local/cloud parity: same container image and runtime entrypoint must run locally and in Cloud Run Jobs (config/adapters only differ).
 
 Exit criteria:
 - Developers can bring up the frontend-focused or API-focused local stack from the relevant repo using shared Compose definitions in `platform-infra`.

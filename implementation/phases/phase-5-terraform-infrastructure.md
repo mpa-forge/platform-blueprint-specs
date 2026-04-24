@@ -16,7 +16,6 @@ Cost suspend/resume artifact: `ops/cost-suspend-resume-automation.md`
   - Google Secret Manager secrets and IAM policies (plus workload identity bindings for ESO on GKE path)
   - Edge routing resources for single-domain `/api/*` mapping to Cloud Run baseline path
   - gated prod frontend delivery resources (Cloud CDN + External HTTPS Load Balancer + Cloud Storage backend bucket)
-  - Cloud Run Jobs + Cloud Scheduler + IAM for AI task-to-code workers, including on-demand execution permissions for event-trigger workflows
   - observability dependencies (as needed), including Grafana dashboard provisioning support
 - Create env stacks (`rc`, `prod`) with separate project-level isolation for prod.
 - Apply runtime guardrail: Cloud Run remains the managed baseline; GKE cluster resources remain disabled/gated until explicitly enabled; single-VPS remains an allowed low-scale preset.
@@ -26,7 +25,6 @@ Cost suspend/resume artifact: `ops/cost-suspend-resume-automation.md`
 - Do not use Terraform workspaces for environment isolation/switching.
 - Add remote state and locking.
 - Enforce separate GCP projects for `rc` and `prod`.
-- Allow minimal infra subset pull-forward when needed to unblock early AI worker automation bootstrap (Cloud Run Job + Scheduler + GSM/IAM).
 - Build suspend/resume tooling to drop idle environment cost to near zero and restore deterministically (including Cloud SQL backup/restore, Cloud Storage sync/restore, and artifact metadata/archive handling).
 - Standardize Terraform remote state pattern on GCS backend:
   - Dedicated Terraform state project.

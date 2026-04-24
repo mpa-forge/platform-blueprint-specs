@@ -76,6 +76,8 @@ Owner: Agent
 Type: IaC coding  
 Dependencies: P5-T01  
 Affected repos: `platform-infra`, `backend-api`, `backend-worker`, `platform-ai-workers`
+Status: Completed (`2026-04-24`)
+Evidence: `implementation/governance/p5-t07-runtime-secret-delivery-evidence.md`, archived OpenSpec change `2026-04-24-implement-p5-t07-gsm-iam-eso-integration-resources`, and validation via `make terraform-validate`, `make test`, `make lint`, `make format-check`, and `go test ./...` across the touched repos.
 Action: Provision secret placeholders and access bindings for runtimes; include Cloud Run direct secret access baseline and ESO/workload identity permissions for optional GKE/controller/workloads. For the backend API database credential, store only the database password in Secret Manager (for example an environment-scoped `api-db-password` secret) and grant the selected API runtime access to that password secret; do not store the full `DATABASE_URL` as the canonical secret unless a later ADR explicitly changes this decision.  
 Output: Secret management infrastructure baseline, including password-only API database secret delivery.  
 Done when: Cloud Run API can read expected secrets directly, including `DB_PASSWORD`, the backend can construct its DB connection string from secret and non-secret parts, and GKE path can retrieve expected secrets via ESO sync when enabled.
@@ -85,14 +87,15 @@ Owner: Agent
 Type: IaC coding  
 Dependencies: P5-T01, P5-T05, P5-T07  
 Affected repos: `platform-infra`, `platform-ai-workers`, `org-dot-github`
-Action: Provision Cloud Run Job definitions (and optional low-frequency Scheduler backstop), service accounts/IAM, and Secret Manager bindings for `platform-ai-workers` execution. Support multiple worker-job deployments, each targeting a repository with environment-specific configuration (`WORKER_RUNTIME_MODE=cloud`, `WORKER_ID`, `TARGET_REPO`, `MAX_PENDING_REVIEW`, `POLL_INTERVAL`, credential refs), and grant least-privilege on-demand execution permissions for GitHub Actions event-trigger wake-up workflows as defined in `../platform-ai-workers/docs/automation/ai-comment-trigger-cloud-run-jobs.md`. Ensure Cloud Run Job command/args invoke the same runtime entrypoint used for local execution, per `../platform-ai-workers/docs/automation/ai-worker-local-cloud-parity.md`.  
-Output: AI worker runtime infrastructure module.  
-Done when: At least one worker-job deployment can be created per environment and triggered on-demand with least privilege (with optional scheduler backstop enabled when configured).
+Status: Deferred to Phase 10 (`P10-T06`).  
+Action: Moved out of the core Terraform baseline so Phase 5 can focus on the frontend/API infrastructure needed for the platform MVP path.  
+Output: Deferral linkage to `P10-T06`.  
+Done when: Phase 5 does not depend on AI-worker runtime infrastructure.
 
 ### P5-T09: Build environment stacks (`rc`, `prod`)
 Owner: Agent  
 Type: IaC coding  
-Dependencies: P5-T03..P5-T08  
+Dependencies: P5-T03..P5-T07  
 Affected repos: `platform-infra`
 Status: Completed (`2026-04-24`)
 Evidence: `platform-infra` PR #31 (`Add deployment presets for Terraform environments`), `implementation/governance/deployment-preset-environment-evidence.md`, and validation via `make terraform-validate`.
@@ -184,7 +187,7 @@ Done when: `rc` frontend can be planned/applied as a Cloud Run service, the prod
 ### P5-T16: Build environment suspend/resume cost-control tool
 Owner: Human + Agent  
 Type: IaC operations automation  
-Dependencies: P5-T04, P5-T05, P5-T06, P5-T08, P5-T09  
+Dependencies: P5-T04, P5-T05, P5-T06, P5-T09  
 Affected repos: `platform-infra`
 Action: Implement a script/tooling package (in `platform-infra`) that can suspend an environment to near-zero run cost and later restore it with data integrity. The tool must support deterministic `suspend <env>` and `resume <env>` commands, and follow the contract in `ops/cost-suspend-resume-automation.md`. Suspend flow must include Cloud SQL backup/export, Cloud Storage backup/sync, artifact image metadata snapshot (and optional image copy/export policy), scale-to-zero where possible (Cloud Run), and deletion/disablement of always-costing resources where required (for example Cloud SQL instance, schedulers, optional GKE resources when enabled). Resume flow must recreate resources via Terraform and restore required datasets/artifacts before reopening traffic.  
 Output: Suspend/resume tooling, state snapshot manifest format, and operations runbook.  
@@ -201,9 +204,6 @@ Done when: `rc` can be suspended and restored end-to-end with documented evidenc
 - `../platform-infra/docs/grafana-dashboards/db-connectivity-symptoms.json`
 - Cloud Run API runtime module validation evidence
 - password-only API database secret contract and runtime env wiring
-- Cloud Run Job/Scheduler module for AI workers
-- `../platform-ai-workers/docs/automation/ai-comment-trigger-cloud-run-jobs.md` IAM mapping reference
-- `../platform-ai-workers/docs/automation/ai-worker-local-cloud-parity.md` runtime parity mapping reference
 - `../backend-api/docs/api-runtime-paths-cloud-run-gke.md` runtime selection reference
 - `ops/ephemeral-gke-cluster-lifecycle-requirements.md` conformance mapping
 - `ops/cost-suspend-resume-automation.md` suspend/resume contract
