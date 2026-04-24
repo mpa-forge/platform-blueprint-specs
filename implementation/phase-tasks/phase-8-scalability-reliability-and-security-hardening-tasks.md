@@ -99,7 +99,7 @@ Done when: Target baseline checklist is passed or deviations are accepted with o
 ### P8-T10: Final baseline certification as reusable template
 Owner: Human  
 Type: Phase gate  
-Dependencies: P8-T01..P8-T09, P8-T11..P8-T18
+Dependencies: P8-T01..P8-T09, P8-T14..P8-T18
 Affected repos: `platform-blueprint-specs`, `frontend-web`, `backend-api`, `backend-worker`, `platform-ai-workers`, `platform-contracts`, `platform-infra`, `org-dot-github`
 Action: Confirm all phase objectives and baseline MVP acceptance criteria are met; tag template release.  
 Output: Reusable platform blueprint release record.  
@@ -110,27 +110,30 @@ Owner: Human + Agent
 Type: Architecture + security  
 Dependencies: Phase 3 observability baseline, P8-T06  
 Affected repos: `platform-ai-workers`, `backend-api`, `platform-infra`
-Action: Define MCP integration boundaries for telemetry access (metrics/logs/traces), allowed tools/endpoints, credential isolation, and data redaction policy for AI diagnostics.  
-Output: `docs/automation/ai-ops-mcp-model.md`.  
-Done when: MCP/tool permissions and safe-data handling rules are approved for alert-driven diagnostics.
+Status: Deferred to Phase 10 (`P10-T07`).  
+Action: Moved to the dedicated AI-worker phase so Phase 8 stays focused on core platform hardening.  
+Output: Deferral linkage to `P10-T07`.  
+Done when: Phase 8 does not depend on AI diagnostics access-model work.
 
 ### P8-T12: Implement alert-driven AI diagnostic worker pipeline
 Owner: Agent  
 Type: Automation coding  
-Dependencies: P8-T11, Phase 3 alert routing, Phase 1 `platform-ai-workers` baseline  
+Dependencies: P10-T07, Phase 3 alert routing, P10-T01  
 Affected repos: `platform-ai-workers`, `backend-api`, `platform-infra`
-Action: Add worker pipeline triggered by Grafana Cloud / Prometheus-style alert events, retrieve telemetry context (metrics/logs/traces), run diagnostic analysis, and emit structured remediation proposals with evidence links.  
-Output: Alert -> diagnostics worker implementation and deployment manifests/config.  
-Done when: Synthetic alerts trigger deterministic diagnostics with linked telemetry evidence.
+Status: Deferred to Phase 10 (`P10-T08`).  
+Action: Moved with the rest of the AI-worker-specific delivery track.  
+Output: Deferral linkage to `P10-T08`.  
+Done when: Phase 8 does not depend on alert-driven AI diagnostics.
 
 ### P8-T13: Automate remediation task generation from diagnostics
 Owner: Agent  
 Type: Automation integration  
-Dependencies: P8-T12, Phase 0 task workflow baseline  
+Dependencies: P10-T08, Phase 0 task workflow baseline  
 Affected repos: `platform-ai-workers`, `platform-blueprint-specs`
-Action: Convert validated diagnostic outputs into GitHub Issues/Project tasks with standard labels/priority suggestions, links to evidence, and optional worker-lane assignment for follow-up automation.  
-Output: Diagnostics -> task generation integration.  
-Done when: At least one synthetic alert produces a correctly formatted remediation issue in the project board.
+Status: Deferred to Phase 10 (`P10-T09`).  
+Action: Moved with the AI diagnostics pipeline that produces the inputs for remediation-task creation.  
+Output: Deferral linkage to `P10-T09`.  
+Done when: Phase 8 does not depend on diagnostics-to-task automation.
 
 ### P8-T14: Resolve edge-provider layering decision with production evidence
 Owner: Human + Agent  
@@ -194,9 +197,6 @@ Done when: The major cross-repo architecture and governance decisions have canon
 - SBOM/signing CI outputs
 - security audit report
 - template certification record
-- MCP/tool access model for AI diagnostics
-- alert-driven diagnostic worker implementation evidence
-- diagnostics-to-task generation validation evidence
 - edge-provider layering ADR and implementation plan
 - Sentry integration evidence and triage runbook
 - incident.io routing/escalation configuration evidence

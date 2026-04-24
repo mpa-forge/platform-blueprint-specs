@@ -137,28 +137,28 @@ Done when: Phase 3 does not depend on incident.io provisioning.
 Owner: Agent  
 Type: Coding  
 Dependencies: P3-T07  
-Status: Deferred to Phase 8 (`P8-T12`).  
+Status: Deferred to Phase 10 (`P10-T08`).  
 Action: Defer the alert -> AI automation service contract and endpoint until late-phase hardening after baseline alert routing is stable, following `../platform-ai-workers/docs/automation/alert-ai-webhook-spec.md`.  
-Output: Deferral linkage to `P8-T12`.  
+Output: Deferral linkage to `P10-T08`.  
 Done when: Phase 3 does not depend on alert -> AI automation service delivery.
 
 ### P3-T11: Add enrichment integrations and evidence links
 Owner: Agent  
 Type: Coding  
 Dependencies: P3-T10  
-Status: Deferred to Phase 8 (`P8-T12`).  
-Action: Defer telemetry-context enrichment and evidence-link generation until the Phase 8 alert-driven diagnostic pipeline is implemented.  
-Output: Deferral linkage to `P8-T12`.  
+Status: Deferred to Phase 10 (`P10-T08`).  
+Action: Defer telemetry-context enrichment and evidence-link generation until the Phase 10 alert-driven diagnostic pipeline is implemented.  
+Output: Deferral linkage to `P10-T08`.  
 Done when: Phase 3 does not depend on enrichment integrations or evidence-link generation.
 
 ### P3-T12: Run synthetic observability E2E tests
 Owner: Human  
 Type: Validation  
-Dependencies: P3-T01..P3-T07, P3-T10, P3-T11  
+Dependencies: P3-T01..P3-T07  
 Implemented so far: The prerequisite alert rules, dashboard assets, routing runbooks, and synthetic-trigger guidance exist, so the validation target is defined even though no end-to-end report has been captured yet.
-Missing: An executed `rc` test report covering synthetic load or failures, dashboard rendering, alert firing, webhook or Slack routing, and the remediation list from the observed outcomes.
-Blocked: The task still depends on deferred P3-T10 and P3-T11 for AI workflow output, so the acceptance text cannot be fully satisfied in Phase 3 as written; Grafana-side checks also wait on deployed runtime wiring.
-Action: Trigger synthetic load/errors and verify dashboard, alerts, webhook/Slack routing, and AI workflow output.  
+Missing: An executed `rc` test report covering synthetic load or failures, dashboard rendering, alert firing, and webhook or Slack routing from the observed outcomes.
+Blocked: Grafana-side checks still wait on deployed runtime wiring and live traffic, but the task no longer depends on the deferred AI automation extension.
+Action: Trigger synthetic load/errors and verify dashboard, alerts, and webhook or Slack routing.  
 Output: Test report and remediation list.  
 Done when: All phase 3 exit criteria are objectively validated.
 
@@ -198,6 +198,4 @@ Done when: Cloud Run API observability is fully operational with direct OTLP exp
 - `../platform-infra/docs/grafana-dashboards/*.json`
 - `docs/operations/grafana-dashboard-bootstrap-runbook.md`
 - alert rules and routing policies
-- `../platform-ai-workers/docs/automation/alert-ai-webhook-spec.md` implementation reference
-- alert->AI webhook spec and service implementation
 - synthetic observability validation report
