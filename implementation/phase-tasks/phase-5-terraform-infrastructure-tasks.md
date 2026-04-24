@@ -94,7 +94,9 @@ Owner: Agent
 Type: IaC coding  
 Dependencies: P5-T03..P5-T08  
 Affected repos: `platform-infra`
-Action: Create per-environment root stack composition and parameter files with minimal drift, while enforcing prod full separation and RC internal isolation boundaries; keep environment selection explicit by root path, not Terraform workspace; include explicit runtime gates so baseline enables Cloud Run API and keeps GKE modules disabled until explicit enable decision, aligned with `ops/ephemeral-gke-cluster-lifecycle-requirements.md`.  
+Status: Completed (`2026-04-24`)
+Evidence: `platform-infra` PR #31 (`Add deployment presets for Terraform environments`), `implementation/governance/deployment-preset-environment-evidence.md`, and validation via `make terraform-validate`.
+Action: Create per-environment root stack composition and parameter files with minimal drift, while enforcing prod full separation and RC internal isolation boundaries; keep environment selection explicit by root path, not Terraform workspace; derive runtime/module activation from deployment presets so roots choose topology through `deployment_preset` + `deployment_enabled`; keep Cloud Run as the managed baseline, GKE gated until explicitly enabled, and allow a single-VPS preset for low-scale environments.
 Output: Environment-specific IaC layers.  
 Done when: `terraform plan` works for all environments from their dedicated root paths.
 

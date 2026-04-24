@@ -14,7 +14,7 @@ Status legend:
 | Cloud provider | GCP selected | Locked | `platform-specification.md` (Section 10) |
 | Environment model | `local` + `rc` + `prod`; prod fully separate | Locked | `common/standards/environment-and-region.md` |
 | Primary region | `us-east4` for `rc` and `prod` | Locked | `common/standards/environment-and-region.md` |
-| API runtime path | Cloud Run baseline; GKE Autopilot + Helm alternative | Locked | `../backend-api/docs/api-runtime-paths-cloud-run-gke.md` |
+| API runtime path | Cloud Run managed baseline; GKE Autopilot + Helm alternative; single-VPS preset allowed for low-scale/cost-sensitive environments | Locked | `../backend-api/docs/api-runtime-paths-cloud-run-gke.md`, `implementation/governance/deployment-preset-environment-evidence.md` |
 | Initial cluster policy | Do not create initial GKE cluster; enable when needed | Locked | `../backend-api/docs/api-runtime-paths-cloud-run-gke.md`, `platform-specification.md` |
 | Repo strategy | Polyrepo with dedicated repos per frontend/api/worker/contracts/infra/ai-workers | Locked | `platform-specification.md` (Section 10), `implementation/governance/repo-ownership.md` |
 | Auth provider | Clerk Free, B2C-first | Locked | `platform-specification.md` (Section 10), `implementation/governance/provider-account-inventory.md` (`P0-T03C`) |
@@ -40,7 +40,7 @@ Status legend:
 | Frontend serving path | Authenticated app first; CDN-first (`Cloud CDN + HTTPS LB + Cloud Storage`) | Locked | `platform-specification.md` (Sections 5, 10) |
 | Ingress routing | Single domain, path-based (`/api/*`) | Locked | `platform-specification.md` (Section 10) |
 | TLS management | Managed certificates | Locked | `platform-specification.md` (Section 10) |
-| Terraform env structure | Separate roots per env (`rc`, `prod`); shared modules | Locked | `platform-specification.md` (Section 10) |
+| Terraform env structure | Separate roots per env (`rc`, `prod`); shared modules plus preset-driven topology selection | Locked | `platform-specification.md` (Section 10), `implementation/governance/deployment-preset-environment-evidence.md` |
 | Terraform state backend | GCS backend with per-env isolation and lock timeout policy | Locked | `platform-specification.md` (Section 10) |
 | Prod deploy control | On-demand promotion with approvals | Locked | `platform-specification.md` (Section 10) |
 | DB migration rollback policy | Forward-fix only | Locked | `platform-specification.md` (Section 10) |
