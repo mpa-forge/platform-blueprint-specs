@@ -108,6 +108,8 @@ Owner: Agent
 Type: IaC coding  
 Dependencies: P3-T01, P3-T06, P5-T01, P5-T09  
 Affected repos: `platform-infra`
+Status: Completed (`2026-04-25`)
+Evidence: `platform-infra` PR #32 (`Add Grafana dashboard provisioning`) and follow-up PR #33 (`Fix stack plan-safe contracts`). Validated with `make terraform-validate`, `make terraform-plan ENV=rc`, and `make terraform-plan ENV=prod`, with both env-root plans showing the Grafana folder and baseline dashboard resources sourced from `docs/grafana-dashboards/*.json`.
 Action: Add `platform-infra` observability support for authoritative Grafana dashboard provisioning using the scoped Grafana API token and stack inputs established earlier in Phase 3. Define provider and module wiring for Grafana folders and baseline dashboards, and ensure the env roots consume the source-controlled dashboard definitions prepared by `P3-T06` from `../platform-infra/docs/grafana-dashboards/manifest.json`, `../platform-infra/docs/grafana-dashboards/api-golden-signals.json`, `../platform-infra/docs/grafana-dashboards/runtime-path-status.json`, and `../platform-infra/docs/grafana-dashboards/db-connectivity-symptoms.json` without manual UI re-authoring.  
 Output: Grafana dashboard provisioning module and environment bindings.  
 Done when: `terraform plan` from each env root shows Grafana folder and dashboard resources that recreate the baseline dashboards from the prepared source-controlled definitions.
@@ -117,6 +119,8 @@ Owner: Agent
 Type: CI/IaC  
 Dependencies: P5-T01, P5-T09A  
 Affected repos: `platform-infra`, `org-dot-github`
+Status: Completed (`2026-04-25`)
+Evidence: `implementation/governance/p5-t10-iac-ci-policy-evidence.md`, `platform-infra` CI workflow updates, and shared `org-dot-github` reusable infra workflow updates. Validated with `make repo-format-check`, `make repo-lint`, `make terraform-validate`, and `make repo-policy-check`.
 Action: Add formatting, validation, static analysis, and policy checks to PR pipelines, including checks that cover Grafana dashboard provisioning assets and their Terraform wiring once the dashboard module exists.  
 Output: Infrastructure quality gates.  
 Done when: Invalid infra changes are blocked in CI before apply.
